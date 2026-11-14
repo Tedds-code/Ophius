@@ -180,6 +180,18 @@ def process_packet(
         else:
             measurements.append(_metric("ecg_heart_rate", _number(data, "heart_rate_bpm", minimum=0), "bpm"))
             notes.append("Device-reported ECG heart rate; no waveform diagnosis")
+        if "qtc_ms" in data:
+            measurements.append(_metric("qtc_interval", _number(data, "qtc_ms", minimum=0), "ms"))
+            notes.append("Device-reported QTc; waveform algorithm does not derive this value")
+
+    elif packet.sensor == "blood_pressure":
+        systolic = _number(data, "blood_pressure_systolic", minimum=0)
+        diastolic = _number(data, "blood_pressure_diastolic", minimum=0)
+        if systolic <= diastolic:
+            raise ProcessingError("Systolic pressure must be above diastolic pressure")
+        measurements.append(_metric("blood_pressure_systolic", systolic, "mmHg"))
+        measurements.append(_metric("blood_pressure_diastolic", diastolic, "mmHg"))
+        notes.append("Device-reported cuff BP; physical device calibration must be validated")
 
     elif packet.sensor == "eda":
         measurements.append(_metric("skin_conductance", _number(data, "conductance_us", minimum=0), "uS"))
@@ -198,8 +210,17 @@ def process_packet(
         notes.append("Externally established dose quantities; no dose inferred from raw counts")
 
     elif packet.sensor == "co2":
-        measurements.append(_metric("co2_concentration", _number(data, "co2_ppm", minimum=0), "ppm"))
-        notes.append("Device-reported environmental CO2; verify sensor calibration separately")
+        if "co2_1h_mmhg" in data:
+            minutes = _number(data, "sample_period_minutes", minimum=60)
+            if minutes != 60:
+                raise ProcessingError("JSON cabin_co2 rule specifies exactly a one-hour average")
+            measurements.append(_metric("cabin_co2", _number(data, "co2_1h_mmhg", minimum=0), "mmHg"))
+            notes.append("Device-reported one-hour partial-pressure average; validate instrument provenance")
+        if "co2_ppm" in data:
+            measurements.append(_metric("co2_concentration", _number(data, "co2_ppm", minimum=0), "ppm"))
+            notes.append("Device spot ppm is not the uploaded JSON one-hour mmHg rule")
+        if not measurements:
+            raise ProcessingError("CO2 requires an hourly partial pressure or reported ppm")
 
     elif packet.sensor == "noise":
         if "sound_level_dba" in data:

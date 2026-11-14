@@ -10,10 +10,14 @@ from astro_health.models import MeasurementValue
 class FixedManualInput(ManualInput):
     """Ask for a test, then only its required numeric fields and units."""
 
+    def __init__(self, *args, test_catalog=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.test_catalog = test_catalog if test_catalog is not None else MANUAL_TESTS
+
     def _collect_measurements(self) -> tuple[MeasurementValue, ...]:
         while True:
             self.output_function("\n=== Available health tests ===")
-            for index, test in enumerate(MANUAL_TESTS, start=1):
+            for index, test in enumerate(self.test_catalog, start=1):
                 self.output_function(f"{index}. {test.display_name}")
 
             choice = self.input_function("Choose a test number: ").strip()
@@ -21,8 +25,8 @@ class FixedManualInput(ManualInput):
                 index = int(choice)
             except ValueError:
                 index = 0
-            if 1 <= index <= len(MANUAL_TESTS):
-                chosen_test = MANUAL_TESTS[index - 1]
+            if 1 <= index <= len(self.test_catalog):
+                chosen_test = self.test_catalog[index - 1]
                 break
             self.output_function("Invalid test number. Please try again.")
 

@@ -1,0 +1,57 @@
+{
+  "format": "astro_health_blood_panel_v1",
+  "timestamp": "2026-11-14T16:35:35.795916+00:00",
+  "synthetic": true,
+  "simulation_profile": "mixed",
+  "note": "SYNTHETIC DATA ONLY; automatically generated for UI/test demonstrations.",
+  "measurements": {
+    "hemoglobin": {
+      "value": 12.5,
+      "unit": "g/dL"
+    },
+    "hematocrit": {
+      "value": 42.861,
+      "unit": "%"
+    },
+    "rbc": {
+      "value": 4.649,
+      "unit": "10^12/L"
+    },
+    "wbc": {
+      "value": 10.6,
+      "unit": "10^9/L"
+    },
+    "neutrophils": {
+      "value": 4.828,
+      "unit": "10^9/L"
+    },
+    "lymphocytes": {
+      "value": 2.061,
+      "unit": "10^9/L"
+    },
+    "monocytes": {
+      "value": 0.537,
+      "unit": "10^9/L"
+    },
+    "eosinophils": {
+      "value": 0.285,
+      "unit": "10^9/L"
+    },
+    "basophils": {
+      "value": 0.057,
+      "unit": "10^9/L"
+    },
+    "platelets": {
+      "value": 425,
+      "unit": "10^9/L"
+    },
+    "reticulocytes": {
+      "value": 1.201,
+      "unit": "%"
+    },
+    "d_dimer": {
+      "value": 0.2,
+      "unit": "mg/dL"
+    }
+  }
+}

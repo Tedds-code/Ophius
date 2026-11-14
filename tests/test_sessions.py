@@ -134,10 +134,10 @@ class SessionTests(unittest.TestCase):
         self.assertEqual(self.sessions.list_sessions()[0].status, 'completed')
 
     def test_cli_manual_data_attaches_to_session(self):
-        self.cli(['1', '1', '32.5', 'yes', '8']).run()
+        self.cli(['1', '1', '36.8', 'yes', '8']).run()
         session = self.sessions.list_sessions()[0]
         self.assertEqual(session.reading_count, 1)
-        self.assertEqual(self.sessions.summary(session.id)['skin_temperature'].value, 32.5)
+        self.assertEqual(self.sessions.summary(session.id)['temperature'].value, 36.8)
 
     def test_cli_sensor_packets_attached_to_one_session(self):
         self.cli(['4', '1', '3', '8']).run()

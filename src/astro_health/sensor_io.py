@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import socket
+from dataclasses import replace
 from pathlib import Path
 from typing import Iterable, Iterator, TextIO
 
@@ -108,7 +109,8 @@ class SensorRecorder:
     """
 
     def __init__(self, health_service, raw_log_path: str | Path, *, image_root=None,
-                 session_store=None, session_id=None, ingest_channel='unspecified'):
+                 session_store=None, session_id=None, ingest_channel='unspecified',
+                 json_only=False):
         self.service = health_service
         self.raw_log_path = Path(raw_log_path)
         self.image_root = Path(image_root) if image_root is not None else None
@@ -117,10 +119,31 @@ class SensorRecorder:
         if ingest_channel not in ('unspecified', 'simulation', 'jsonl', 'tcp', 'serial'):
             raise ValueError('Unsupported ingestion channel')
         self.ingest_channel = ingest_channel
+        self.json_only = json_only
         ensure_sensor_history(self.service.database)
 
     def record(self, packet: SensorPacket) -> tuple[int, ProcessedPacket]:
         processed = process_packet(packet, image_root=self.image_root)
+        if self.json_only:
+            from astro_health.models import MeasurementValue
+            from astro_health.astronaut_assessment import load_rules
+            rules_path = Path(__file__).resolve().parents[2] / 'config' / 'thresholds.json'
+            names = load_rules(rules_path)['signals']
+            allowed = set(names)
+            allowed.update(name.rsplit('_', 1)[0] for name in names
+                           if name.endswith(('_male', '_female')))
+            mapped = {'ecg_heart_rate': 'heart_rate',
+                      'career_effective_dose': 'cumulative_effective_dose',
+                      'nuclear_effective_dose': 'nuclear_source_dose'}
+            filtered = []
+            for item in processed.reading.measurements:
+                key = mapped.get(item.measurement_type, item.measurement_type)
+                if key in allowed:
+                    filtered.append(MeasurementValue(key, item.value, item.unit))
+            if not filtered:
+                raise PacketError('Sensor packet does not supply any measurement from thresholds.json')
+            processed = replace(processed, reading=replace(processed.reading,
+                                 measurements=tuple(filtered)))
         fingerprint = packet_fingerprint(packet)
         original_id = existing_packet_id(self.service.database, fingerprint)
         if original_id is not None:

@@ -17,7 +17,7 @@ def main():
     database.initialize()
 
     service = HealthService(database)
-    cli = HealthCLI(service)
+    cli = HealthCLI(service, auto_full_simulation=False, json_only=True)
 
     cli.run()
 

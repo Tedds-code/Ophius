@@ -37,19 +37,19 @@ class TestHealthCLI(unittest.TestCase):
         self.assertIn("Saving session and exiting health monitor.", self.messages)
 
     def test_invalid_menu_option(self):
-        self.make_cli(["9", "8"]).run()
+        self.make_cli(["99", "8"]).run()
         self.assertTrue(any("Invalid option" in msg for msg in self.messages))
 
     def test_enter_and_save_fixed_reading(self):
         # Menu 1 -> mission day 3 -> catalog #1 -> temperature -> save.
-        self.make_cli(["1", "1", "32.5", "yes", "8"]).run()
+        self.make_cli(["1", "1", "36.8", "yes", "8"]).run()
         readings = self.service.list_readings()
         self.assertEqual(len(readings), 1)
-        self.assertEqual(readings[0].measurements[0].measurement_type, "skin_temperature")
+        self.assertEqual(readings[0].measurements[0].measurement_type, "temperature")
         self.assertEqual(readings[0].measurements[0].unit, "degC")
 
     def test_decline_save(self):
-        self.make_cli(["1", "1", "32.5", "no", "8"]).run()
+        self.make_cli(["1", "1", "36.8", "no", "8"]).run()
         self.assertIn("Reading not saved.", self.messages)
         self.assertEqual(self.service.list_readings(), [])
 

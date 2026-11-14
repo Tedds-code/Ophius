@@ -61,6 +61,7 @@ class AssessmentTests(unittest.TestCase):
             'lens_dose_30d': {'unit': 'mGy-Eq', 'window': '30_days', 'critical_above': 1000}}}
         self.assertEqual(assess_measurement('co2_concentration', 22000, 'ppm', v1).status, 'caution')
         self.assertEqual(assess_measurement('skin_temperature', 39, 'degC', v1).status, 'critical')
+        self.assertEqual(assess_measurement('temperature', 39, 'degC', v1).status, 'unassessed')
         self.assertEqual(rule_name('lens_dose_30d', v1['signals']['lens_dose_30d']), 'lens_dose')
 
     def test_settings_optin_defaults_and_validation(self):

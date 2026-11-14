@@ -28,12 +28,15 @@ class HealthCLI:
 
     def __init__(
         self, service: HealthService, input_function=input,
-        output_function=print, sensor_realtime=True,
+        output_function=print, sensor_realtime=True, auto_full_simulation=False,
+        json_only=False,
     ):
         self.service = service
         self.input_function = input_function
         self.output_function = output_function
         self.sensor_realtime = sensor_realtime
+        self.auto_full_simulation = auto_full_simulation
+        self.json_only = json_only
         self.sessions = SessionStore(service.database)
         self.current_session_id = None
 
@@ -48,12 +51,40 @@ class HealthCLI:
         self.output_function("6. Receive packets from another laptop (offline TCP)")
         self.output_function("7. Receive packets from USB serial (optional pyserial)")
         self.output_function("8. Exit")
+        self.output_function("9. Open astronaut dashboard")
+        self.output_function("10. Import blood-test JSON file")
+        self.output_function("11. Simulate blood panel (creates a JSON file and records results)")
+        self.output_function("12. Simulate ALL JSON tests + save 365-day history")
+        self.output_function("13. Import a complete synthetic history JSON")
 
     def _enter_reading(self):
+        manual_catalog = None
+        if self.json_only:
+            from astro_health.fixed_tests import FixedTest, TestField
+            from astro_health.astronaut_assessment import load_rules
+            rules = load_rules(Path(__file__).resolve().parents[2] / 'config' / 'thresholds.json')
+            # Do not offer unrelated engineering readings or a body-temperature
+            # test when the JSON only defines skin temperature.
+            offered = ('heart_rate', 'spo2', 'skin_temperature', 'qtc_interval',
+                       'vomiting_episodes')
+            manual_catalog = tuple(FixedTest(k, rules['signals'].get(k, {}).get('label', k),
+                (TestField(k, k, rules['signals'][k]['unit']),)) for k in offered
+                if k in rules['signals'])
+            if 'qtc_interval_male' in rules['signals'] and 'qtc_interval_female' in rules['signals']:
+                manual_catalog += (FixedTest('qtc_interval', 'Corrected QT interval (male/female references)',
+                    (TestField('qtc_interval', 'QTc', 'ms'),)),)
+            manual_catalog += (FixedTest('blood_pressure', 'Cuff blood pressure',
+                (TestField('blood_pressure_systolic', 'Systolic BP', 'mmHg'),
+                 TestField('blood_pressure_diastolic', 'Diastolic BP', 'mmHg'))),)
+            manual_catalog += tuple(test for test in FIXED_TESTS
+                if test.test_id in ('space_motion_sickness_duration_hours',
+                    'nasal_congestion_duration_hours', 'urinary_incontinence_duration_hours',
+                    'urinary_retention_duration_hours'))
         source = FixedManualInput(
             mission_day=0,  # suppress old manual day prompt; service assigns actual day
             input_function=self.input_function,
             output_function=self.output_function,
+            test_catalog=manual_catalog,
         )
         reading = source.read()
         self.output_function("\nReview your entry:")
@@ -77,6 +108,7 @@ class HealthCLI:
         self.output_function(f"Quality status: {stored.quality}")
         self.output_function(f"Mission day: {stored.mission_day}")
         self._show_reference_comparison(stored)
+        self._v9_reading_status(stored)
 
     def _show_reference_comparison(self, reading):
         """Show optional JSON comparisons WITHOUT changing medical quality."""
@@ -98,6 +130,30 @@ class HealthCLI:
                 f"{result.status}"
             )
         self.output_function("Comparisons are not diagnoses; quality remains unassessed.")
+
+    # v9 dashboard integration (installed via scripts/apply_v9_cli.py)
+    def _v9_reading_status(self, reading, warnings_only=False):
+        try:
+            from astro_health.session_assessment import describe_reading
+            for line in describe_reading(reading):
+                if not warnings_only or line.startswith(('CAUTION:', 'CRITICAL:')):
+                    self.output_function('Project reference: ' + line)
+        except (OSError, ValueError, KeyError) as exc:
+            self.output_function(f'Project reference unavailable: {exc}')
+
+    def _v9_session_status(self, session_id):
+        try:
+            from astro_health.session_assessment import print_session_report
+            print_session_report(self.sessions, session_id, output=self.output_function)
+        except (OSError, ValueError, KeyError) as exc:
+            self.output_function(f'Project session assessment unavailable: {exc}')
+
+    def _v9_dashboard(self):
+        try:
+            from astro_health.dashboard import main
+            main(['--db', str(self.service.database.database_path)])
+        except (OSError, ValueError, ImportError, RuntimeError) as exc:
+            self.output_function(f'Dashboard unavailable: {exc}')
 
     def _list_sessions(self):
         sessions = self.sessions.list_sessions()
@@ -170,6 +226,15 @@ class HealthCLI:
             "not an accuracy or medical assessment."
         )
         values = self.sessions.summary(session_id)
+        self._v9_session_status(session_id)
+        # The JSON-first synthetic view already lists every allowed JSON key.
+        # Do not append old engineering / body-temperature catalog entries.
+        from astro_health.json_catalog_simulation import FORMAT
+        is_full_sim = any(r.source == 'simulated_json_catalog'
+                          for r in self.sessions.readings_for_session(session_id))
+        if is_full_sim:
+            self.output_function('Complete JSON catalog shown above (synthetic full-history mode).')
+            return
         for test in FIXED_TESTS:
             # NASA radiation fields are displayed below, grouped by sensor and
             # source; avoid showing the same values twice.
@@ -266,6 +331,7 @@ class HealthCLI:
             session_store=self.sessions,
             session_id=self.current_session_id,
             ingest_channel=ingest_channel,
+            json_only=self.json_only,
         )
 
     def _record_packets(self, packets, stop_event=None, *, ingest_channel='unspecified'):
@@ -293,6 +359,7 @@ class HealthCLI:
                     for m in processed.reading.measurements
                 )
                 self.output_function(f"ID {reading_id} ({packet.origin}_{packet.sensor}): {details}")
+                self._v9_reading_status(processed.reading, warnings_only=True)
         except (PacketError, OSError, TimeoutError) as exc:
             errors += 1
             self.output_function(f"Input stream stopped: {exc}")
@@ -304,17 +371,18 @@ class HealthCLI:
 
     def _simulate_sensor(self):
         self.output_function("\n=== Simulated sensors ===")
-        for index, sensor in enumerate(SENSOR_TYPES, start=1):
+        supported_sensors = tuple(s for s in SENSOR_TYPES if s in ('thermistor', 'ppg', 'ecg', 'blood_pressure', 'co2', 'radiation'))
+        for index, sensor in enumerate(supported_sensors, start=1):
             self.output_function(f"{index}. {sensor}")
         raw = self.input_function("Choose sensor number: ").strip()
         try:
             index = int(raw)
         except ValueError:
             index = 0
-        if not 1 <= index <= len(SENSOR_TYPES):
+        if not 1 <= index <= len(supported_sensors):
             self.output_function("Invalid sensor number.")
             return
-        sensor = SENSOR_TYPES[index - 1]
+        sensor = supported_sensors[index - 1]
         count_raw = self.input_function(
             "How many packets? (10 suggested; Enter = continuous until stopped): "
         ).strip()
@@ -377,6 +445,118 @@ class HealthCLI:
             return
         self._record_packets(packets_from_file(Path(path)), ingest_channel='jsonl')
 
+    def _save_blood_test(self, reading):
+        """Save a whole blood panel in one existing, durable health-check session."""
+        reading_id = self.service.record_reading(reading)
+        self.sessions.attach_reading(self.current_session_id, reading_id)
+        self.output_function(f"Blood panel saved as reading ID {reading_id} "
+                             f"({len(reading.measurements)} measurements; source={reading.source}).")
+        self.output_function('Male and female JSON reference ratings appear side by side in the dashboard.')
+        self._v9_reading_status(reading)
+
+    def _import_blood_test(self):
+        from astro_health.blood_tests import load_blood_test
+        filename = self.input_function('Path to blood-test .json file: ').strip().strip('"')
+        if not filename:
+            self.output_function('No blood-test file selected.')
+            return
+        try:
+            reading = load_blood_test(filename)
+        except (OSError, ValueError, TypeError) as exc:
+            self.output_function(f'Blood-test JSON rejected: {exc}')
+            return
+        self.output_function(f'Loaded {len(reading.measurements)} lab values from {filename}.')
+        if reading.source == 'simulated_blood_panel':
+            self.output_function('SYNTHETIC data: these readings are only for testing.')
+        answer = self.input_function('Save this blood panel to current session? (yes/no): ').strip().lower()
+        if answer not in ('y', 'yes'):
+            self.output_function('Blood panel not saved.')
+            return
+        self._save_blood_test(reading)
+
+    def _simulate_blood_test(self):
+        from astro_health.blood_tests import save_simulated_blood_test, load_blood_test
+        from astro_health.astronaut_assessment import load_rules
+        profile_raw = self.input_function(
+            'Simulation: 1=within both references, 2=mixed caution (Enter=1): '
+        ).strip()
+        if profile_raw not in ('', '1', '2'):
+            self.output_function('Invalid simulation profile.')
+            return
+        profile = 'mixed' if profile_raw == '2' else 'normal'
+        from datetime import datetime, timezone
+        stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+        path = (self.service.database.database_path.parent / 'simulations' /
+                f'blood_panel_{profile}_{stamp}.json')
+        try:
+            project_root = Path(__file__).resolve().parents[2]
+            config = load_rules(project_root / 'config' / 'thresholds.json')
+            save_simulated_blood_test(path, config, profile=profile)
+            reading = load_blood_test(path)
+        except (OSError, ValueError) as exc:
+            self.output_function(f'Blood-panel simulation unavailable: {exc}')
+            return
+        self.output_function(f'SYNTHETIC blood-test JSON created: {path}')
+        self._save_blood_test(reading)
+
+    def _record_full_catalog_report(self, filename, report):
+        """Save full report as one session reading, linked to its original history."""
+        import json
+        from astro_health.json_catalog_simulation import reading_from_simulation
+        reading = reading_from_simulation(report)
+        reading_id = self.service.record_reading(reading)
+        self.sessions.attach_reading(self.current_session_id, reading_id)
+        mapping = self.service.database.database_path.parent / 'simulations' / 'session_reports.json'
+        mapping.parent.mkdir(parents=True, exist_ok=True)
+        lookup = json.loads(mapping.read_text(encoding='utf-8')) if mapping.is_file() else {}
+        lookup[str(self.current_session_id)] = str(Path(filename).resolve())
+        mapping.write_text(json.dumps(lookup, indent=2), encoding='utf-8')
+        critical = sum(v['status'] == 'critical' for v in report['assessments'].values())
+        caution = sum(v['status'] == 'caution' for v in report['assessments'].values())
+        self.output_function(f'SYNTHETIC: {len(report["assessments"])} JSON rules assessed; '
+                             f'{critical} critical / {caution} caution. Reading ID {reading_id}.')
+        self.output_function(f'Full dated synthetic history: {filename}')
+
+    def _import_full_catalog_history(self):
+        """Import the complete, explicitly fictional year of sensor/dose history."""
+        from astro_health.json_catalog_simulation import load_simulation
+        from astro_health.astronaut_assessment import load_rules
+        path = self.input_function('Path to complete synthetic history .json: ').strip().strip('"')
+        if not path:
+            self.output_function('Import cancelled.')
+            return
+        try:
+            config = load_rules(Path(__file__).resolve().parents[2] / 'config' / 'thresholds.json')
+            report = load_simulation(path, config)
+            self._record_full_catalog_report(path, report)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            self.output_function(f'History JSON rejected: {exc}')
+
+    def _simulate_full_json_catalog(self, *, automatic=False):
+        """Generate a complete, labeled synthetic assessment and dated history."""
+        import json
+        from astro_health.json_catalog_simulation import save_simulation, load_simulation, reading_from_simulation
+        from astro_health.astronaut_assessment import load_rules
+        project_root = Path(__file__).resolve().parents[2]
+        config = load_rules(project_root / 'config' / 'thresholds.json')
+        profile = 'normal'
+        if not automatic:
+            response = self.input_function('1=normal, 2=mixed caution/critical (Enter=1): ').strip()
+            if response not in ('', '1', '2'):
+                self.output_function('Invalid scenario selection.')
+                return
+            profile = 'mixed' if response == '2' else 'normal'
+        stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+        filename = self.service.database.database_path.parent / 'simulations' / f'full_catalog_{profile}_{stamp}.json'
+        try:
+            save_simulation(filename, config, days=365, profile=profile)
+            report = load_simulation(filename, config)
+            self._record_full_catalog_report(filename, report)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            self.output_function(f'Synthetic full-catalog simulation failed: {exc}')
+            return
+        self.output_function('365 dated synthetic days include 30-day, 1-year, and fictional full-career dose coverage.')
+
     def _receive_tcp(self):
         host = self.input_function(
             "Listen address (Enter = 127.0.0.1; use 0.0.0.0 only on trusted LAN): "
@@ -410,6 +590,9 @@ class HealthCLI:
             )
         self.current_session_id = self.sessions.start()
         self.output_function(f"Started session {self.current_session_id}.")
+        # Populate the session immediately with all rules from the JSON.
+        if self.auto_full_simulation:
+            self._simulate_full_json_catalog(automatic=True)
         try:
             while True:
                 self._show_menu()
@@ -428,11 +611,21 @@ class HealthCLI:
                     self._receive_tcp()
                 elif choice == "7":
                     self._receive_serial()
+                elif choice == "9":
+                    self._v9_dashboard()
+                elif choice == "10":
+                    self._import_blood_test()
+                elif choice == "11":
+                    self._simulate_blood_test()
+                elif choice == "12":
+                    self._simulate_full_json_catalog()
+                elif choice == "13":
+                    self._import_full_catalog_history()
                 elif choice == "8":
                     self.output_function("Saving session and exiting health monitor.")
                     break
                 else:
-                    self.output_function("Invalid option. Please choose 1 through 8.")
+                    self.output_function("Invalid option. Please choose a displayed menu number.")
         except (KeyboardInterrupt, EOFError):
             self.output_function("\nInterrupted; saving session and exiting.")
         finally:

@@ -16,7 +16,7 @@ class ThresholdMonitorTests(unittest.TestCase):
 
     def test_name_mapping_and_units(self):
         self.assertEqual(self.config['signals']['cumulative_effective_dose']['measurement_type'],'career_effective_dose')
-        self.assertEqual(self.config['signals']['cabin_co2']['unit'],'ppm')
+        self.assertEqual(self.config['signals']['cabin_co2']['unit'],'mmHg')
         self.assertFalse(self.config['signals']['cabin_co2']['enabled_for_comparison'])
 
     def test_career_requires_explicit_coverage(self):
@@ -26,7 +26,7 @@ class ThresholdMonitorTests(unittest.TestCase):
         self.assertEqual(result['status'],'insufficient_context')
         result=evaluate_reading(reading,self.config,full_career_history=True)[0]
         self.assertEqual(result['status'],'critical')
-        self.assertFalse(result['reference_verified'])
+        self.assertTrue(result['reference_verified'])
 
     def test_lens_window_not_guessed(self):
         packet=self.packet('radiation',{'measurement_basis':'nasa_effective_dose_model','radiation_source':'other','lens_dose':1500})
@@ -39,6 +39,6 @@ class ThresholdMonitorTests(unittest.TestCase):
         packet=self.packet('radiation',{'measurement_basis':'nasa_effective_dose_model','radiation_source':'nuclear_technology','nuclear_source_dose':15})
         reading=process_packet(packet).reading
         self.assertEqual(evaluate_reading(reading,self.config)[0]['status'],'insufficient_context')
-        self.assertEqual(evaluate_reading(reading,self.config,mission_days=180)[0]['status'],'critical')
+        self.assertEqual(evaluate_reading(reading,self.config,mission_days=180,mission_cumulative_verified=True)[0]['status'],'critical')
 
 if __name__=='__main__':unittest.main()

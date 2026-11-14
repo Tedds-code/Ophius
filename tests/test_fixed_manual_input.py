@@ -23,11 +23,11 @@ class TestFixedManualInput(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
 
     def test_single_value_has_fixed_type_and_unit(self):
-        source, _ = self.make_source(["", "1", "32.5"])
+        source, _ = self.make_source(["", "1", "36.8"])
         reading = source.read()
-        self.assertEqual(reading.measurements[0].measurement_type, "skin_temperature")
+        self.assertEqual(reading.measurements[0].measurement_type, "temperature")
         self.assertEqual(reading.measurements[0].unit, "degC")
-        self.assertEqual(reading.measurements[0].value, 32.5)
+        self.assertEqual(reading.measurements[0].value, 36.8)
 
     def test_blood_pressure_is_two_values(self):
         source, _ = self.make_source(["3", "5", "120", "80"])
@@ -43,7 +43,7 @@ class TestFixedManualInput(unittest.TestCase):
         )
 
     def test_invalid_selection_reprompts(self):
-        source, messages = self.make_source(["", "999", "1", "31"])
+        source, messages = self.make_source(["", "999", "1", "36.8"])
         source.read()
         self.assertTrue(any("Invalid test number" in m for m in messages))
 

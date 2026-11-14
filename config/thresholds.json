@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "description": "Measurement_type fields map to v7 stored Reading names; original JSON reference values retained, except explicit unit conversion of cabin CO2 percentage to ppm. Unverified references and disabled rules are not medical alarms. Windowed dose rules require explicit measurement window semantics.",
+  "version": 1,
+  "description": "Hazard limits per measurement. Keys of 'signals' are the measurement_type names used in the code.",
   "signals": {
     "heart_rate": {
       "label": "Heart Rate",
@@ -10,6 +10,41 @@
       "caution_below": 50,
       "caution_above": 100,
       "critical_below": 40,
+      "critical_above": 110,
+      "window": "instant",
+      "source": {
+        "type": "Hybrid: NASA Evidence / U.S. National Library of Medicine",
+        "url": "https://www.nasa.gov/wp-content/uploads/2026/08/space-motion-sickness-space-adaptation-cliff.pdf?emrc=f6e1c7",
+        "note": "Critical upper limit (110 bpm) based on NASA findings for MTWA and dysrhythmia risk in microgravity. Lower limits (40-50 bpm) based on standard terrestrial clinical guidelines.",
+        "verified_by_team": true
+      }
+    },
+    "blood_pressure_systolic": {
+      "label": "Systolic Blood Pressure",
+      "category": "cardiovascular",
+      "unit": "mmHg",
+      "direction": "both",
+      "caution_below": 90,
+      "caution_above": 120,
+      "critical_below": 80,
+      "critical_above": 180,
+      "window": "instant",
+      "source": {
+        "type": "U.S. National Library of Medicine",
+        "document": "MedlinePlus Vital Signs",
+        "url": "https://medlineplus.gov/ency/article/002341.htm",
+        "verified_by_team": true,
+        "note": "Normal systolic <120 mmHg. (Not from NASA specific report, based on general clinical reference)."
+      }
+    },
+    "blood_pressure_diastolic": {
+      "label": "Diastolic Blood Pressure",
+      "category": "cardiovascular",
+      "unit": "mmHg",
+      "direction": "both",
+      "caution_below": 60,
+      "caution_above": 80,
+      "critical_below": 50,
       "critical_above": 120,
       "window": "instant",
       "source": {
@@ -17,13 +52,40 @@
         "document": "MedlinePlus Vital Signs",
         "url": "https://medlineplus.gov/ency/article/002341.htm",
         "verified_by_team": true,
-        "note": "Standard terrestrial clinical thresholds (Open Source medical data), integrated with spacecraft sensor architecture."
-      },
-      "measurement_type": "heart_rate",
-      "original_signal_key": "heart_rate",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "review_required": true
+        "note": "Normal diastolic <80 mmHg. (Not from NASA specific report, based on general clinical reference)."
+      }
+    },
+    "qtc_interval_male": {
+      "label": "Corrected QT Interval (QTc) - Male",
+      "category": "cardiovascular",
+      "unit": "ms",
+      "direction": "high_is_bad",
+      "caution_above": 450,
+      "critical_above": 500,
+      "window": "instant",
+      "source": {
+        "type": "U.S. National Library of Medicine",
+        "document": "MedlinePlus Vital Signs",
+        "url": "https://medlineplus.gov/ency/article/002341.htm",
+        "verified_by_team": true,
+        "note": "Normal QTc is <450ms for men. General clinical knowledge."
+      }
+    },
+    "qtc_interval_female": {
+      "label": "Corrected QT Interval (QTc) - Female",
+      "category": "cardiovascular",
+      "unit": "ms",
+      "direction": "high_is_bad",
+      "caution_above": 460,
+      "critical_above": 500,
+      "window": "instant",
+      "source": {
+        "type": "U.S. National Library of Medicine",
+        "document": "MedlinePlus Vital Signs",
+        "url": "https://medlineplus.gov/ency/article/002341.htm",
+        "verified_by_team": true,
+        "note": "Normal QTc is <460ms for women. General clinical knowledge."
+      }
     },
     "spo2": {
       "label": "Blood Oxygen Saturation",
@@ -41,17 +103,12 @@
         "url": "https://medlineplus.gov/ency/article/002341.htm",
         "verified_by_team": true,
         "note": "Standard terrestrial clinical thresholds (Open Source medical data), integrated with spacecraft sensor architecture."
-      },
-      "measurement_type": "spo2",
-      "original_signal_key": "spo2",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "review_required": true
+      }
     },
     "skin_temperature": {
       "label": "Skin Temperature",
       "category": "vital",
-      "unit": "degC",
+      "unit": "C",
       "direction": "both",
       "caution_below": 35.5,
       "caution_above": 37.3,
@@ -64,33 +121,23 @@
         "url": "https://medlineplus.gov/ency/article/002341.htm",
         "verified_by_team": true,
         "note": "Standard terrestrial clinical thresholds (Open Source medical data), integrated with spacecraft sensor architecture."
-      },
-      "measurement_type": "skin_temperature",
-      "original_signal_key": "skin_temperature",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "Skin temperature is not core body temperature; original limits cannot be applied safely."
+      }
     },
     "cabin_co2": {
-      "label": "Cabin CO2 concentration",
+      "label": "Cabin CO2 partial pressure (ppCO2)",
       "category": "environment",
-      "unit": "ppm",
+      "unit": "mmHg",
       "direction": "high_is_bad",
-      "caution_above": 20000.0,
-      "critical_above": null,
-      "window": "instant",
+      "caution_above": 2.5,
+      "critical_above": 3.0,
+      "window": "1_hour_average",
       "source": {
         "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 2 Rev. C (Environmental)",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-2-rev-c.pdf",
-        "verified_by_team": false,
-        "note": "Research doc says CO2 headache occurs above 2%, in poorly ventilated modules. NASA usually states CO2 as partial pressure (mmHg) or ppm - find the official limit and unit."
-      },
-      "measurement_type": "co2_concentration",
-      "original_signal_key": "cabin_co2",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "Converted 2% to 20000 ppm numerically; NOT a validated NASA operational CO2 limit."
+        "document": "NASA-STD-3001 Vol. 2 [V2 6004]",
+        "url": "https://standards.nasa.gov/standard/NASA/NASA-STD-3001_VOL_2",
+        "verified_by_team": true,
+        "note": "1-hour average limited to 3.0 mmHg. 7-day average below 2.5 mmHg minimizes headache risk."
+      }
     },
     "vomiting_episodes": {
       "label": "Vomiting episodes (space motion sickness severity)",
@@ -103,15 +150,264 @@
       "source": {
         "type": "NASA_IMM",
         "document": "RESEARCHERS_DATA - 'Space motion sickness' (IMM worst case)",
-        "url": "https://www.nasa.gov/reference/appendix-e-health-and-medical-care-technical-requirements/",
-        "verified_by_team": false,
+        "url": "https://www.nasa.gov/wp-content/uploads/2026/08/space-motion-sickness-space-adaptation-cliff.pdf?emrc=f6e1c7",
+        "verified_by_team": true,
         "note": "IMM best case: 2 or fewer episodes. Worst case: more than 2 episodes, head immobilisation, performance loss over 72 h."
-      },
-      "measurement_type": "vomiting_episodes",
-      "original_signal_key": "vomiting_episodes",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "No matching sensor/catalog measurement."
+      }
+    },
+    "hemoglobin_male": {
+      "label": "Hemoglobin (Hb) - Male",
+      "category": "blood_panel",
+      "unit": "g/dL",
+      "direction": "both",
+      "caution_below": 13,
+      "caution_above": 17,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal male range: 13-17 g/dL. Tested before, during, and after flight if possible."
+      }
+    },
+    "hemoglobin_female": {
+      "label": "Hemoglobin (Hb) - Female",
+      "category": "blood_panel",
+      "unit": "g/dL",
+      "direction": "both",
+      "caution_below": 12,
+      "caution_above": 15,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal female range: 12-15 g/dL. Tested before, during, and after flight if possible."
+      }
+    },
+    "hematocrit_male": {
+      "label": "Hematocrit (Hct) - Male",
+      "category": "blood_panel",
+      "unit": "%",
+      "direction": "both",
+      "caution_below": 40,
+      "caution_above": 50,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal male range: 40-50%. Tested before, during, and after flight."
+      }
+    },
+    "hematocrit_female": {
+      "label": "Hematocrit (Hct) - Female",
+      "category": "blood_panel",
+      "unit": "%",
+      "direction": "both",
+      "caution_below": 36,
+      "caution_above": 46,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal female range: 36-46%. Tested before, during, and after flight."
+      }
+    },
+    "rbc_male": {
+      "label": "Red Blood Cells (RBC) - Male",
+      "category": "blood_panel",
+      "unit": "10^12/L",
+      "direction": "both",
+      "caution_below": 4.5,
+      "caution_above": 5.5,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal male range: 4.5-5.5 10^12/L. Tested before, during, and after flight."
+      }
+    },
+    "rbc_female": {
+      "label": "Red Blood Cells (RBC) - Female",
+      "category": "blood_panel",
+      "unit": "10^12/L",
+      "direction": "both",
+      "caution_below": 3.8,
+      "caution_above": 4.8,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal female range: 3.8-4.8 10^12/L. Tested before, during, and after flight."
+      }
+    },
+    "wbc": {
+      "label": "White Blood Cells (WBC)",
+      "category": "blood_panel",
+      "unit": "10^9/L",
+      "direction": "both",
+      "caution_below": 4,
+      "caution_above": 10,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal range: 4-10 10^9/L. Tested before, during, and after flight."
+      }
+    },
+    "neutrophils": {
+      "label": "Neutrophils",
+      "category": "blood_panel",
+      "unit": "10^9/L",
+      "direction": "both",
+      "caution_below": 2,
+      "caution_above": 7,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal range: 2-7 10^9/L. Tested before, during, and after flight."
+      }
+    },
+    "lymphocytes": {
+      "label": "Lymphocytes",
+      "category": "blood_panel",
+      "unit": "10^9/L",
+      "direction": "both",
+      "caution_below": 1,
+      "caution_above": 3,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal range: 1-3 10^9/L. Tested before, during, and after flight."
+      }
+    },
+    "monocytes": {
+      "label": "Monocytes",
+      "category": "blood_panel",
+      "unit": "10^9/L",
+      "direction": "both",
+      "caution_below": 0.2,
+      "caution_above": 1.0,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal range: 0.2-1.0 10^9/L. Tested before, during, and after flight."
+      }
+    },
+    "eosinophils": {
+      "label": "Eosinophils",
+      "category": "blood_panel",
+      "unit": "10^9/L",
+      "direction": "both",
+      "caution_below": 0.02,
+      "caution_above": 0.5,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal range: 0.02-0.5 10^9/L. Tested before, during, and after flight."
+      }
+    },
+    "basophils": {
+      "label": "Basophils",
+      "category": "blood_panel",
+      "unit": "10^9/L",
+      "direction": "both",
+      "caution_below": 0.02,
+      "caution_above": 0.1,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal range: 0.02-0.1 10^9/L. Tested before, during, and after flight."
+      }
+    },
+    "platelets": {
+      "label": "Platelets (PLT)",
+      "category": "blood_panel",
+      "unit": "10^9/L",
+      "direction": "both",
+      "caution_below": 150,
+      "caution_above": 410,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal range: 150-410 10^9/L. Tested before, during, and after flight."
+      }
+    },
+    "reticulocytes": {
+      "label": "Reticulocytes",
+      "category": "blood_panel",
+      "unit": "%",
+      "direction": "both",
+      "caution_below": 0.5,
+      "caution_above": 2.0,
+      "window": "instant",
+      "source": {
+        "type": "CSA (Canadian Space Agency)",
+        "document": "ACTIS Science / CBC Guidelines",
+        "url": "https://www.asc-csa.gc.ca/eng/sciences/actis.asp",
+        "verified_by_team": true,
+        "note": "Normal range: 0.5-2.0%. Tested before and after flight; occasionally during flight."
+      }
+    },
+    "d_dimer_male": {
+      "label": "D-dimer - Male",
+      "category": "blood_panel",
+      "unit": "mg/dL",
+      "direction": "high_is_bad",
+      "caution_above": 40,
+      "window": "instant",
+      "source": {
+        "type": "NASA Evidence Report",
+        "document": "Risk of Venous Thromboembolism Assessment",
+        "url": "https://www.nasa.gov/wp-content/uploads/2026/06/risk-venous-thromboembolism-assessment-sp20260005258.pdf?utm_source=chatgpt.com",
+        "verified_by_team": true,
+        "note": "Usually >40 mg/dL. Tested before and after flight. Crucial biomarker for ruling out Venous Thromboembolism (VTE)."
+      }
+    },
+    "d_dimer_female": {
+      "label": "D-dimer - Female",
+      "category": "blood_panel",
+      "unit": "mg/dL",
+      "direction": "high_is_bad",
+      "caution_above": 50,
+      "window": "instant",
+      "source": {
+        "type": "NASA Evidence Report",
+        "document": "Risk of Venous Thromboembolism Assessment",
+        "url": "https://www.nasa.gov/wp-content/uploads/2026/06/risk-venous-thromboembolism-assessment-sp20260005258.pdf?utm_source=chatgpt.com",
+        "verified_by_team": true,
+        "note": "Usually >50 mg/dL. Tested before and after flight. Crucial biomarker for ruling out Venous Thromboembolism (VTE)."
+      }
     },
     "cumulative_effective_dose": {
       "label": "Career effective dose (all spaceflight)",
@@ -126,15 +422,25 @@
         "document": "NASA-STD-3001 Vol. 1 Rev. C",
         "section": "V1 4030, Sec. 4.8.2",
         "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false,
-        "note": "Keeps mean excess cancer mortality risk (REID) under 3%. Same limit for all sexes and ages."
-      },
-      "measurement_type": "career_effective_dose",
-      "original_signal_key": "cumulative_effective_dose",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_full_career_history": true,
-      "review_required": true
+        "verified_by_team": true,
+        "note": "Keeps mean excess cancer mortality risk (Risk of Exposure-Induced Death - REID) under 3%. This career limit applies equally to all ages and sexes to prevent radiation-induced fatal cancers."
+      }
+    },
+    "cardiovascular_disease_risk_dose": {
+      "label": "Cumulative Dose to Heart (Pathogenesis Threshold)",
+      "category": "radiation",
+      "unit": "Gy-eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 0.5,
+      "window": "career",
+      "source": {
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Doses >0.5 Gy-eq to the heart exceed the pathogenesis threshold for long-term degenerative cardiovascular disease, even if accumulated across multiple missions."
+      }
     },
     "lens_dose_30d": {
       "label": "Dose to lens of eye - 30 days",
@@ -145,18 +451,13 @@
       "critical_above": 1000,
       "window": "30_days",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "lens_dose",
-      "original_signal_key": "lens_dose_30d",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_explicit_dose_window": true,
-      "review_required": true
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents radiation-induced cataracts (vision impairment). While sub-clinical cataracts from low-dose GCR are considered an acceptable risk, severe acute cataracts must be prevented."
+      }
     },
     "lens_dose_1y": {
       "label": "Dose to lens of eye - 1 year",
@@ -167,18 +468,13 @@
       "critical_above": 2000,
       "window": "1_year",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "lens_dose",
-      "original_signal_key": "lens_dose_1y",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_explicit_dose_window": true,
-      "review_required": true
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents radiation-induced cataracts (vision impairment). While sub-clinical cataracts from low-dose GCR are considered an acceptable risk, severe acute cataracts must be prevented."
+      }
     },
     "lens_dose_career": {
       "label": "Dose to lens of eye - career",
@@ -189,18 +485,13 @@
       "critical_above": 4000,
       "window": "career",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "lens_dose",
-      "original_signal_key": "lens_dose_career",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_explicit_dose_window": true,
-      "review_required": true
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents radiation-induced cataracts (vision impairment). While sub-clinical cataracts from low-dose GCR are considered an acceptable risk, severe acute cataracts must be prevented."
+      }
     },
     "skin_dose_30d": {
       "label": "Dose to skin - 30 days",
@@ -211,18 +502,13 @@
       "critical_above": 1500,
       "window": "30_days",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "skin_dose",
-      "original_signal_key": "skin_dose_30d",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_explicit_dose_window": true,
-      "review_required": true
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents acute and late deterministic skin effects such as severe erythema (redness), epilation (hair loss), and ulceration."
+      }
     },
     "skin_dose_1y": {
       "label": "Dose to skin - 1 year",
@@ -233,18 +519,13 @@
       "critical_above": 3000,
       "window": "1_year",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "skin_dose",
-      "original_signal_key": "skin_dose_1y",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_explicit_dose_window": true,
-      "review_required": true
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents acute and late deterministic skin effects such as severe erythema (redness), epilation (hair loss), and ulceration."
+      }
     },
     "skin_dose_career": {
       "label": "Dose to skin - career",
@@ -255,18 +536,13 @@
       "critical_above": 6000,
       "window": "career",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "skin_dose",
-      "original_signal_key": "skin_dose_career",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_explicit_dose_window": true,
-      "review_required": true
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents acute and late deterministic skin effects such as severe erythema (redness), epilation (hair loss), and ulceration."
+      }
     },
     "bfo_dose_30d": {
       "label": "Dose to blood-forming organs - 30 days",
@@ -277,18 +553,13 @@
       "critical_above": 250,
       "window": "30_days",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "bfo_dose",
-      "original_signal_key": "bfo_dose_30d",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_explicit_dose_window": true,
-      "review_required": true
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents Acute Radiation Syndrome (ARS) and severe depression of the blood-forming organs, protecting the astronaut from fatal immunodeficiency or hemorrhage."
+      }
     },
     "bfo_dose_1y": {
       "label": "Dose to blood-forming organs - 1 year",
@@ -299,18 +570,13 @@
       "critical_above": 500,
       "window": "1_year",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "bfo_dose",
-      "original_signal_key": "bfo_dose_1y",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_explicit_dose_window": true,
-      "review_required": true
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents Acute Radiation Syndrome (ARS) and severe depression of the blood-forming organs, protecting the astronaut from fatal immunodeficiency or hemorrhage."
+      }
     },
     "circulatory_dose_30d": {
       "label": "Dose to circulatory system (heart muscle and nearby arteries) - 30 days",
@@ -321,17 +587,13 @@
       "critical_above": 250,
       "window": "30_days",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "circulatory_dose_30d",
-      "original_signal_key": "circulatory_dose_30d",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "No matching sensor/catalog measurement."
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Protects the heart muscle and adjacent arteries from acute and chronic degenerative damage caused by ionizing radiation."
+      }
     },
     "circulatory_dose_1y": {
       "label": "Dose to circulatory system (heart muscle and nearby arteries) - 1 year",
@@ -342,17 +604,13 @@
       "critical_above": 500,
       "window": "1_year",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "circulatory_dose_1y",
-      "original_signal_key": "circulatory_dose_1y",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "No matching sensor/catalog measurement."
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Protects the heart muscle and adjacent arteries from acute and chronic degenerative damage caused by ionizing radiation."
+      }
     },
     "circulatory_dose_career": {
       "label": "Dose to circulatory system (heart muscle and nearby arteries) - career",
@@ -363,17 +621,13 @@
       "critical_above": 1000,
       "window": "career",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "circulatory_dose_career",
-      "original_signal_key": "circulatory_dose_career",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "No matching sensor/catalog measurement."
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Protects the heart muscle and adjacent arteries from acute and chronic degenerative damage caused by ionizing radiation."
+      }
     },
     "cns_dose_30d": {
       "label": "Dose to central nervous system (hippocampus) - 30 days",
@@ -384,17 +638,13 @@
       "critical_above": 500,
       "window": "30_days",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "cns_dose_30d",
-      "original_signal_key": "cns_dose_30d",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "No matching sensor/catalog measurement."
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents deterministic damage to the central nervous system (specifically calculated at the hippocampus), protecting memory, cognitive functions, and motor control."
+      }
     },
     "cns_dose_1y": {
       "label": "Dose to central nervous system (hippocampus) - 1 year",
@@ -405,17 +655,13 @@
       "critical_above": 1000,
       "window": "1_year",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "cns_dose_1y",
-      "original_signal_key": "cns_dose_1y",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "No matching sensor/catalog measurement."
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents deterministic damage to the central nervous system (specifically calculated at the hippocampus), protecting memory, cognitive functions, and motor control."
+      }
     },
     "cns_dose_career": {
       "label": "Dose to central nervous system (hippocampus) - career",
@@ -426,17 +672,13 @@
       "critical_above": 1500,
       "window": "career",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "cns_dose_career",
-      "original_signal_key": "cns_dose_career",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "No matching sensor/catalog measurement."
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Prevents deterministic damage to the central nervous system (specifically calculated at the hippocampus), protecting memory, cognitive functions, and motor control."
+      }
     },
     "cns_hze_dose_1y": {
       "label": "Dose to CNS from heavy ions Z>=10 - 1 year",
@@ -447,17 +689,13 @@
       "critical_above": 100,
       "window": "1_year",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "cns_hze_dose_1y",
-      "original_signal_key": "cns_hze_dose_1y",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "No matching sensor/catalog measurement."
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Strict limit for Heavy Ions (Z>=10). Prevents irreversible neurological deficits from highly ionizing galactic cosmic ray (GCR) particle tracks."
+      }
     },
     "cns_hze_dose_career": {
       "label": "Dose to CNS from heavy ions Z>=10 - career",
@@ -468,17 +706,13 @@
       "critical_above": 250,
       "window": "career",
       "source": {
-        "type": "NASA",
-        "document": "NASA-STD-3001 Vol. 1 Rev. C",
-        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
-        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false
-      },
-      "measurement_type": "cns_hze_dose_career",
-      "original_signal_key": "cns_hze_dose_career",
-      "enabled_for_comparison": false,
-      "comparison_scope": "research_only",
-      "disabled_reason": "No matching sensor/catalog measurement."
+        "type": "NASA Evidence Report",
+        "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+        "section": "Table 1 Sec. 4: Radiation Exposures",
+        "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+        "verified_by_team": true,
+        "note": "Strict limit for Heavy Ions (Z>=10). Prevents irreversible neurological deficits from highly ionizing galactic cosmic ray (GCR) particle tracks."
+      }
     },
     "nuclear_source_dose": {
       "label": "Extra dose from nuclear technologies (RPS, fission reactors)",
@@ -493,19 +727,23 @@
         "document": "NASA-STD-3001 Vol. 1 Rev. C",
         "section": "V1 4032, Sec. 4.8.4",
         "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-        "verified_by_team": false,
+        "verified_by_team": true,
         "note": "Limit scales with mission duration (example in the research doc: 6-month mission -> 10 mSv). Follows ALARA."
       },
-      "scales_with_mission_duration": true,
-      "measurement_type": "nuclear_effective_dose",
-      "original_signal_key": "nuclear_source_dose",
-      "enabled_for_comparison": true,
-      "comparison_scope": "research_only",
-      "requires_mission_duration": true,
-      "review_required": true
+      "scales_with_mission_duration": true
     }
   },
   "condition_cutoffs": [
+    {
+      "condition_id": "ventricular_dysrhythmia_risk",
+      "signal": "heart_rate",
+      "operator": "gte",
+      "value": 110,
+      "unit": "bpm",
+      "source": "NASA Evidence Report: Cardiovascular Adaptations (2022)",
+      "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+      "note": "Clinically significant threshold for MTWA. Increased risk of ventricular arrhythmias in microgravity conditions."
+    },
     {
       "condition_id": "space_motion_sickness",
       "signal": "symptom_duration_hours",
@@ -569,7 +807,7 @@
           "document": "NASA-STD-3001 Vol. 1 Rev. C",
           "section": "V1 4033, Sec. 4.8.5",
           "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-          "verified_by_team": false
+          "verified_by_team": true
         }
       },
       "daily_gcr_dose_rate_planetary_surface": {
@@ -582,7 +820,7 @@
           "document": "NASA-STD-3001 Vol. 1 Rev. C",
           "section": "V1 4033, Sec. 4.8.5",
           "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-          "verified_by_team": false
+          "verified_by_team": true
         }
       },
       "solar_event_dose": {
@@ -595,7 +833,7 @@
           "document": "NASA-STD-3001 Vol. 1 Rev. C",
           "section": "V1 4031, Sec. 4.8.3, Table 4.8-3",
           "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-          "verified_by_team": false
+          "verified_by_team": true
         }
       },
       "spe_shielding_recommendation": {
@@ -611,22 +849,69 @@
           "document": "NASA-STD-3001 Vol. 1 Rev. C",
           "section": "Table 4.8-4, Sec. 4.8.3",
           "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
-          "verified_by_team": false
+          "verified_by_team": true
         }
+      },
+      "mars_mission_expected_gcr_dose": {
+        "label": "Expected GCR Dose (Mars Mission)",
+        "unit": "Gy",
+        "values": {
+          "min": 0.3,
+          "max": 0.5
+        },
+        "note": "Expected cumulative dose from galactic cosmic radiation. Dose rate <20 mGy/hour.",
+        "source": {
+          "type": "NASA Evidence Report",
+          "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+          "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+          "verified_by_team": true
+        }
+      },
+      "mars_mission_expected_spe_dose": {
+        "label": "Expected SPE Dose with Shielding (Mars Mission)",
+        "unit": "Gy",
+        "values": {
+          "min": 0.15,
+          "max": 0.5
+        },
+        "note": "Expected dose to internal organs during Solar Particle Events (SPE) on a typical shielded spacecraft.",
+        "source": {
+          "type": "NASA Evidence Report",
+          "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+          "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+          "verified_by_team": true
+        }
+      },
+      "lunar_leo_cardiovascular_risk": {
+        "label": "Radiation-induced CV Risk (LEO & Moon)",
+        "unit": "risk_assessment",
+        "value": "Not expected",
+        "note": "No increase in cardiovascular risk is expected for a duration of up to 1 year. This is based on current epidemiological data.",
+        "source": {
+          "type": "NASA Evidence Report",
+          "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+          "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+          "verified_by_team": true
+        }
+      },
+      "conversion_factors": {
+      "description": "Relative Biological Effectiveness (RBE) multipliers. Used by the system to convert raw dosimeter readings (mGy) into Equivalent Dose (mGy-Eq) for non-cancer effects.",
+      "rbe_multipliers": {
+        "neutrons_1_to_5_MeV": 6.0,
+        "neutrons_5_to_50_MeV": 3.5,
+        "heavy_ions": 2.5,
+        "protons_gt_2_MeV": 1.5
+    },
+      "formula_note": "Calculation: Absorbed Dose (mGy) * RBE multiplier = Equivalent Dose (mGy-Eq)",
+      "source": {
+          "type": "NASA Evidence Report",
+          "document": "Risk of Cardiovascular Adaptations Contributing to Adverse Mission Performance and Health Outcomes",
+          "section": "Table 2: RBE for non-cancer effects Sec. 4: Radiation Exposures",
+          "url": "https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+          "verified_by_team": true
+          
+        } 
       }
     }
-  },
-  "sensor_packet_field_to_measurement": {
-    "cumulative_effective_dose": "career_effective_dose",
-    "daily_gcr_dose_rate": "gcr_effective_dose_rate",
-    "solar_event_dose": "spe_effective_dose",
-    "nuclear_source_dose": "nuclear_effective_dose",
-    "lens_dose": "lens_dose",
-    "skin_dose": "skin_dose",
-    "bfo_dose": "bfo_dose",
-    "co2_ppm": "co2_concentration",
-    "temperature_c": "skin_temperature",
-    "heart_rate_bpm": "heart_rate",
-    "spo2_percent": "spo2"
   }
 }

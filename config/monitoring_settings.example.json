@@ -3,10 +3,26 @@
   "career_history_complete": false,
   "interval_history_file": null,
   "dose_semantics": {
-    "career_effective_dose": {"mode": "unknown", "verified": false},
-    "nuclear_effective_dose": {"mode": "unknown", "verified": false},
-    "lens_dose": {"mode": "unknown", "verified": false},
-    "skin_dose": {"mode": "unknown", "verified": false},
-    "bfo_dose": {"mode": "unknown", "verified": false}
-  }
+    "career_effective_dose": {
+      "mode": "unknown",
+      "verified": false
+    },
+    "nuclear_effective_dose": {
+      "mode": "unknown",
+      "verified": false
+    },
+    "lens_dose": {
+      "mode": "unknown",
+      "verified": false
+    },
+    "skin_dose": {
+      "mode": "unknown",
+      "verified": false
+    },
+    "bfo_dose": {
+      "mode": "unknown",
+      "verified": false
+    }
+  },
+  "cabin_pressure_mmhg": null
 }

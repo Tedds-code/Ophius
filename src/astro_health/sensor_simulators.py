@@ -65,7 +65,7 @@ def make_simulated_packet(
     if sensor == "thermistor":
         data = {"adc_count": simulate_adc(31 + 0.2 * math.sin(index / 5), ThermistorConfig())}
     elif sensor == "ppg":
-        data = _waveform("ppg", index)
+        data = {**_waveform("ppg", index), "spo2_percent": 98.0 - (index % 3) * 0.2}
     elif sensor == "imu":
         data = {
             "ax_m_s2": 0.1 * math.sin(index / 4),
@@ -74,7 +74,10 @@ def make_simulated_packet(
             "gx_dps": 0.1, "gy_dps": 0.2, "gz_dps": 0.3,
         }
     elif sensor == "ecg":
-        data = _waveform("ecg", index)
+        data = {**_waveform("ecg", index), "qtc_ms": 420.0 + (index % 4)}
+    elif sensor == "blood_pressure":
+        data = {"blood_pressure_systolic": 115 + (index % 4),
+                "blood_pressure_diastolic": 74 + (index % 3)}
     elif sensor == "eda":
         data = {"conductance_us": 4.0 + 0.1 * math.sin(index / 4)}
     elif sensor == "radiation":
@@ -102,7 +105,7 @@ def make_simulated_packet(
             'daily_gcr_dose_rate': 0.3 + 0.01 * (index % 3),
         }
     elif sensor == "co2":
-        data = {"co2_ppm": 600 + index % 10}
+        data = {"co2_ppm": 600 + index % 10, "co2_1h_mmhg": 2.0, "sample_period_minutes": 60}
     elif sensor == "noise":
         data = {"sound_level_dba": 45.0 + index % 3}
     elif sensor == "bioimpedance":
@@ -121,6 +124,7 @@ def make_simulated_packet(
     return SensorPacket(
         sensor=sensor, timestamp=timestamp, data=data,
         origin="simulated", device_id=f"virtual_{sensor}",
+        calibration_id="SYNTHETIC_ONLY" if sensor == "ppg" else None,
     )
 
 

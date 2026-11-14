@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from astro_health.astronaut_assessment import assess_measurement, load_rules, load_settings
+from astro_health.astronaut_assessment import assess_measurement, assess_condition, CONDITION_FIELDS, load_rules, load_settings
 from astro_health.radiation_trends import analyze_history
 
 
@@ -39,6 +39,38 @@ def evaluate_session(store, session_id: int, config: dict, settings: dict) -> Se
     session = store.get_session(session_id)
     if session is None:
         raise ValueError(f'Session {session_id} not found')
+    # A complete synthetic report is evaluated from the JSON-first 365-day
+    # fixture, never by pretending one sensor snapshot covers a year/career.
+    import json
+    from astro_health.json_catalog_simulation import load_simulation
+    database = getattr(store, 'database', None)
+    pointer = (database.database_path.parent / 'simulations' / 'session_reports.json'
+               if database is not None else Path('__nonexistent_synthetic_reports__'))
+    if pointer.is_file():
+        try:
+            pointers = json.loads(pointer.read_text(encoding='utf-8'))
+            report_path = pointers.get(str(session_id))
+            if report_path:
+                report = load_simulation(report_path, config)
+                # Display only names that exist in the user's JSON.
+                rows = tuple(TestResult(
+                    entry['label'], key, True, entry['status'],
+                    f"{entry['value']:g} {entry['unit']} [SYNTHETIC] ({entry['window']})",
+                    entry['coverage'] + '; synthetic demonstration, not medical clearance')
+                    for key, entry in report['assessments'].items())
+                rows += tuple(TestResult(
+                    cid, cid, True, item['status'],
+                    f"{item['value']:g} {item['unit']} [SYNTHETIC]",
+                    'Condition reference (not a diagnosis)')
+                    for cid, item in report['condition_assessments'].items())
+                warnings = tuple(f'{r.name}: {r.status.upper()}' for r in rows
+                                 if r.status in ('critical', 'caution'))
+                return SessionView(session.id, session.status, session.started_at,
+                                   session.ended_at, session.reading_count,
+                                   len(rows), len(rows), rows, warnings)
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            # Refuse to present a corrupted history as a valid full-year dose.
+            raise ValueError(f'Synthetic history is invalid: {exc}') from exc
     summary = store.summary(session_id)
     # Calculate dose windows once across saved history. Missing provenance
     # returns no windows rather than interpreting single snapshots as doses.
@@ -68,7 +100,25 @@ def evaluate_session(store, session_id: int, config: dict, settings: dict) -> Se
             windows = dict(history.windows) if history is not None else {}
             if career_verified:
                 windows['career'] = history.career
-            assessment = assess_measurement(
+            # Explicit, independently verified operator-reported dose windows
+            # can be assessed directly; the test name alone is not proof.
+            if isinstance(semantics, dict) and semantics.get('verified') is True and semantics.get('mode') == 'reported_window':
+                from astro_health.astronaut_assessment import rule_name
+                for rule_id, rule in config['signals'].items():
+                    if rule_name(rule_id, rule) == field.measurement_type:
+                        reporting_window = rule.get('window')
+                        if reporting_window in ('30_days', '1_year'):
+                            windows[reporting_window] = saved.value
+                        elif reporting_window == 'career' and settings.get('career_history_complete') is True:
+                            windows['career'] = saved.value
+                            career_verified = True
+            if field.measurement_type == 'co2_concentration':
+                if (settings.get('co2_average_verified') is True and
+                        settings.get('co2_average_1h_ppm') is not None):
+                    windows['1_hour_average'] = settings['co2_average_1h_ppm']
+            is_condition = (field.measurement_type in CONDITION_FIELDS or
+                            field.measurement_type == 'back_pain_space_adaptation_mission_day')
+            assessment = assess_condition(field.measurement_type, saved.value, saved.unit, config) if is_condition else assess_measurement(
                 field.measurement_type, saved.value, saved.unit, config,
                 career_history_complete=career_verified,
                 mission_days=settings.get('mission_days'),
@@ -76,7 +126,8 @@ def evaluate_session(store, session_id: int, config: dict, settings: dict) -> Se
                     and isinstance(semantics, dict)
                     and semantics.get('mode') == 'mission_cumulative'
                     and semantics.get('verified') is True),
-                window_values=windows)
+                window_values=windows,
+                cabin_pressure_mmhg=settings.get('cabin_pressure_mmhg'))
             assessments.append(assessment)
             label = field.display_name if len(test.fields) > 1 else ''
             texts.append(f'{label + ": " if label else ""}{saved.value:g} {saved.unit}')
@@ -87,8 +138,10 @@ def evaluate_session(store, session_id: int, config: dict, settings: dict) -> Se
         explanations = '; '.join(dict.fromkeys(a.explanation for a in assessments))
         if status in ('critical', 'caution'):
             all_warnings.append(f'{test.display_name}: {status.upper()} — {explanations}')
+        simulated = any(getattr(m, 'source', '').startswith('simulated') for m in measurements)
+        display = ', '.join(texts) + ('  [SYNTHETIC]' if simulated else '')
         output.append(TestResult(test.display_name, test.test_id, True,
-                                 status, ', '.join(texts), explanations))
+                                 status, display, explanations))
     return SessionView(session.id, session.status, session.started_at,
                        session.ended_at, session.reading_count,
                        sum(t.recorded for t in output), len(output),
@@ -118,7 +171,10 @@ def describe_reading(reading, rules_path='config/thresholds.json',
     config, settings = load_project_configuration(rules_path, settings_path)
     lines = []
     for m in reading.measurements:
-        assessment = assess_measurement(
+        if m.measurement_type in CONDITION_FIELDS or m.measurement_type == 'back_pain_space_adaptation_mission_day':
+            assessment = assess_condition(m.measurement_type, m.value, m.unit, config)
+        else:
+            assessment = assess_measurement(
             m.measurement_type, m.value, m.unit, config, quality=reading.quality,
             mission_days=settings.get('mission_days'),
             mission_cumulative_verified=(m.measurement_type == 'nuclear_effective_dose' and

@@ -53,7 +53,7 @@ class TestSensorProcessing(unittest.TestCase):
         self.assertAlmostEqual(values["heart_rate"].value, 72, delta=2)
         self.assertIn("hrv_rmssd", values)
         self.assertEqual(values["heart_rate"].unit, "bpm")
-        self.assertNotIn("spo2", values)
+        self.assertEqual(values["spo2"].value, 98.0)
         self.assertEqual(result.reading.quality, "unassessed")
 
     def test_ppg_rejects_flat_wave(self):

@@ -15,12 +15,15 @@ from astro_health.session_assessment import (
     evaluate_session, load_project_configuration, radiation_for_store,
 )
 
+from astro_health.astronaut_assessment import assess_sex_references
+
 PALETTE = {
     'good': ('#ddf7e5', '#14532d', 'GOOD'),
     'caution': ('#fff0bd', '#7c4a00', 'CAUTION'),
     'critical': ('#ffe0e0', '#991b1b', 'CRITICAL'),
     'unassessed': ('#e8eefa', '#334155', 'UNASSESSED'),
     'missing': ('#f1f5f9', '#64748b', 'NOT RECORDED'),
+    'context_only': ('#e8eefa', '#334155', 'CONTEXT'),
 }
 
 
@@ -41,8 +44,8 @@ class AstronautDashboard:
         self._refresh_scheduled = False
 
         root.title('Astronaut Health Monitor | Crew Dashboard')
-        root.geometry('1180x800')
-        root.minsize(850, 570)
+        root.geometry('1300x900')
+        root.minsize(940, 650)
         root.configure(bg='#f7fafc')
 
         style = ttk.Style(root)
@@ -61,6 +64,8 @@ class AstronautDashboard:
         header.pack(fill='x')
         ttk.Label(header, text='ASTRONAUT HEALTH MONITOR', style='Header.TLabel').pack(side='left')
         ttk.Button(header, text='Refresh data', command=self.refresh).pack(side='right')
+        ttk.Button(header, text='Habitat design references',
+                   command=self._show_reference_only).pack(side='right', padx=(0, 8))
         ttk.Label(root, text='Offline prototype | Project reference comparisons, not medical clearance',
                   foreground='#526077').pack(anchor='w', padx=22, pady=(0, 10))
 
@@ -112,6 +117,36 @@ class AstronautDashboard:
         lower.pack(fill='both', expand=False)
         self.detail_var = tk.StringVar(value='Click a test to see how its rating was determined.')
         ttk.Label(lower, textvariable=self.detail_var, wraplength=780).pack(anchor='w', pady=(0, 7))
+        # Standard ttk.Treeview cannot apply colors to individual cells.
+        # Use native Tk labels so each sex-specific comparison has its own
+        # genuinely independent foreground/background color side by side.
+        sex_box = ttk.Labelframe(lower, text='Same measured value / two JSON reference ranges', padding=6)
+        sex_box.pack(fill='x', pady=(3, 8))
+        ttk.Label(sex_box, text='No sex is inferred. Male and female columns are independent project references.',
+                  foreground='#526077').grid(row=0, column=0, columnspan=4, sticky='w')
+        for column, caption in enumerate(('Lab/ECG measurement', 'Recorded value', 'Male reference', 'Female reference')):
+            tk.Label(sex_box, text=caption, anchor='w', bg='#f7fafc', fg='#1e293b',
+                     font=('Segoe UI', 9, 'bold')).grid(row=1, column=column, padx=(3, 12), sticky='ew')
+        self.sex_rows = {}
+        for index, (name, caption) in enumerate((
+            ('hemoglobin', 'Hemoglobin'), ('hematocrit', 'Hematocrit'),
+            ('rbc', 'RBC'), ('d_dimer', 'D-dimer'), ('qtc_interval', 'QTc interval')
+        ), start=2):
+            tk.Label(sex_box, text=caption, bg='#f7fafc', fg='#25324b',
+                     anchor='w').grid(row=index, column=0, padx=(3, 12), sticky='ew')
+            val = tk.Label(sex_box, text='—', bg='#f7fafc', fg='#25324b', anchor='w')
+            val.grid(row=index, column=1, padx=(3, 12), sticky='ew')
+            male = tk.Label(sex_box, text='NOT RECORDED', bg='#f1f5f9', fg='#64748b',
+                            anchor='center', font=('Segoe UI', 9, 'bold'), padx=5)
+            male.grid(row=index, column=2, padx=(2, 9), pady=1, sticky='ew')
+            female = tk.Label(sex_box, text='NOT RECORDED', bg='#f1f5f9', fg='#64748b',
+                              anchor='center', font=('Segoe UI', 9, 'bold'), padx=5)
+            female.grid(row=index, column=3, padx=(2, 9), pady=1, sticky='ew')
+            self.sex_rows[name] = (val, male, female)
+        for column in (0, 1, 2, 3):
+            sex_box.grid_columnconfigure(column, weight=1)
+        ttk.Label(sex_box, text='Blood-test file: CLI option 10  •  Synthetic panel: CLI option 11',
+                  foreground='#526077').grid(row=7, column=0, columnspan=4, sticky='w', pady=(4, 0))
         ttk.Label(lower, text='Radiation history & trend', style='Summary.TLabel').pack(anchor='w')
         self.radiation_text = tk.Text(lower, height=8, wrap='word', font=('Consolas', 10),
                                       bg='#f0f5fa', fg='#223148', borderwidth=0, padx=12, pady=8)
@@ -121,6 +156,26 @@ class AstronautDashboard:
         self.refresh()
         if auto_refresh:
             self._schedule_refresh()
+
+    def _show_reference_only(self):
+        """Display every JSON reference-only item without generating alerts."""
+        from tkinter import scrolledtext
+        dialog = tk.Toplevel(self.root)
+        dialog.title('Reference-only habitat design information')
+        dialog.geometry('790x530')
+        ttk.Label(dialog, text='NOT astronaut medical-alert thresholds',
+                  style='Summary.TLabel').pack(anchor='w', padx=14, pady=10)
+        content = scrolledtext.ScrolledText(dialog, wrap='word', font=('Consolas', 10))
+        content.pack(fill='both', expand=True, padx=14, pady=(0, 14))
+        items = self.config.get('reference_only', {}).get('items', {})
+        for key, entry in items.items():
+            content.insert('end', (entry.get('label', key) + '\n') if isinstance(entry, dict) else (key+'\n'))
+            if isinstance(entry, dict):
+                for prop in ('reference_below', 'unit', 'applies_to', 'value', 'values', 'rbe_multipliers', 'note'):
+                    if prop in entry:
+                        content.insert('end', f'    {prop}: {entry[prop]}\n')
+            content.insert('end', '\n')
+        content.configure(state='disabled')
 
     def _schedule_refresh(self):
         if not self._refresh_scheduled:
@@ -191,7 +246,8 @@ class AstronautDashboard:
                 tags=(result.status,))
             self._tests_by_row[iid] = result
         self.detail_var.set('Click a test to see the project reference or missing context.')
-        self._update_radiation()
+        self._update_sex_references(session_id)
+        self._update_radiation(session_id)
 
     def _test_selected(self, _event):
         selected = self.results_tree.selection()
@@ -200,7 +256,64 @@ class AstronautDashboard:
             if result:
                 self.detail_var.set(f'{result.name}: {result.explanation}')
 
-    def _update_radiation(self):
+    def _update_sex_references(self, session_id: int):
+        import json
+        from astro_health.json_catalog_simulation import load_simulation
+        summary = self.store.summary(session_id)
+        synthetic = None
+        pointer = self.store.database.database_path.parent / 'simulations' / 'session_reports.json'
+        if pointer.exists():
+            try:
+                filename = json.loads(pointer.read_text(encoding='utf-8')).get(str(session_id))
+                if filename:
+                    synthetic = load_simulation(filename, self.config)['assessments']
+            except (OSError, ValueError, KeyError, TypeError):
+                synthetic = None
+        for name, (value_label, male_label, female_label) in self.sex_rows.items():
+            measurement = summary.get(name) or summary.get(f'{name}_male') or summary.get(f'{name}_female')
+            if synthetic and f'{name}_male' in synthetic:
+                observed = synthetic[f'{name}_male']
+                value, unit = observed['value'], observed['unit']
+            elif measurement is None:
+                value, unit = None, ''
+            else:
+                value, unit = measurement.value, measurement.unit
+            value_label.configure(text=f'{value:g} {unit}' if value is not None else '—')
+            comparisons = assess_sex_references(name, value, unit, self.config)
+            for sex, label in (('male', male_label), ('female', female_label)):
+                assessment = comparisons.get(sex)
+                status = assessment.status if assessment else 'unassessed'
+                bg, fg, title = PALETTE.get(status, PALETTE['unassessed'])
+                label.configure(text=title, background=bg, foreground=fg)
+
+    def _update_radiation(self, session_id=None):
+        import json
+        from astro_health.json_catalog_simulation import load_simulation
+        if session_id is not None:
+            pointer = self.store.database.database_path.parent / 'simulations' / 'session_reports.json'
+            if pointer.exists():
+                try:
+                    paths = json.loads(pointer.read_text(encoding='utf-8'))
+                    filename = paths.get(str(session_id))
+                    if filename:
+                        report = load_simulation(filename, self.config)
+                        lines = ['SYNTHETIC report; dated daily increments, NOT instrument readings.']
+                        for key, item in report['assessments'].items():
+                            if key in self.config['signals'] and self.config['signals'][key].get('category') == 'radiation':
+                                lines.append(f"{key}: {item['value']:g} {item['unit']} "
+                                             f"({item['window']}) — {item['status'].upper()}")
+                        self.radiation_text.configure(state='normal')
+                        self.radiation_text.delete('1.0', 'end')
+                        self.radiation_text.insert('1.0', '\n'.join(lines))
+                        self.radiation_text.configure(state='disabled')
+                        return
+                except (OSError, ValueError, KeyError, TypeError) as exc:
+                    lines = [f'Synthetic history unavailable: {exc}']
+                    self.radiation_text.configure(state='normal')
+                    self.radiation_text.delete('1.0', 'end')
+                    self.radiation_text.insert('1.0', '\n'.join(lines))
+                    self.radiation_text.configure(state='disabled')
+                    return
         try:
             analyses = radiation_for_store(self.store, self.config, self.settings)
             lines = []

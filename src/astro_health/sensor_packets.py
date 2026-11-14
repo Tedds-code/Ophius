@@ -17,7 +17,7 @@ from typing import Any, Mapping
 
 
 SENSOR_TYPES = (
-    "thermistor", "ppg", "imu", "ecg", "eda", "radiation",
+    "thermistor", "ppg", "imu", "ecg", "eda", "radiation", "blood_pressure",
     "co2", "noise", "bioimpedance", "eye_imaging", "radiation_environment",
 )
 ORIGINS = ("simulated", "device", "replay")

@@ -1,0 +1,123 @@
+# Made in cooperation with ChatGPT
+"""Contract tests for the user's uploaded thresholds.json, not invented limits."""
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from types import SimpleNamespace
+
+from astro_health.astronaut_assessment import (
+    assess_condition, assess_measurement, load_rules, rule_name,
+)
+from astro_health.fixed_tests import FIELDS_BY_MEASUREMENT, FIXED_TESTS, MANUAL_TESTS
+from astro_health.session_assessment import evaluate_session
+from astro_health.threshold_monitor import load_thresholds
+
+
+RULES_FILE = Path('config/thresholds.json')
+
+
+class UploadedJSONContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.config = load_rules(RULES_FILE)
+
+    def test_all_44_source_rules_have_recordable_measurements(self):
+        rules = self.config['signals']
+        self.assertEqual(len(rules), 44)
+        missing = [rule_id for rule_id, rule in rules.items()
+                   if rule_name(rule_id, rule) not in FIELDS_BY_MEASUREMENT]
+        self.assertEqual(missing, [], 'All JSON signals must have matching code catalog fields')
+        self.assertEqual(self.config['version'], 1)
+        self.assertEqual(len(self.config['condition_cutoffs']), 6)
+
+    def test_uploaded_json_is_not_rewritten_by_monitor(self):
+        before = RULES_FILE.read_bytes()
+        config = load_thresholds(RULES_FILE)
+        self.assertEqual(RULES_FILE.read_bytes(), before)
+        self.assertEqual(config['signals']['cabin_co2']['unit'], 'mmHg')
+        self.assertEqual(config['signals']['heart_rate']['critical_above'], 110)
+        self.assertTrue(config['signals']['cumulative_effective_dose']['source']['verified_by_team'])
+
+    def test_all_44_source_bounds_drive_critical_or_caution(self):
+        for rule_id, rule in self.config['signals'].items():
+            with self.subTest(rule=rule_id):
+                name = rule_name(rule_id, rule)
+                unit = FIELDS_BY_MEASUREMENT[name].unit
+                # Select the strongest available boundary without fabricating one.
+                severity, bound, direction = next(
+                    (severity, bound, direction)
+                    for severity in ('critical', 'caution')
+                    for bound, direction in ((f'{severity}_above', 1), (f'{severity}_below', -1))
+                    if rule.get(bound) is not None
+                )
+                value = rule[bound] + (0.1 if direction == 1 else -0.1)
+                window = rule.get('window', 'instant')
+                kw = {}
+                if window in ('30_days', '1_year', 'career'):
+                    kw['window_values'] = {window: value}
+                    if window == 'career':
+                        kw['career_history_complete'] = True
+                if window == 'per_mission_year':
+                    kw['mission_cumulative_verified'] = True
+                    kw['mission_days'] = 365.25
+                if rule_id == 'cabin_co2':
+                    name, unit = 'cabin_co2_1h_mmhg', 'mmHg'
+                result = assess_measurement(name, value, unit, self.config, **kw)
+                self.assertEqual(result.status, severity, result.explanation)
+                self.assertIn(rule_id, result.rule_ids)
+
+    def test_dose_windows_never_assumed_from_snapshot(self):
+        for name, value, unit in (
+            ('lens_dose', 2000, 'mGy-Eq'),
+            ('cns_dose_30d', 9999, 'mGy'),
+            ('circulatory_dose_career', 5000, 'mGy-Eq'),
+            ('cardiovascular_disease_risk_dose', 1, 'Gy-eq'),
+            ('career_effective_dose', 999, 'mSv'),
+            ('nuclear_effective_dose', 999, 'mSv'),
+        ):
+            with self.subTest(name=name):
+                self.assertEqual(assess_measurement(name, value, unit, self.config).status, 'unassessed')
+
+    def test_blood_panel_and_body_temp_source_values(self):
+        self.assertEqual(assess_measurement('temperature', 36.8, 'degC', self.config).status, 'good')
+        self.assertEqual(assess_measurement('temperature', 39, 'degC', self.config).status, 'critical')
+        self.assertEqual(assess_measurement('skin_temperature', 32, 'degC', self.config).status, 'unassessed')
+        self.assertEqual(assess_measurement('hemoglobin_female', 11.9, 'g/dL', self.config).status, 'caution')
+        self.assertEqual(assess_measurement('wbc', 9.0, '10^9/L', self.config).status, 'good')
+        self.assertEqual(assess_measurement('platelets', 415, '10^9/L', self.config).status, 'caution')
+        # Project input units are followed as provided; not clinical clearance.
+        self.assertEqual(assess_measurement('d_dimer_male', 41, 'mg/dL', self.config).status, 'caution')
+
+    def test_condition_cutoffs_and_context_coverage(self):
+        conditions = {
+            'space_motion_sickness_duration_hours': 73,
+            'nasal_congestion_duration_hours': 73,
+            'urinary_incontinence_duration_hours': 25,
+            'urinary_retention_duration_hours': 25,
+        }
+        for name, value in conditions.items():
+            with self.subTest(name=name):
+                self.assertEqual(assess_condition(name, value, 'hours', self.config).status, 'critical')
+        onset = assess_condition('back_pain_space_adaptation_mission_day', 3, 'mission_day', self.config)
+        self.assertEqual(onset.status, 'unassessed')
+        self.assertIn('inside', onset.explanation)
+        borderline = assess_measurement('heart_rate', 110, 'bpm', self.config)
+        self.assertEqual(borderline.status, 'caution')
+        self.assertIn('dysrhythmia-risk', borderline.explanation)
+
+    def test_reference_only_not_a_personal_alert(self):
+        self.assertFalse(self.config['reference_only']['use_for_alerts'])
+        self.assertEqual(assess_measurement('gcr_effective_dose_rate', 3, 'mSv/day', self.config).status,
+                         'unassessed')
+        self.assertEqual(assess_measurement('spe_effective_dose', 300, 'mSv', self.config).status,
+                         'unassessed')
+
+    def test_manual_body_temperature_is_first_and_thermistor_kept(self):
+        self.assertEqual(MANUAL_TESTS[0].test_id, 'temperature')
+        self.assertNotIn('skin_temperature', {t.test_id for t in MANUAL_TESTS})
+        self.assertIn('skin_temperature', {t.test_id for t in FIXED_TESTS})
+
+
+if __name__ == '__main__':
+    unittest.main()
