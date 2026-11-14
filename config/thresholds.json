@@ -1,0 +1,632 @@
+{
+  "version": 2,
+  "description": "Measurement_type fields map to v7 stored Reading names; original JSON reference values retained, except explicit unit conversion of cabin CO2 percentage to ppm. Unverified references and disabled rules are not medical alarms. Windowed dose rules require explicit measurement window semantics.",
+  "signals": {
+    "heart_rate": {
+      "label": "Heart Rate",
+      "category": "cardiovascular",
+      "unit": "bpm",
+      "direction": "both",
+      "caution_below": 50,
+      "caution_above": 100,
+      "critical_below": 40,
+      "critical_above": 120,
+      "window": "instant",
+      "source": {
+        "type": "U.S. National Library of Medicine",
+        "document": "MedlinePlus Vital Signs",
+        "url": "https://medlineplus.gov/ency/article/002341.htm",
+        "verified_by_team": true,
+        "note": "Standard terrestrial clinical thresholds (Open Source medical data), integrated with spacecraft sensor architecture."
+      },
+      "measurement_type": "heart_rate",
+      "original_signal_key": "heart_rate",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "review_required": true
+    },
+    "spo2": {
+      "label": "Blood Oxygen Saturation",
+      "category": "respiratory",
+      "unit": "%",
+      "direction": "low_is_bad",
+      "caution_above": null,
+      "caution_below": 95,
+      "critical_above": null,
+      "critical_below": 92,
+      "window": "instant",
+      "source": {
+        "type": "U.S. National Library of Medicine",
+        "document": "MedlinePlus Vital Signs",
+        "url": "https://medlineplus.gov/ency/article/002341.htm",
+        "verified_by_team": true,
+        "note": "Standard terrestrial clinical thresholds (Open Source medical data), integrated with spacecraft sensor architecture."
+      },
+      "measurement_type": "spo2",
+      "original_signal_key": "spo2",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "review_required": true
+    },
+    "skin_temperature": {
+      "label": "Skin Temperature",
+      "category": "vital",
+      "unit": "degC",
+      "direction": "both",
+      "caution_below": 35.5,
+      "caution_above": 37.3,
+      "critical_below": 34.0,
+      "critical_above": 38.0,
+      "window": "instant",
+      "source": {
+        "type": "U.S. National Library of Medicine",
+        "document": "MedlinePlus Vital Signs",
+        "url": "https://medlineplus.gov/ency/article/002341.htm",
+        "verified_by_team": true,
+        "note": "Standard terrestrial clinical thresholds (Open Source medical data), integrated with spacecraft sensor architecture."
+      },
+      "measurement_type": "skin_temperature",
+      "original_signal_key": "skin_temperature",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "Skin temperature is not core body temperature; original limits cannot be applied safely."
+    },
+    "cabin_co2": {
+      "label": "Cabin CO2 concentration",
+      "category": "environment",
+      "unit": "ppm",
+      "direction": "high_is_bad",
+      "caution_above": 20000.0,
+      "critical_above": null,
+      "window": "instant",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 2 Rev. C (Environmental)",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-2-rev-c.pdf",
+        "verified_by_team": false,
+        "note": "Research doc says CO2 headache occurs above 2%, in poorly ventilated modules. NASA usually states CO2 as partial pressure (mmHg) or ppm - find the official limit and unit."
+      },
+      "measurement_type": "co2_concentration",
+      "original_signal_key": "cabin_co2",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "Converted 2% to 20000 ppm numerically; NOT a validated NASA operational CO2 limit."
+    },
+    "vomiting_episodes": {
+      "label": "Vomiting episodes (space motion sickness severity)",
+      "category": "symptom",
+      "unit": "episodes",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 2,
+      "window": "episode",
+      "source": {
+        "type": "NASA_IMM",
+        "document": "RESEARCHERS_DATA - 'Space motion sickness' (IMM worst case)",
+        "url": "https://www.nasa.gov/reference/appendix-e-health-and-medical-care-technical-requirements/",
+        "verified_by_team": false,
+        "note": "IMM best case: 2 or fewer episodes. Worst case: more than 2 episodes, head immobilisation, performance loss over 72 h."
+      },
+      "measurement_type": "vomiting_episodes",
+      "original_signal_key": "vomiting_episodes",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "No matching sensor/catalog measurement."
+    },
+    "cumulative_effective_dose": {
+      "label": "Career effective dose (all spaceflight)",
+      "category": "radiation",
+      "unit": "mSv",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 600,
+      "window": "career",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "V1 4030, Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false,
+        "note": "Keeps mean excess cancer mortality risk (REID) under 3%. Same limit for all sexes and ages."
+      },
+      "measurement_type": "career_effective_dose",
+      "original_signal_key": "cumulative_effective_dose",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_full_career_history": true,
+      "review_required": true
+    },
+    "lens_dose_30d": {
+      "label": "Dose to lens of eye - 30 days",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 1000,
+      "window": "30_days",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "lens_dose",
+      "original_signal_key": "lens_dose_30d",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_explicit_dose_window": true,
+      "review_required": true
+    },
+    "lens_dose_1y": {
+      "label": "Dose to lens of eye - 1 year",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 2000,
+      "window": "1_year",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "lens_dose",
+      "original_signal_key": "lens_dose_1y",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_explicit_dose_window": true,
+      "review_required": true
+    },
+    "lens_dose_career": {
+      "label": "Dose to lens of eye - career",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 4000,
+      "window": "career",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "lens_dose",
+      "original_signal_key": "lens_dose_career",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_explicit_dose_window": true,
+      "review_required": true
+    },
+    "skin_dose_30d": {
+      "label": "Dose to skin - 30 days",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 1500,
+      "window": "30_days",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "skin_dose",
+      "original_signal_key": "skin_dose_30d",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_explicit_dose_window": true,
+      "review_required": true
+    },
+    "skin_dose_1y": {
+      "label": "Dose to skin - 1 year",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 3000,
+      "window": "1_year",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "skin_dose",
+      "original_signal_key": "skin_dose_1y",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_explicit_dose_window": true,
+      "review_required": true
+    },
+    "skin_dose_career": {
+      "label": "Dose to skin - career",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 6000,
+      "window": "career",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "skin_dose",
+      "original_signal_key": "skin_dose_career",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_explicit_dose_window": true,
+      "review_required": true
+    },
+    "bfo_dose_30d": {
+      "label": "Dose to blood-forming organs - 30 days",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 250,
+      "window": "30_days",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "bfo_dose",
+      "original_signal_key": "bfo_dose_30d",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_explicit_dose_window": true,
+      "review_required": true
+    },
+    "bfo_dose_1y": {
+      "label": "Dose to blood-forming organs - 1 year",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 500,
+      "window": "1_year",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "bfo_dose",
+      "original_signal_key": "bfo_dose_1y",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_explicit_dose_window": true,
+      "review_required": true
+    },
+    "circulatory_dose_30d": {
+      "label": "Dose to circulatory system (heart muscle and nearby arteries) - 30 days",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 250,
+      "window": "30_days",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "circulatory_dose_30d",
+      "original_signal_key": "circulatory_dose_30d",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "No matching sensor/catalog measurement."
+    },
+    "circulatory_dose_1y": {
+      "label": "Dose to circulatory system (heart muscle and nearby arteries) - 1 year",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 500,
+      "window": "1_year",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "circulatory_dose_1y",
+      "original_signal_key": "circulatory_dose_1y",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "No matching sensor/catalog measurement."
+    },
+    "circulatory_dose_career": {
+      "label": "Dose to circulatory system (heart muscle and nearby arteries) - career",
+      "category": "radiation",
+      "unit": "mGy-Eq",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 1000,
+      "window": "career",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "circulatory_dose_career",
+      "original_signal_key": "circulatory_dose_career",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "No matching sensor/catalog measurement."
+    },
+    "cns_dose_30d": {
+      "label": "Dose to central nervous system (hippocampus) - 30 days",
+      "category": "radiation",
+      "unit": "mGy",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 500,
+      "window": "30_days",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "cns_dose_30d",
+      "original_signal_key": "cns_dose_30d",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "No matching sensor/catalog measurement."
+    },
+    "cns_dose_1y": {
+      "label": "Dose to central nervous system (hippocampus) - 1 year",
+      "category": "radiation",
+      "unit": "mGy",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 1000,
+      "window": "1_year",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "cns_dose_1y",
+      "original_signal_key": "cns_dose_1y",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "No matching sensor/catalog measurement."
+    },
+    "cns_dose_career": {
+      "label": "Dose to central nervous system (hippocampus) - career",
+      "category": "radiation",
+      "unit": "mGy",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 1500,
+      "window": "career",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "cns_dose_career",
+      "original_signal_key": "cns_dose_career",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "No matching sensor/catalog measurement."
+    },
+    "cns_hze_dose_1y": {
+      "label": "Dose to CNS from heavy ions Z>=10 - 1 year",
+      "category": "radiation",
+      "unit": "mGy",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 100,
+      "window": "1_year",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "cns_hze_dose_1y",
+      "original_signal_key": "cns_hze_dose_1y",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "No matching sensor/catalog measurement."
+    },
+    "cns_hze_dose_career": {
+      "label": "Dose to CNS from heavy ions Z>=10 - career",
+      "category": "radiation",
+      "unit": "mGy",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 250,
+      "window": "career",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "Table 4.8-1 (after V1 4030), Sec. 4.8.2",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false
+      },
+      "measurement_type": "cns_hze_dose_career",
+      "original_signal_key": "cns_hze_dose_career",
+      "enabled_for_comparison": false,
+      "comparison_scope": "research_only",
+      "disabled_reason": "No matching sensor/catalog measurement."
+    },
+    "nuclear_source_dose": {
+      "label": "Extra dose from nuclear technologies (RPS, fission reactors)",
+      "category": "radiation",
+      "unit": "mSv",
+      "direction": "high_is_bad",
+      "caution_above": null,
+      "critical_above": 20,
+      "window": "per_mission_year",
+      "source": {
+        "type": "NASA",
+        "document": "NASA-STD-3001 Vol. 1 Rev. C",
+        "section": "V1 4032, Sec. 4.8.4",
+        "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+        "verified_by_team": false,
+        "note": "Limit scales with mission duration (example in the research doc: 6-month mission -> 10 mSv). Follows ALARA."
+      },
+      "scales_with_mission_duration": true,
+      "measurement_type": "nuclear_effective_dose",
+      "original_signal_key": "nuclear_source_dose",
+      "enabled_for_comparison": true,
+      "comparison_scope": "research_only",
+      "requires_mission_duration": true,
+      "review_required": true
+    }
+  },
+  "condition_cutoffs": [
+    {
+      "condition_id": "space_motion_sickness",
+      "signal": "symptom_duration_hours",
+      "operator": "gt",
+      "value": 72,
+      "unit": "hours",
+      "meaning": "Worst case: severe and persistent symptoms lasting over 72 h.",
+      "source": "RESEARCHERS_DATA (IMM)"
+    },
+    {
+      "condition_id": "nasal_congestion",
+      "signal": "symptom_duration_hours",
+      "operator": "gt",
+      "value": 72,
+      "unit": "hours",
+      "meaning": "Worst case: complete obstruction needing 72-168 h (3-7 days) of treatment. Best case: 0-72 h.",
+      "source": "RESEARCHERS_DATA (IMM)"
+    },
+    {
+      "condition_id": "urinary_incontinence",
+      "signal": "symptom_duration_hours",
+      "operator": "gt",
+      "value": 24,
+      "unit": "hours",
+      "meaning": "Moderate to severe course: Clinical Phase II lasts 24-120 h. Best case: 0-24 h.",
+      "source": "RESEARCHERS_DATA (IMM)"
+    },
+    {
+      "condition_id": "urinary_retention",
+      "signal": "symptom_duration_hours",
+      "operator": "gt",
+      "value": 24,
+      "unit": "hours",
+      "meaning": "Needs repeated or indwelling catheterisation: 24-120 h. Best case: 0-24 h. Catheterisation failure risk under 1% may require medical evacuation.",
+      "source": "RESEARCHERS_DATA (IMM)"
+    },
+    {
+      "condition_id": "back_pain_space_adaptation",
+      "signal": "mission_day",
+      "operator": "between",
+      "value": [
+        2,
+        5
+      ],
+      "unit": "mission day",
+      "meaning": "Typical onset window of space-adaptation back pain (first 2-5 days of flight).",
+      "source": "RESEARCHERS_DATA"
+    }
+  ],
+  "reference_only": {
+    "note": "NASA design requirements for the vehicle/habitat. Do NOT use as alert thresholds for an astronaut.",
+    "use_for_alerts": false,
+    "items": {
+      "daily_gcr_dose_rate_free_space": {
+        "label": "GCR effective dose rate - free space",
+        "unit": "mSv/day",
+        "reference_below": 1.3,
+        "applies_to": "Habitats supporting crew for more than 60 days",
+        "source": {
+          "type": "NASA",
+          "document": "NASA-STD-3001 Vol. 1 Rev. C",
+          "section": "V1 4033, Sec. 4.8.5",
+          "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+          "verified_by_team": false
+        }
+      },
+      "daily_gcr_dose_rate_planetary_surface": {
+        "label": "GCR effective dose rate - planetary surface",
+        "unit": "mSv/day",
+        "reference_below": 0.9,
+        "applies_to": "Habitats supporting crew for more than 60 days",
+        "source": {
+          "type": "NASA",
+          "document": "NASA-STD-3001 Vol. 1 Rev. C",
+          "section": "V1 4033, Sec. 4.8.5",
+          "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+          "verified_by_team": false
+        }
+      },
+      "solar_event_dose": {
+        "label": "Design Reference SPE effective dose",
+        "unit": "mSv",
+        "reference_below": 250,
+        "applies_to": "Protective design against the October 1989 SPE proton spectrum",
+        "source": {
+          "type": "NASA",
+          "document": "NASA-STD-3001 Vol. 1 Rev. C",
+          "section": "V1 4031, Sec. 4.8.3, Table 4.8-3",
+          "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+          "verified_by_team": false
+        }
+      },
+      "spe_shielding_recommendation": {
+        "label": "Recommended SPE shielding (water equivalent)",
+        "unit": "cm",
+        "values": {
+          "celestial_surface_any_duration": 10,
+          "beyond_leo_under_6_months": 15,
+          "beyond_leo_over_6_months": 20
+        },
+        "source": {
+          "type": "NASA",
+          "document": "NASA-STD-3001 Vol. 1 Rev. C",
+          "section": "Table 4.8-4, Sec. 4.8.3",
+          "url": "https://standards.nasa.gov/sites/default/files/standards/NASA/C/nasa-std-3001-vol-1-rev-c-signature.pdf",
+          "verified_by_team": false
+        }
+      }
+    }
+  },
+  "sensor_packet_field_to_measurement": {
+    "cumulative_effective_dose": "career_effective_dose",
+    "daily_gcr_dose_rate": "gcr_effective_dose_rate",
+    "solar_event_dose": "spe_effective_dose",
+    "nuclear_source_dose": "nuclear_effective_dose",
+    "lens_dose": "lens_dose",
+    "skin_dose": "skin_dose",
+    "bfo_dose": "bfo_dose",
+    "co2_ppm": "co2_concentration",
+    "temperature_c": "skin_temperature",
+    "heart_rate_bpm": "heart_rate",
+    "spo2_percent": "spo2"
+  }
+}

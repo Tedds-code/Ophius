@@ -1,0 +1,7 @@
+{"sensor":"thermistor","timestamp":"2026-11-11T14:30:00Z","origin":"simulated","device_id":"demo_ntc","data":{"adc_count":2048}}
+{"sensor":"imu","timestamp":"2026-11-11T14:30:01Z","origin":"simulated","device_id":"demo_imu","data":{"ax_m_s2":0.1,"ay_m_s2":0.2,"az_m_s2":9.81}}
+{"sensor":"eda","timestamp":"2026-11-11T14:30:02Z","origin":"simulated","device_id":"demo_eda","data":{"conductance_us":4.5}}
+{"sensor":"radiation","timestamp":"2026-11-11T14:30:03Z","origin":"simulated","device_id":"demo_dosimeter","data":{"counts":3}}
+{"sensor":"co2","timestamp":"2026-11-11T14:30:04Z","origin":"simulated","device_id":"demo_co2","data":{"co2_ppm":600}}
+{"sensor":"noise","timestamp":"2026-11-11T14:30:05Z","origin":"simulated","device_id":"demo_noise","data":{"audio_samples":[0.1,-0.1,0.2,-0.2]}}
+{"sensor":"bioimpedance","timestamp":"2026-11-11T14:30:06Z","origin":"simulated","device_id":"demo_impedance","data":{"impedance_ohms":510}}
