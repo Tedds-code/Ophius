@@ -56,6 +56,7 @@ class HealthCLI:
         self.output_function("11. Simulate blood panel (creates a JSON file and records results)")
         self.output_function("12. Simulate ALL JSON tests + save 365-day history")
         self.output_function("13. Import a complete synthetic history JSON")
+        self.output_function("Option 4, sensor 0: simulate all available instrument types")
 
     def _enter_reading(self):
         manual_catalog = None
@@ -144,7 +145,7 @@ class HealthCLI:
     def _v9_session_status(self, session_id):
         try:
             from astro_health.session_assessment import print_session_report
-            print_session_report(self.sessions, session_id, output=self.output_function)
+            print_session_report(self.sessions, session_id, output=self.output_function, json_first=self.json_only)
         except (OSError, ValueError, KeyError) as exc:
             self.output_function(f'Project session assessment unavailable: {exc}')
 
@@ -232,8 +233,8 @@ class HealthCLI:
         from astro_health.json_catalog_simulation import FORMAT
         is_full_sim = any(r.source == 'simulated_json_catalog'
                           for r in self.sessions.readings_for_session(session_id))
-        if is_full_sim:
-            self.output_function('Complete JSON catalog shown above (synthetic full-history mode).')
+        if self.json_only:
+            self.output_function('JSON-defined measurements shown above. No legacy engineering fields.')
             return
         for test in FIXED_TESTS:
             # NASA radiation fields are displayed below, grouped by sensor and
@@ -371,10 +372,16 @@ class HealthCLI:
 
     def _simulate_sensor(self):
         self.output_function("\n=== Simulated sensors ===")
-        supported_sensors = tuple(s for s in SENSOR_TYPES if s in ('thermistor', 'ppg', 'ecg', 'blood_pressure', 'co2', 'radiation'))
+        supported_sensors = ('thermistor', 'ppg', 'ecg', 'blood_pressure', 'co2', 'radiation', 'lab_analyzer', 'dose_report')
         for index, sensor in enumerate(supported_sensors, start=1):
             self.output_function(f"{index}. {sensor}")
+        self.output_function("0. All sensor types (one cycle; includes laboratory analyzer and dosimetry report)")
         raw = self.input_function("Choose sensor number: ").strip()
+        if raw == '0':
+            for name in supported_sensors:
+                self.output_function(f'\nSimulating {name}:')
+                self._record_packets(simulated_stream(name, count=4 if name == 'dose_report' else 1, realtime=False), ingest_channel='simulation')
+            return
         try:
             index = int(raw)
         except ValueError:

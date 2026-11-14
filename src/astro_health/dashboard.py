@@ -22,9 +22,18 @@ PALETTE = {
     'caution': ('#fff0bd', '#7c4a00', 'CAUTION'),
     'critical': ('#ffe0e0', '#991b1b', 'CRITICAL'),
     'unassessed': ('#e8eefa', '#334155', 'UNASSESSED'),
-    'missing': ('#f1f5f9', '#64748b', 'NOT RECORDED'),
+    'missing': ('#f1f5f9', '#64748b', 'NOT MEASURED'),
     'context_only': ('#e8eefa', '#334155', 'CONTEXT'),
 }
+
+
+def assessment_display_state(result):
+    """Differentiate absent readings, evaluated readings and context gaps."""
+    if not result.recorded or result.status == 'missing':
+        return 'NOT MEASURED'
+    if result.status in ('good', 'caution', 'critical'):
+        return 'ASSESSED'
+    return 'NEEDS CONTEXT'
 
 
 def default_path(rel):
@@ -92,7 +101,7 @@ class AstronautDashboard:
         self.progress_var = tk.StringVar(value='Test results will appear here')
         ttk.Label(info, textvariable=self.title_var, style='Header.TLabel').pack(anchor='w')
         ttk.Label(info, textvariable=self.progress_var, style='Summary.TLabel').pack(anchor='w', pady=(2, 6))
-        self.legend = ttk.Label(info, text='GREEN: within project reference  •  YELLOW: caution  •  RED: critical  •  GRAY: missing/unassessed',
+        self.legend = ttk.Label(info, text='GREEN: within project reference  •  YELLOW: caution  •  RED: critical  •  GRAY: not measured  •  BLUE: needs context',
                                 foreground='#334155')
         self.legend.pack(anchor='w', pady=(0, 8))
 
@@ -101,7 +110,7 @@ class AstronautDashboard:
         self.results_tree = ttk.Treeview(table_holder,
              columns=('completion', 'result', 'status', 'detail'), show='headings', height=15)
         for key, text, width in (
-            ('completion', 'Recorded', 87), ('result', 'Test / Measurement', 225),
+            ('completion', 'Assessment', 125), ('result', 'Test / Measurement', 225),
             ('status', 'Rating', 108), ('detail', 'Saved value / reason', 370)):
             self.results_tree.heading(key, text=text)
             self.results_tree.column(key, width=width, stretch=key in ('result', 'detail'))
@@ -229,12 +238,14 @@ class AstronautDashboard:
 
     def _show_session(self, session_id: int):
         self.selected_session = session_id
-        view = evaluate_session(self.store, session_id, self.config, self.settings)
+        view = evaluate_session(self.store, session_id, self.config, self.settings, json_first=True)
         label = 'Session closed successfully' if view.session_status == 'completed' else (
             'Session currently active' if view.session_status == 'active' else
             'Session interrupted; saved readings retained')
         self.title_var.set(f'Session {session_id}  |  {label}')
-        self.progress_var.set(f'{view.recorded_tests} of {view.total_tests} fixed tests recorded  •  '
+        self.progress_var.set(f'{sum(assessment_display_state(t) == "ASSESSED" for t in view.tests)} assessed  •  '
+                              f'{sum(assessment_display_state(t) == "NOT MEASURED" for t in view.tests)} not measured  •  '
+                              f'{sum(assessment_display_state(t) == "NEEDS CONTEXT" for t in view.tests)} need context  •  ' 
                               f'{len(view.warnings)} caution/critical results')
         self.results_tree.delete(*self.results_tree.get_children())
         self._tests_by_row = {}
@@ -242,10 +253,10 @@ class AstronautDashboard:
             iid = f't{index}'
             _, _, title = PALETTE[result.status]
             self.results_tree.insert('', 'end', iid=iid,
-                values=('YES ✓' if result.recorded else 'NO', result.name, title, result.display_value),
+                values=(assessment_display_state(result), result.name, title, result.display_value),
                 tags=(result.status,))
             self._tests_by_row[iid] = result
-        self.detail_var.set('Click a test to see the project reference or missing context.')
+        self.detail_var.set('ASSESSED: compared with JSON  •  NOT MEASURED: no reading  •  NEEDS CONTEXT: cannot yet compare')
         self._update_sex_references(session_id)
         self._update_radiation(session_id)
 
@@ -271,7 +282,11 @@ class AstronautDashboard:
                 synthetic = None
         for name, (value_label, male_label, female_label) in self.sex_rows.items():
             measurement = summary.get(name) or summary.get(f'{name}_male') or summary.get(f'{name}_female')
-            if synthetic and f'{name}_male' in synthetic:
+            full_reading_ids = [r.id for r in self.store.readings_for_session(session_id)
+                                if r is not None and r.source == 'simulated_json_catalog']
+            newer = (measurement is not None and full_reading_ids and
+                     measurement.reading_id > max(full_reading_ids))
+            if synthetic and f'{name}_male' in synthetic and not newer:
                 observed = synthetic[f'{name}_male']
                 value, unit = observed['value'], observed['unit']
             elif measurement is None:
@@ -282,7 +297,7 @@ class AstronautDashboard:
             comparisons = assess_sex_references(name, value, unit, self.config)
             for sex, label in (('male', male_label), ('female', female_label)):
                 assessment = comparisons.get(sex)
-                status = assessment.status if assessment else 'unassessed'
+                status = assessment.status if assessment else ('missing' if value is None else 'unassessed')
                 bg, fg, title = PALETTE.get(status, PALETTE['unassessed'])
                 label.configure(text=title, background=bg, foreground=fg)
 

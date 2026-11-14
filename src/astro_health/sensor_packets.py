@@ -18,7 +18,7 @@ from typing import Any, Mapping
 
 SENSOR_TYPES = (
     "thermistor", "ppg", "imu", "ecg", "eda", "radiation", "blood_pressure",
-    "co2", "noise", "bioimpedance", "eye_imaging", "radiation_environment",
+    "co2", "lab_analyzer", "dose_report", "noise", "bioimpedance", "eye_imaging", "radiation_environment",
 )
 ORIGINS = ("simulated", "device", "replay")
 MAX_PACKET_BYTES = 2_000_000

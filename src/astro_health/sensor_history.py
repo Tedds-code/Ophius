@@ -64,6 +64,12 @@ def ensure_sensor_history(database):
                     (version, applied_at, description)
                 VALUES (5, ?, 'Radiation origin, environment, measurement basis')
             """, (datetime.now(timezone.utc).isoformat(),))
+            for column, sqltype in (
+                ('coverage_window', 'TEXT'), ('coverage_start', 'TEXT'),
+                ('coverage_end', 'TEXT'), ('career_complete', 'TEXT'),
+                ('mission_days', 'REAL')):
+                if column not in columns:
+                    connection.execute(f'ALTER TABLE sensor_packet_history ADD COLUMN {column} {sqltype}')
     finally:
         connection.close()
 
@@ -123,6 +129,13 @@ def store_packet_metadata(database, reading_id, fingerprint, packet, *, ingest_c
                 spec.environment if spec else None,
                 spec.measurement_basis if spec else None,
             ))
+            if packet.sensor == 'dose_report':
+                connection.execute("""UPDATE sensor_packet_history SET
+                    coverage_window=?, coverage_start=?, coverage_end=?,
+                    career_complete=?, mission_days=? WHERE reading_id=?""", (
+                    packet.data.get('coverage_window'), packet.data.get('coverage_start'),
+                    packet.data.get('coverage_end'), packet.data.get('career_complete'),
+                    packet.data.get('mission_days'), reading_id))
     finally:
         connection.close()
 

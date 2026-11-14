@@ -151,6 +151,19 @@ FIXED_TESTS += (FixedTest('json_cabin_co2', 'Cabin CO2 one-hour mean',
     (TestField('cabin_co2', 'CO2 partial pressure', 'mmHg'),),
     'co2', manual_enabled=False),)
 
+# JSON-defined dosimetry reports have explicit per-window measurement names.
+# Retain the old catalog only for old-session compatibility; the live dashboard
+# enumerates thresholds.json keys, not FIXED_TESTS.
+from pathlib import Path as _Path
+import json as _json
+_json_rules = _json.loads((_Path(__file__).resolve().parents[2] / 'config' / 'thresholds.json').read_text(encoding='utf-8'))['signals']
+_existing_names = {field.measurement_type for test in FIXED_TESTS for field in test.fields}
+for _key, _rule in _json_rules.items():
+    if _rule.get('category') == 'radiation' and _key not in _existing_names:
+        FIXED_TESTS += (FixedTest('json_dosimetry_' + _key, _rule.get('label', _key),
+            (TestField(_key, _rule.get('label', _key), _rule['unit']),),
+            'dose_report', manual_enabled=False),)
+
 TESTS_BY_ID = {test.test_id: test for test in FIXED_TESTS}
 FIELDS_BY_MEASUREMENT = {
     field.measurement_type: field

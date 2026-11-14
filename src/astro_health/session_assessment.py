@@ -32,7 +32,7 @@ class SessionView:
     warnings: tuple[str, ...]
 
 
-def evaluate_session(store, session_id: int, config: dict, settings: dict) -> SessionView:
+def evaluate_session(store, session_id: int, config: dict, settings: dict, *, json_first=False) -> SessionView:
     """Read-only assessment. Never updates stored reading quality or results."""
     from astro_health.fixed_tests import FIXED_TESTS
 
@@ -63,6 +63,18 @@ def evaluate_session(store, session_id: int, config: dict, settings: dict) -> Se
                     f"{item['value']:g} {item['unit']} [SYNTHETIC]",
                     'Condition reference (not a diagnosis)')
                     for cid, item in report['condition_assessments'].items())
+                # Readings saved AFTER Fill All must take precedence for their
+                # JSON keys; the other historical synthetic rows stay visible.
+                if json_first:
+                    all_readings = store.readings_for_session(session_id)
+                    full_reading_ids = [r.id for r in all_readings
+                                        if r is not None and r.source == 'simulated_json_catalog']
+                    if full_reading_ids:
+                        from astro_health.json_session_view import evaluate_json_session
+                        changed = evaluate_json_session(store, session_id, config, settings,
+                                    after_reading_id=max(full_reading_ids))
+                        updates = {row.test_id: row for row in changed.tests if row.recorded}
+                        rows = tuple(updates.get(row.test_id, row) for row in rows)
                 warnings = tuple(f'{r.name}: {r.status.upper()}' for r in rows
                                  if r.status in ('critical', 'caution'))
                 return SessionView(session.id, session.status, session.started_at,
@@ -71,6 +83,9 @@ def evaluate_session(store, session_id: int, config: dict, settings: dict) -> Se
         except (OSError, ValueError, TypeError, KeyError) as exc:
             # Refuse to present a corrupted history as a valid full-year dose.
             raise ValueError(f'Synthetic history is invalid: {exc}') from exc
+    if json_first:
+        from astro_health.json_session_view import evaluate_json_session
+        return evaluate_json_session(store, session_id, config, settings)
     summary = store.summary(session_id)
     # Calculate dose windows once across saved history. Missing provenance
     # returns no windows rather than interpreting single snapshots as doses.
@@ -191,15 +206,18 @@ def describe_reading(reading, rules_path='config/thresholds.json',
 def print_session_report(store, session_id: int, *,
                          rules_path='config/thresholds.json',
                          settings_path='config/monitoring_settings.json',
-                         output=print):
+                         output=print, json_first=False):
     config, settings = load_project_configuration(rules_path, settings_path)
-    view = evaluate_session(store, session_id, config, settings)
+    view = evaluate_session(store, session_id, config, settings, json_first=json_first)
     output(f'\n=== Astronaut test status | session {session_id} ({view.session_status}) ===')
     output(f'Recorded tests: {view.recorded_tests}/{view.total_tests} — Session completion is not medical clearance')
     for test in view.tests:
         output(f'  {test.status.upper():11} | {test.name}: {test.display_value}')
     for warning in view.warnings:
         output('PROJECT THRESHOLD WARNING: ' + warning)
+    if json_first:
+        output('Dated exposure coverage is required for non-instant radiation assessments.')
+        return view
     radiation = radiation_for_store(store, config, settings)
     output('Radiation history (personal, NASA-aligned quantities only):')
     for field, result in radiation.items():

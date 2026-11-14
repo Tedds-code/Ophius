@@ -222,6 +222,42 @@ def process_packet(
         if not measurements:
             raise ProcessingError("CO2 requires an hourly partial pressure or reported ppm")
 
+    elif packet.sensor == "lab_analyzer":
+        # Device-generated laboratory report. Measurements and units are
+        # defined by the user JSON, never by the sending device.
+        from astro_health.blood_tests import BY_NAME
+        from astro_health.astronaut_assessment import load_rules
+        rules = load_rules(Path(__file__).resolve().parents[2] / "config" / "thresholds.json")['signals']
+        for name, raw in data.items():
+            if name not in BY_NAME:
+                raise ProcessingError(f"Unknown blood analyte {name!r}")
+            candidates = [r for key, r in rules.items() if key == name or key in (name + '_male', name + '_female')]
+            if not candidates or {r['unit'] for r in candidates} != {BY_NAME[name].unit}:
+                raise ProcessingError(f"No matching JSON unit for {name}")
+            measurements.append(_metric(name, _number(data, name, minimum=0), BY_NAME[name].unit))
+        notes.append("Analyzer-reported laboratory results; device adapter and lab quality must be verified")
+
+    elif packet.sensor == "dose_report":
+        # An instrument or dosimetry service REPORTS modeled organ doses.
+        # These are never inferred from radiation detector counts.
+        from astro_health.astronaut_assessment import load_rules
+        rules = load_rules(Path(__file__).resolve().parents[2] / "config" / "thresholds.json")['signals']
+        for name, raw in data.items():
+            if name in ('coverage_window', 'coverage_start', 'coverage_end',
+                        'career_complete', 'mission_days'):
+                continue
+            rule = rules.get(name)
+            if not rule or rule.get('category') != 'radiation':
+                raise ProcessingError(f"Unknown JSON dosimetry measurement {name!r}")
+            measurements.append(_metric(name, _number(data, name, minimum=0), rule['unit']))
+        if not measurements:
+            raise ProcessingError('No radiation measurement provided')
+        if 'coverage_window' in data and data['coverage_window'] not in ('30_days', '1_year', 'career', 'per_mission_year'):
+            raise ProcessingError('Invalid coverage_window')
+        if any(rules[m.measurement_type].get('window') != data.get('coverage_window') for m in measurements):
+            raise ProcessingError('All reported doses must match the declared coverage_window')
+        notes.append('Dosimetry-service-reported model quantities; coverage metadata is required for assessment')
+
     elif packet.sensor == "noise":
         if "sound_level_dba" in data:
             measurements.append(_metric("sound_level", _number(data, "sound_level_dba"), "dBA"))
@@ -258,6 +294,8 @@ def process_packet(
 
     # Enforce the fixed catalog: devices cannot invent measurement labels/units.
     for measurement in measurements:
+        if packet.sensor == "dose_report":
+            continue  # Checked against the exact JSON rules above.
         field = FIELDS_BY_MEASUREMENT.get(measurement.measurement_type)
         if field is None or field.unit != measurement.unit:
             raise ProcessingError("Processed measurement is not in the fixed catalog")

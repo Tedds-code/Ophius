@@ -106,6 +106,25 @@ def make_simulated_packet(
         }
     elif sensor == "co2":
         data = {"co2_ppm": 600 + index % 10, "co2_1h_mmhg": 2.0, "sample_period_minutes": 60}
+    elif sensor == "lab_analyzer":
+        from astro_health.blood_tests import simulate_blood_test
+        from astro_health.astronaut_assessment import load_rules
+        cfg = load_rules(Path(__file__).resolve().parents[2] / 'config' / 'thresholds.json')
+        demo = simulate_blood_test(cfg, seed=index)
+        data = {key: entry['value'] for key, entry in demo['measurements'].items()}
+    elif sensor == "dose_report":
+        # A report is an upstream dosimetry *model* output, not a basic
+        # physical detector value; this packet intentionally lacks the full
+        # exposure coverage needed to mark a career limit assessed.
+        from astro_health.astronaut_assessment import load_rules
+        cfg = load_rules(Path(__file__).resolve().parents[2] / 'config' / 'thresholds.json')
+        periods = ('30_days', '1_year', 'career', 'per_mission_year')
+        period = periods[index % len(periods)]
+        data = {'coverage_window': period}
+        for key, rule in cfg['signals'].items():
+            if rule.get('category') == 'radiation' and rule.get('window') == period:
+                limit = rule.get('critical_above') or rule.get('caution_above')
+                data[key] = round(limit * 0.1, 6)
     elif sensor == "noise":
         data = {"sound_level_dba": 45.0 + index % 3}
     elif sensor == "bioimpedance":
