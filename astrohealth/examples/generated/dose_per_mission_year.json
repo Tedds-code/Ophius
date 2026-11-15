@@ -1,0 +1,22 @@
+{
+  "packet_id": "synthetic-ff34c27f9ca7411a9fcff77a264deb93",
+  "timestamp": "2026-11-15T15:27:15.917126+00:00",
+  "source": "simulation",
+  "quality": "ok",
+  "readings": {
+    "nuclear_source_dose": {
+      "value": 2.0,
+      "unit": "mSv",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "per_mission_year",
+        "verified": true,
+        "coverage_start": "2026-11-14T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": false,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    }
+  }
+}

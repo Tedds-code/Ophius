@@ -1,0 +1,19 @@
+{
+  "packet_id": "example-hourly-co2-001",
+  "timestamp": "2026-11-15T12:00:00Z",
+  "source": "simulation",
+  "quality": "ok",
+  "readings": {
+    "cabin_co2": {
+      "value": 2.0,
+      "unit": "mmHg",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "1_hour_average",
+        "coverage_start": "2026-11-15T11:00:00Z",
+        "coverage_end": "2026-11-15T12:00:00Z",
+        "verified": true
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "packet_id": "synthetic-mission-dose-example-001",
+  "timestamp": "2026-11-14T12:00:00Z",
+  "source": "simulation",
+  "quality": "ok",
+  "readings": {
+    "nuclear_source_dose": {
+      "value": 35,
+      "unit": "mSv",
+      "metadata": {
+        "kind": "cumulative",
+        "window": "per_mission_year",
+        "verified": true,
+        "coverage_start": "2026-11-04T12:00:00Z",
+        "coverage_end": "2026-11-14T12:00:00Z"
+      }
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "packet_id": "synthetic-3f525a3df78b4c828cba74f7864c6cc2",
+  "timestamp": "2026-11-15T15:27:15.917126+00:00",
+  "source": "simulation",
+  "quality": "ok",
+  "readings": {
+    "cumulative_effective_dose": {
+      "value": 60.0,
+      "unit": "mSv",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "career",
+        "verified": true,
+        "coverage_start": "2024-11-15T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": true,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "cardiovascular_disease_risk_dose": {
+      "value": 0.05,
+      "unit": "Gy-eq",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "career",
+        "verified": true,
+        "coverage_start": "2024-11-15T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": true,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "lens_dose_career": {
+      "value": 400.0,
+      "unit": "mGy-Eq",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "career",
+        "verified": true,
+        "coverage_start": "2024-11-15T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": true,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "skin_dose_career": {
+      "value": 600.0,
+      "unit": "mGy-Eq",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "career",
+        "verified": true,
+        "coverage_start": "2024-11-15T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": true,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "circulatory_dose_career": {
+      "value": 100.0,
+      "unit": "mGy-Eq",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "career",
+        "verified": true,
+        "coverage_start": "2024-11-15T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": true,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "cns_dose_career": {
+      "value": 150.0,
+      "unit": "mGy",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "career",
+        "verified": true,
+        "coverage_start": "2024-11-15T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": true,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "cns_hze_dose_career": {
+      "value": 25.0,
+      "unit": "mGy",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "career",
+        "verified": true,
+        "coverage_start": "2024-11-15T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": true,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    }
+  }
+}

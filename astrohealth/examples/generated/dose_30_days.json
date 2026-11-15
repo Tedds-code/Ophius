@@ -1,0 +1,78 @@
+{
+  "packet_id": "synthetic-2eb5a596e2d44e80946f7a427d0ab5c4",
+  "timestamp": "2026-11-15T15:27:15.917126+00:00",
+  "source": "simulation",
+  "quality": "ok",
+  "readings": {
+    "lens_dose_30d": {
+      "value": 100.0,
+      "unit": "mGy-Eq",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "30_days",
+        "verified": true,
+        "coverage_start": "2026-10-16T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": false,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "skin_dose_30d": {
+      "value": 150.0,
+      "unit": "mGy-Eq",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "30_days",
+        "verified": true,
+        "coverage_start": "2026-10-16T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": false,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "bfo_dose_30d": {
+      "value": 25.0,
+      "unit": "mGy-Eq",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "30_days",
+        "verified": true,
+        "coverage_start": "2026-10-16T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": false,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "circulatory_dose_30d": {
+      "value": 25.0,
+      "unit": "mGy-Eq",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "30_days",
+        "verified": true,
+        "coverage_start": "2026-10-16T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": false,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    },
+    "cns_dose_30d": {
+      "value": 50.0,
+      "unit": "mGy",
+      "metadata": {
+        "kind": "reported_window",
+        "window": "30_days",
+        "verified": true,
+        "coverage_start": "2026-10-16T15:27:15.917126+00:00",
+        "coverage_end": "2026-11-15T15:27:15.917126+00:00",
+        "career_complete": false,
+        "synthetic_coverage": true,
+        "note": "Declared synthetic report coverage; not actual acquired history"
+      }
+    }
+  }
+}
