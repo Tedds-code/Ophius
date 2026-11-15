@@ -1,4 +1,0 @@
-
-{"sensor":"thermistor","timestamp":"2026-11-12T10:00:00Z","origin":"simulated","device_id":"thermistor_demo","data":{"temperature_c":32.5}}
-{"sensor":"imu","timestamp":"2026-11-12T10:00:01Z","origin":"simulated","device_id":"imu_demo","data":{"ax_m_s2":0.12,"ay_m_s2":-0.04,"az_m_s2":9.79}}
-{"sensor":"co2","timestamp":"2026-11-12T10:00:02Z","origin":"simulated","device_id":"co2_demo","data":{"co2_ppm":650}}

@@ -1,3 +1,0 @@
-{"measurement_type":"lens_dose","unit":"mGy-Eq","dose_increment":0.4,"start":"2026-11-10T00:00:00+00:00","end":"2026-11-11T00:00:00+00:00","source_id":"demo-dosimeter","verified":true}
-{"measurement_type":"lens_dose","unit":"mGy-Eq","dose_increment":0.5,"start":"2026-11-11T00:00:00+00:00","end":"2026-11-12T00:00:00+00:00","source_id":"demo-dosimeter","verified":true}
-{"measurement_type":"lens_dose","unit":"mGy-Eq","dose_increment":0.6,"start":"2026-11-12T00:00:00+00:00","end":"2026-11-13T00:00:00+00:00","source_id":"demo-dosimeter","verified":true}

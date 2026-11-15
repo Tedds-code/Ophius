@@ -1,0 +1,1721 @@
+[
+  {
+    "condition_id": "sudden_cardiac_arrest",
+    "condition_name": "Sudden Cardiac Arrest",
+    "treatments": [
+      {
+        "treatment_name": "Cardiopulmonary Resuscitation (CPR)",
+        "indication": "All cases",
+        "diagnostic_markers": "Pulse outside 60-100 bpm, specifically pulseless (0 bpm). Unresponsive, abnormal or absent breathing.",
+        "sensor_method": "ECG, Pulse Oximeter",
+        "instructions": [
+          "Space guidelines (NASA, ISS, procedures 1.102 and 1.103):",
+          "1. Single rescuer: CPR with 30 compressions to 2 breaths, 1 second per breath, for 5 cycles (approx. 2 minutes). Move patient to the Crew Medical Restraint System (CMRS) if needed, call another crew member and mission control.",
+          "2. Two rescuers: One performs CPR, the other deploys the defibrillator.",
+          "2a. Pulse check for 10 seconds (when defibrillator prompts 'Start CPR'): if no pulse is felt, continue CPR; if pulse or spontaneous breathing is present, stop compressions and support breathing.",
+          "3. Zero-gravity compression technique (DGLRM / ESAM-SMG guideline, not NASA): in immediate basic life support use the Evetts-Russomano method; when the patient is secured in the CMRS, use the handstand method.",
+          "4. Depth and rate (Earth, American Heart Association): press at least 5 cm, 100-120 compressions per minute, full chest recoil. No official limit found specifically for space.",
+          "5. Termination of CPR: in consultation with the flight surgeon if available, and only if all three apply: at least 10 minutes of CPR since the last medication dose, no pulse or spontaneous breathing, at least 45 minutes since resuscitation began.",
+          "Note: Guidelines are derived from a 2016 NASA manual and may have been updated since."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "None reported",
+        "context": "General medical treatment capability",
+        "sources": [
+          "NASA – Evidence Report: Risk of Cardiovascular Adaptations (2022): https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+          "NASA – ISS Emergency Medical Procedures (2016, FOIA): https://www.governmentattic.org/19docs/NASA-ISSmedicalEmergManual_2016.pdf",
+          "DGLRM / ESAM-SMG (PubMed): https://pubmed.ncbi.nlm.nih.gov/33138865/",
+          "American Heart Association: https://ECCGuidelines.Heart.org/-/media/CPR-Files/CPR-Guidelines-Files/Algorithms/AlgorithmACLS_CA_Circular_200612.pdf"
+        ]
+      },
+      {
+        "treatment_name": "Crew Medical Restraint System (CMRS) for chest compressions",
+        "indication": "All cases",
+        "diagnostic_markers": "Pulse outside 60-100 bpm, specifically pulseless (0 bpm). Unresponsive, abnormal or absent breathing.",
+        "sensor_method": "ECG, Pulse Oximeter",
+        "instructions": [
+          "Space guidelines (NASA and European directive):",
+          "1. The patient is secured in the Crew Medical Restraint System (CMRS) where needed (NASA, procedures 1.102 and 1.103).",
+          "2. The published NASA excerpt does not contain steps for setting up the system.",
+          "3. With the patient secured, compressions are performed using the handstand method: the rescuer's feet push against the cabin wall and hands press on the patient's chest (DGLRM / ESAM-SMG guideline).",
+          "Note: Guidelines are derived from a 2016 NASA manual and may have been updated since."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "None reported",
+        "context": "ISS, currently available",
+        "sources": [
+          "NASA – Evidence Report: Risk of Cardiovascular Adaptations (2022): https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+          "NASA – ISS Emergency Medical Procedures (2016, FOIA): https://www.governmentattic.org/19docs/NASA-ISSmedicalEmergManual_2016.pdf",
+          "DGLRM / ESAM-SMG – Cardiopulmonary resuscitation (CPR) during spaceflight (PubMed): https://pubmed.ncbi.nlm.nih.gov/33138865/"
+        ]
+      },
+      {
+        "treatment_name": "Automated External Defibrillator (AED)",
+        "indication": "All cases",
+        "diagnostic_markers": "Pulse outside 60-100 bpm, specifically pulseless (0 bpm). Unresponsive, abnormal or absent breathing.",
+        "sensor_method": "ECG, Pulse Oximeter",
+        "instructions": [
+          "Space guidelines (NASA, ISS, procedures 1.102 and 1.104):",
+          "1. Check the environment for hazards and assess the patient.",
+          "2. If two rescuers are present: one performs CPR and the other deploys the defibrillator (AED).",
+          "3. Connect the pads to the patient's bare chest and turn on the AED.",
+          "4. Follow voice prompts; if inaudible, read the screen.",
+          "5. When the AED says \"Start CPR\", check the pulse for 10 seconds.",
+          "6. If a pulse or spontaneous breathing is present: stop compressions and assist breathing if needed.",
+          "7. If no pulse: continue CPR (30:2) until the next AED prompt, then recheck pulse.",
+          "8. Secure the patient to the CMRS, call another crew member and Mission Control (MCC-H) for a private medical conference.",
+          "Troubleshooting: Poor pad contact -> press pads firmly; if hair is present, remove pads and hair, apply new set. Dry/damaged pads -> replace. Motion detected -> stop CPR during analysis and move electronics away. Low battery -> continue CPR, change battery ASAP, notify MCC (can still deliver approx. 30 shocks). Dead battery -> continue CPR and change battery.",
+          "Note: Guidelines are derived from a 2016 NASA manual and may have been updated since."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "None reported",
+        "context": "ISS, currently available",
+        "sources": [
+          "NASA – Evidence Report: Risk of Cardiovascular Adaptations (2022): https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+          "American Heart Association: https://ECCGuidelines.Heart.org/-/media/CPR-Files/CPR-Guidelines-Files/Algorithms/AlgorithmACLS_CA_Circular_200612.pdf",
+          "NASA – NASA-STD-3001, Appendix E: https://www.nasa.gov/reference/appendix-e-health-and-medical-care-technical-requirements/",
+          "NASA – ISS Emergency Medical Procedures (2016, FOIA): https://www.governmentattic.org/19docs/NASA-ISSmedicalEmergManual_2016.pdf"
+        ]
+      },
+      {
+        "treatment_name": "Epinephrine",
+        "indication": "All cases",
+        "diagnostic_markers": "Pulse outside 60-100 bpm, specifically pulseless (0 bpm). Unresponsive, abnormal or absent breathing.",
+        "sensor_method": "ECG, Pulse Oximeter",
+        "instructions": [
+          "Space guidelines (NASA, ISS, procedure 1.103):",
+          "Intraosseous (IO) access:",
+          "1. Prepare IO kit: cut two 10 cm pieces of medical tape, attach IV cap to a 10 mL syringe, expose leg to the knee.",
+          "2. Locate insertion site: find the bony prominence (tibial tuberosity), move 2 cm inward and then 1 cm toward the knee.",
+          "3. Place the blue barrel perpendicular to the skin. Caution: needle can deploy like a projectile.",
+          "4. Remove safety, maintain pressure on the blue barrel and press the gray end until a click is heard.",
+          "5. Lift the device to expose the needle; place the safety between the skin and needle base, secure with tape.",
+          "6. Remove the inner stylet and connect the syringe with the IV cap.",
+          "7. Pull back 5 mL with the plunger to check for blood return (may clear bone fragments).",
+          "Administration:",
+          "8. Administer one syringe of epinephrine from the ALS kit via the IO needle and confirm flow.",
+          "9. After the next rhythm analysis: if no shock is advised, give atropine; if shock is advised, give lidocaine; then epinephrine again.",
+          "10. If a pulse returns at any step: stop compressions and meds, give breaths and proceed to breathing assessment.",
+          "11. If two IO attempts fail: repeat on the other leg.",
+          "Prescription: Administered from the ISS ALS kit per procedure; NASA requires communication with Mission Control (MCC-H).",
+          "Note: Guidelines from a 2016 NASA manual."
+        ],
+        "dosage": "Space dosage (ISS): one syringe of epinephrine from the ALS kit, intraosseous (IO), repeated per ALS algorithm. Kit syringes contain 0.1 mg/mL in 10 mL (total 1 mg per syringe). This aligns with terrestrial AHA dosage: 1 mg every 3-5 minutes. Note: Based on 2016 NASA manual.",
+        "warnings_and_interactions": "Not mentioned in the reviewed sources",
+        "context": "ISS, currently available",
+        "sources": [
+          "NASA – Evidence Report: Risk of Cardiovascular Adaptations (2022): https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf",
+          "American Heart Association: https://ECCGuidelines.Heart.org/-/media/CPR-Files/CPR-Guidelines-Files/Algorithms/AlgorithmACLS_CA_Circular_200612.pdf",
+          "NASA – ISS Emergency Medical Procedures (2016, FOIA): https://www.governmentattic.org/19docs/NASA-ISSmedicalEmergManual_2016.pdf"
+        ]
+      },
+      {
+        "treatment_name": "Lidocaine",
+        "indication": "Shockable rhythm (AED advises shock)",
+        "diagnostic_markers": "Pulse outside 60-100 bpm, specifically pulseless (0 bpm). Unresponsive, abnormal or absent breathing.",
+        "sensor_method": "ECG, Pulse Oximeter",
+        "instructions": [
+          "Space guidelines (NASA, ISS, procedure 1.103):",
+          "1. Continue CPR and defibrillation as prompted by the AED.",
+          "2. After a rhythm analysis that advises a shock, administer lidocaine via the intraosseous (IO) line, using the same method described for epinephrine.",
+          "3. Afterward, administer epinephrine again.",
+          "4. If a pulse returns at any step: stop compressions and medications, provide rescue breaths, and proceed to respiratory assessment.",
+          "Note: Guidelines from a 2016 NASA manual."
+        ],
+        "dosage": "NASA does not provide a specific dose in the published excerpt. Terrestrial dosage (AHA 2020): Initial dose 1-1.5 mg/kg IV/IO, second dose 0.5-0.75 mg/kg.",
+        "warnings_and_interactions": "Not mentioned in the reviewed sources.",
+        "context": "ISS, available in the ALS kit",
+        "sources": [
+          "NASA – ISS Emergency Medical Procedures (2016, FOIA): https://www.governmentattic.org/19docs/NASA-ISSmedicalEmergManual_2016.pdf",
+          "American Heart Association: https://ECCGuidelines.Heart.org/-/media/CPR-Files/CPR-Guidelines-Files/Algorithms/AlgorithmACLS_CA_Circular_200612.pdf"
+        ]
+      },
+      {
+        "treatment_name": "Atropine",
+        "indication": "Non-shockable rhythm (AED advises no shock)",
+        "diagnostic_markers": "Pulse outside 60-100 bpm, specifically pulseless (0 bpm). Unresponsive, abnormal or absent breathing.",
+        "sensor_method": "ECG, Pulse Oximeter",
+        "instructions": [
+          "Space guidelines (NASA, ISS, procedure 1.103):",
+          "1. Continue CPR as prompted by the AED.",
+          "2. After a rhythm analysis that does not advise a shock, administer atropine via the intraosseous (IO) line, using the same method described for epinephrine.",
+          "3. Afterward, administer epinephrine again.",
+          "4. If a pulse returns at any step: stop compressions and medications, provide rescue breaths, and proceed to respiratory assessment.",
+          "Note: Guidelines from a 2016 NASA manual."
+        ],
+        "dosage": "NASA does not provide a specific dose in the published excerpt. No standard terrestrial dosage found for this specific arrest context.",
+        "warnings_and_interactions": "The AHA (2020) cardiac arrest algorithm includes only epinephrine, amiodarone, and lidocaine, not atropine. The NASA guideline is from 2016 and may be outdated.",
+        "context": "ISS, available in the ALS kit",
+        "sources": [
+          "NASA – ISS Emergency Medical Procedures (2016, FOIA): https://www.governmentattic.org/19docs/NASA-ISSmedicalEmergManual_2016.pdf",
+          "American Heart Association: https://ECCGuidelines.Heart.org/-/media/CPR-Files/CPR-Guidelines-Files/Algorithms/AlgorithmACLS_CA_Circular_200612.pdf"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "hypomagnesemia_magnesium_deficiency",
+    "condition_name": "Hypomagnesemia (Magnesium Deficiency)",
+    "treatments": [
+      {
+        "treatment_name": "No specific solutions reported",
+        "indication": "Cause not specified",
+        "diagnostic_markers": "Blood Magnesium < 1.7 mg/dL",
+        "sensor_method": "Blood panel (terrestrial analysis)",
+        "instructions": [],
+        "dosage": "None specified",
+        "warnings_and_interactions": "None specified",
+        "context": "Lunar mission (Apollo 15, retrospective analysis)",
+        "sources": [
+          "NASA – Evidence Report: Risk of Cardiovascular Adaptations (2022): https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "qtc_interval_prolongation",
+    "condition_name": "QTc Interval Prolongation",
+    "treatments": [
+      {
+        "treatment_name": "Avoid Midodrine",
+        "indication": "Medications (midodrine, especially in combination with promethazine)",
+        "diagnostic_markers": "QTc > 450 ms (males) or > 460 ms (females). QTc > 500 ms indicates high risk.",
+        "sensor_method": "ECG",
+        "instructions": [
+          "Do not administer midodrine, especially in combination with promethazine (PDF pp. 29-30, 55)."
+        ],
+        "dosage": "Not applicable (medication is contraindicated)",
+        "warnings_and_interactions": "Midodrine combined with promethazine (used for space motion sickness) increases akathisia (severe restlessness). Midodrine can also prolong QTc. Therefore, NASA does not use it for orthostatic intolerance.",
+        "context": "Post-landing (return to gravity)",
+        "sources": [
+          "NASA – Evidence Report: Risk of Cardiovascular Adaptations (2022): https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf"
+        ]
+      },
+      {
+        "treatment_name": "No specific solutions reported",
+        "indication": "Other ISS medications that prolong QTc (ciprofloxacin, haloperidol, propranolol, verapamil, azithromycin, sertraline, nortriptyline)",
+        "diagnostic_markers": "QTc > 450 ms (males) or > 460 ms (females). QTc > 500 ms indicates high risk.",
+        "sensor_method": "ECG",
+        "instructions": [],
+        "dosage": "None specified",
+        "warnings_and_interactions": "The reference notes that combining these agents can induce or exacerbate QT prolongation (pg. 9).",
+        "context": "ISS (International Space Station)",
+        "sources": [
+          "NASA – Evidence Report: Risk of Cardiovascular Adaptations (2022): https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf"
+        ]
+      },
+      {
+        "treatment_name": "No specific solutions reported",
+        "indication": "Bradycardia, autonomic nervous system changes, cardiac remodeling",
+        "diagnostic_markers": "QTc > 450 ms (males) or > 460 ms (females). QTc > 500 ms indicates high risk.",
+        "sensor_method": "ECG",
+        "instructions": [],
+        "dosage": "None specified",
+        "warnings_and_interactions": "None specified",
+        "context": "Long-duration flights",
+        "sources": [
+          "NASA – Evidence Report: Risk of Cardiovascular Adaptations (2022): https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "hypokalemia",
+    "condition_name": "Hypokalemia",
+    "treatments": [
+      {
+        "treatment_name": "No specific solutions reported",
+        "indication": "Inadequate potassium intake (Apollo 15)",
+        "diagnostic_markers": "Blood Potassium < 3.7 mEq/L",
+        "sensor_method": "Blood panel (portable i-STAT analyzer)",
+        "instructions": [],
+        "dosage": "None specified",
+        "warnings_and_interactions": "None specified",
+        "context": "Lunar mission (Apollo 15)",
+        "sources": [
+          "NASA – Evidence Report: Risk of Cardiovascular Adaptations (2022): https://humanresearchroadmap.nasa.gov/evidence/reports/Cardio%20Risk%20EB%202022%20FINAL_4-3-2023.pdf"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C01",
+    "condition_name": "Mild/moderate allergic reaction",
+    "treatments": [
+      {
+        "treatment_name": "Remove trigger and assess for anaphylaxis",
+        "indication": "All suspected cases (rule C01.R1)",
+        "diagnostic_markers": "(pruritus OR skin_rash OR urticaria) AND allergen_exposure_possible AND NOT anaphylaxis_red_flags. anaphylaxis_red_flags = acute_respiratory_distress OR airway_swelling OR syncope_or_collapse OR blood_pressure_systolic < 80 mmHg (critical_below). Watch heart_rate, blood_pressure_systolic, spo2.",
+        "sensor_method": "Crew symptom report; ECG / heart rate, blood pressure cuff and pulse oximeter to detect deterioration",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL5 Allergic Reaction, Mild to Moderate, 2023):",
+          "1. Stop or remove the suspected allergen or drug.",
+          "2. Take a history and perform cardiopulmonary, skin and oropharyngeal examination (about 0.83 h in the CliFF).",
+          "3. Check airway, breathing and blood pressure; repeat heart_rate, blood_pressure_systolic and spo2.",
+          "4. Inform the crew medical officer (CMO) and flight surgeon.",
+          "5. If any anaphylaxis red flag appears, switch immediately to condition C02 (Anaphylaxis).",
+          "Note: The CliFF lists topical antihistamines, oral non-drowsy antihistamines and topical corticosteroids as best-case treatment resources."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Never use an antihistamine as a substitute for epinephrine when dyspnea, tongue/throat swelling or hypotension is present (CDC: antihistamines and corticosteroids are not initial or sole treatment of anaphylaxis).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Allergic Reaction (Mild to Moderate) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/allergic-reaction-mild-to-moderate-cliff-2023.pdf?emrc=eb8309",
+          "CDC – Preventing and Managing Adverse Reactions (ACIP General Best Practice Guidelines): https://www.cdc.gov/vaccines/hcp/imz-best-practices/preventing-managing-adverse-reactions.html"
+        ]
+      },
+      {
+        "treatment_name": "Second-generation (non-sedating) H1 antihistamine and topical therapy",
+        "indication": "Symptomatic itching, hives or mild rash without anaphylaxis signs",
+        "diagnostic_markers": "pruritus OR urticaria OR skin_rash, AND NOT anaphylaxis_red_flags. anaphylaxis_red_flags = acute_respiratory_distress OR airway_swelling OR syncope_or_collapse OR blood_pressure_systolic < 80 mmHg (critical_below).",
+        "sensor_method": "Crew symptom report; heart rate, blood pressure and pulse oximeter after each dose",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL5, 2023):",
+          "1. Best case: a single dose of a second-generation, non-sedating antihistamine (the CliFF names cetirizine and prefers it to sedating diphenhydramine).",
+          "2. Localized skin symptoms: topical antihistamine or topical corticosteroid.",
+          "3. Worst case: several days of therapy, possibly antihistamine plus oral corticosteroid.",
+          "4. Wheeze: short- or long-acting inhaled bronchodilator by metered-dose inhaler with spacer (not nebulizer), and re-check for anaphylaxis.",
+          "5. Reassess symptoms and vital signs after each dose.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route or frequency. Dose per approved mission formulary/SOP only.",
+        "warnings_and_interactions": "Prefer non-sedating agents to protect crew performance. Antihistamines do not treat airway or circulatory involvement.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Allergic Reaction (Mild to Moderate) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/allergic-reaction-mild-to-moderate-cliff-2023.pdf?emrc=eb8309"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C02",
+    "condition_name": "Anaphylaxis",
+    "treatments": [
+      {
+        "treatment_name": "Intramuscular epinephrine (first-line)",
+        "indication": "Any anaphylaxis red flag with suspected allergic cause (rule C02.R1); rash NOT required",
+        "diagnostic_markers": "anaphylaxis_red_flags AND allergic_etiology_suspected. anaphylaxis_red_flags = acute_respiratory_distress OR airway_swelling OR syncope_or_collapse OR blood_pressure_systolic < 80 mmHg (critical_below). A normal spo2 does not exclude anaphylaxis.",
+        "sensor_method": "Crew observation; blood pressure cuff, pulse oximeter, ECG / heart rate",
+        "instructions": [
+          "Terrestrial guideline (CDC / ACIP, Preventing and Managing Adverse Reactions):",
+          "1. Call the crew medical team and start the emergency SOP; do not delay epinephrine for measurements or communication.",
+          "2. Give epinephrine 1 mg/mL intramuscularly, preferably in the mid-outer thigh.",
+          "3. Repeat every 5 to 15 minutes (or more often) as needed.",
+          "4. Place the patient recumbent if tolerated with lower extremities elevated (in microgravity, secure the patient, e.g., in the Crew Medical Restraint System).",
+          "5. Give oxygen 8 to 10 L/min by face mask, up to 100% oxygen, as needed.",
+          "6. Hypotension: rapid IV infusion of 1 to 2 liters, repeated as needed.",
+          "Space guidelines (NASA CliFF ICL7 Anaphylaxis, 2023):",
+          "7. Best case: 2 intramuscular epinephrine doses plus oral antihistamine and oral corticosteroid; periodic repeat vital signs.",
+          "8. Worst case: IM or IV-push epinephrine about once per hour for up to 48 hours, IV antihistamine and corticosteroid, up to 3 L IV fluids, non-invasive oxygen, bronchodilator by MDI with spacer.",
+          "9. Request audio, video and remote telemetry with ground in as close to real time as possible.",
+          "Note: IV epinephrine infusion, invasive ventilation and other vasoactive agents are outside the CliFF scope."
+        ],
+        "dosage": "Epinephrine (CDC adult dose): 0.3 to 0.5 mg of 1 mg/mL solution IM, mid-outer thigh; repeat every 5 to 15 minutes as needed. NASA CliFF gives dose counts only (2 IM doses best case; hourly doses up to 48 h worst case), not a per-dose amount. Terrestrial dose; mission SOP required.",
+        "warnings_and_interactions": "Antihistamines and corticosteroids must not be the initial or sole treatment (CDC). Do not delay epinephrine for vital-sign measurement or ground contact.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "CDC – Preventing and Managing Adverse Reactions (ACIP General Best Practice Guidelines): https://www.cdc.gov/vaccines/hcp/imz-best-practices/preventing-managing-adverse-reactions.html",
+          "NASA – Anaphylaxis CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/anaphylaxis-cliff-2023.pdf?emrc=aec229"
+        ]
+      },
+      {
+        "treatment_name": "Adjunct antihistamine and corticosteroid",
+        "indication": "After epinephrine only: urticaria/itching and post-stabilization",
+        "diagnostic_markers": "Confirmed anaphylaxis episode already treated with epinephrine. anaphylaxis_red_flags = acute_respiratory_distress OR airway_swelling OR syncope_or_collapse OR blood_pressure_systolic < 80 mmHg (critical_below).",
+        "sensor_method": "Crew observation; heart rate, blood pressure, pulse oximeter",
+        "instructions": [
+          "Terrestrial guideline (CDC / ACIP):",
+          "1. Consider cetirizine IV or diphenhydramine IV for relief of urticaria and itching only.",
+          "2. Consider methylprednisolone IV.",
+          "Space guidelines (NASA CliFF ICL7, 2023):",
+          "3. After stabilization: 5 days of oral antihistamine and oral corticosteroid.",
+          "4. Continue periodic repeat vital signs.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "CDC (terrestrial): cetirizine 10 mg IV over 2 minutes or diphenhydramine 25 to 50 mg IV; methylprednisolone 125 mg IV. NASA CliFF gives no dose for the 5-day oral course.",
+        "warnings_and_interactions": "Not to be used as initial or sole treatment of anaphylaxis (CDC). Diphenhydramine is sedating.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "CDC – Preventing and Managing Adverse Reactions (ACIP General Best Practice Guidelines): https://www.cdc.gov/vaccines/hcp/imz-best-practices/preventing-managing-adverse-reactions.html",
+          "NASA – Anaphylaxis CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/anaphylaxis-cliff-2023.pdf?emrc=aec229"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C03",
+    "condition_name": "Space adaptation back pain",
+    "treatments": [
+      {
+        "treatment_name": "Positioning and non-drug measures",
+        "indication": "Back pain after microgravity transition without red flags (rule C03.R1)",
+        "diagnostic_markers": "back_pain AND recent_microgravity_transition AND NOT back_pain_red_flags (trauma_recent OR new_focal_neuro_deficit OR bladder_bowel_dysfunction). Supporting: mission_day between 2 and 5 (cutoff back_pain_space_adaptation).",
+        "sensor_method": "Crew symptom report; mission clock",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL91 Space Adaptation Back Pain, 2023):",
+          "1. Record location and intensity of the pain.",
+          "2. Use the in-flight position with knees pulled toward the chest, which often relieves pain.",
+          "3. Apply hot or cold packs.",
+          "4. Physical therapy supplies and physical therapy consult with ground.",
+          "5. Reassess; if trauma, leg weakness/numbness or bladder/bowel dysfunction appears, escalate (rule C03.R2, URGENT)."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Do not label as simple adaptation back pain if there is leg weakness or numbness, perineal numbness, loss of bladder/bowel control or recent trauma.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Back Pain (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-back-pain-cliff-2023.pdf?emrc=9bce87"
+        ]
+      },
+      {
+        "treatment_name": "Topical and oral analgesics; muscle relaxant for severe cases",
+        "indication": "Pain not controlled by positioning",
+        "diagnostic_markers": "back_pain AND recent_microgravity_transition AND NOT back_pain_red_flags",
+        "sensor_method": "Crew symptom report (pain score)",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL91, 2023):",
+          "1. Topical pain management: lidocaine patch or topical diclofenac.",
+          "2. Oral pain medication: NSAID (ibuprofen) prioritized over acetaminophen.",
+          "3. Worst case: muscle relaxant for muscle spasm; diazepam for severe pain (physician order).",
+          "4. Routine medical ground communication to assist treatment.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route or frequency for lidocaine, diclofenac, ibuprofen, acetaminophen, muscle relaxants or diazepam. Dose per mission formulary.",
+        "warnings_and_interactions": "Diazepam and muscle relaxants are sedating: no critical tasks or EVA after dosing.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Back Pain (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-back-pain-cliff-2023.pdf?emrc=9bce87"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C04",
+    "condition_name": "Space adaptation constipation",
+    "treatments": [
+      {
+        "treatment_name": "Hydration, diet and watchful waiting",
+        "indication": "Bowel symptoms after microgravity transition (rules C04.R1 and C04.R2)",
+        "diagnostic_markers": "SUSPECTED: reduced_bowel_movements AND (hard_stools OR straining) AND recent_microgravity_transition. MONITOR: any one of these symptoms AND recent_microgravity_transition.",
+        "sensor_method": "Crew symptom report; bowel diary",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL92 Space Adaptation Constipation, 2023):",
+          "1. Keep a bowel-movement diary.",
+          "2. Increase hydration.",
+          "3. Dietary changes (e.g., more fiber).",
+          "4. Watchful waiting, with physical activity as allowed.",
+          "5. Re-evaluate if there is no improvement."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Do not give laxatives or fiber without assessment when there is severe abdominal pain, vomiting, marked distension or inability to pass gas (possible obstruction).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Constipation (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-constipation-cliff-2023.pdf?emrc=503504"
+        ]
+      },
+      {
+        "treatment_name": "Bulk agent, stimulant laxative, enema or disimpaction",
+        "indication": "No response to basic measures (CliFF worst case)",
+        "diagnostic_markers": "reduced_bowel_movements AND (hard_stools OR straining) AND recent_microgravity_transition, AND NOT (severe_abdominal_pain OR vomiting)",
+        "sensor_method": "Crew symptom report; bowel diary",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL92, 2023) - worst case, in addition to the basic measures:",
+          "1. Psyllium (bulk agent; psyllium wafers are available on orbit).",
+          "2. Bisacodyl (oral or rectal bowel stimulant).",
+          "3. Soap-water enema.",
+          "4. Fecal disimpaction by a trained crew member if needed.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route, frequency or enema volume. Per mission SOP.",
+        "warnings_and_interactions": "Do not give laxatives or fiber without assessment when there is severe abdominal pain, vomiting, marked distension or inability to pass gas (possible obstruction).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Constipation (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-constipation-cliff-2023.pdf?emrc=503504"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C05",
+    "condition_name": "CO2-induced headache",
+    "treatments": [
+      {
+        "treatment_name": "Reduce cabin CO2 (environmental correction)",
+        "indication": "CO2 above limit, with or without headache (rules C05.R1 and C05.R2)",
+        "diagnostic_markers": "ENVIRONMENT_ALERT: cabin_co2 1-hour average > 3.0 mmHg (critical_above). SUSPECTED: headache AND (cabin_co2 > 2.5 mmHg (caution_above) OR local_co2_accumulation).",
+        "sensor_method": "Cabin ppCO2 sensor (1-hour rolling average); crew symptom report",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL64 Headache CO2-Induced, 2023):",
+          "1. Alert the crew, the ECLSS team and ground.",
+          "2. Reduce or reverse the excess CO2, mainly by improving intramodule airflow; move the crew member to a better-ventilated area.",
+          "3. Check the vehicle CO2 scrubbing system and use contingency scrubbing if needed.",
+          "4. Headaches resolve rapidly when CO2 falls (CliFF estimate 1 to 8 hours).",
+          "5. Worst case (pain refractory to mild medication): further decrease cabin CO2 and give oxygen.",
+          "6. Keep monitoring symptoms and ppCO2 against thresholds.json cabin_co2 (NASA-STD-3001 [V2 6004]).",
+          "Note: NASA OCHMO-TB-004 describes CO2 removal hardware (e.g., CDRA) and the effects of acute CO2 exposure on crew."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Correct the CO2 before symptomatic treatment; an analgesic must not clear the environment alert. Cabin ppCO2 is not arterial PaCO2.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Headache (CO2-Induced) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/headache-co2-induced-cliff-2023.pdf?emrc=79ed88",
+          "NASA – OCHMO-TB-004 Carbon Dioxide (NASA-STD-3001 Technical Brief): https://www.nasa.gov/ochmo-tb-004-carbon-dioxide-2/"
+        ]
+      },
+      {
+        "treatment_name": "Mild analgesic",
+        "indication": "Headache persisting while CO2 is being corrected",
+        "diagnostic_markers": "headache AND (cabin_co2 > 2.5 mmHg OR local_co2_accumulation)",
+        "sensor_method": "Crew symptom report; cabin ppCO2 sensor",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL64, 2023):",
+          "1. Mild analgesic as needed, up to 2 doses per the ISS medical checklist.",
+          "2. Reassess headache and ppCO2; if headache persists after CO2 is normal, evaluate other causes (C25).",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF does not name the analgesic and gives no dose, route or frequency.",
+        "warnings_and_interactions": "Do not mask a persisting environmental problem or a neurological red flag with analgesics.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Headache (CO2-Induced) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/headache-co2-induced-cliff-2023.pdf?emrc=79ed88"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C06",
+    "condition_name": "Space adaptation headache",
+    "treatments": [
+      {
+        "treatment_name": "Assessment and non-drug measures",
+        "indication": "New headache after microgravity transition (rule C06.R1)",
+        "diagnostic_markers": "headache AND recent_microgravity_transition AND NOT neuro_red_flags AND NOT cabin_co2 > 2.5 mmHg. neuro_red_flags = thunderclap_headache OR new_focal_neuro_deficit OR (neck_stiffness AND core_temperature >= 38.0 C).",
+        "sensor_method": "Crew symptom report; cabin ppCO2 sensor; blood pressure; core temperature if available",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL94 Space Adaptation Headache, 2023):",
+          "1. History and physical examination; screen for red flags.",
+          "2. Check cabin CO2.",
+          "3. Non-drug measures: pressure point massage, schedule changes, change of location within the spacecraft; fluids and rest.",
+          "4. Worst case: more thorough exam including neurological, fundoscopic and vision testing.",
+          "5. Headache beyond the first 72 hours: investigate other causes (e.g., carbon monoxide toxicity)."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Do not attribute sudden severe headache or any new neurological symptom to microgravity.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Headache (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-headache-cliff-2023.pdf?emrc=b4416f"
+        ]
+      },
+      {
+        "treatment_name": "Analgesic and antiemetic; escalation for refractory headache",
+        "indication": "Headache not relieved by non-drug measures",
+        "diagnostic_markers": "headache AND recent_microgravity_transition AND NOT neuro_red_flags",
+        "sensor_method": "Crew symptom report",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL94, 2023):",
+          "1. Best case: NSAID (given primacy) or acetaminophen, plus antiemetic if nauseated; usually resolves with 1 or 2 doses.",
+          "2. Refractory headache (worst case): metoclopramide, promethazine, oral steroid, magnesium gluconate, caffeine; diphenhydramine to mitigate extrapyramidal symptoms such as akathisia.",
+          "3. These medications are used with flight surgeon input.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route or frequency.",
+        "warnings_and_interactions": "Metoclopramide/promethazine can cause akathisia. Promethazine is sedating and is associated with higher odds of in-flight urinary retention (see C10).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Headache (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-headache-cliff-2023.pdf?emrc=b4416f",
+          "NASA NTRS – NASA Astronaut Urinary Conditions Associated with Spaceflight: https://ntrs.nasa.gov/citations/20150020958"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C07",
+    "condition_name": "Space adaptation nasal congestion",
+    "treatments": [
+      {
+        "treatment_name": "Observation and reassessment",
+        "indication": "Nasal congestion after microgravity onset (rules C07.R1 to C07.R3)",
+        "diagnostic_markers": "MONITOR: nasal_congestion AND recent_microgravity_transition. Re-evaluate for another cause if core_temperature >= 38.0 C OR acute_respiratory_distress. SUSPECTED (clinical review): nasal_congestion lasting > 72 h (cutoff nasal_congestion).",
+        "sensor_method": "Crew symptom report; core temperature (not skin temperature) if available",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL96 Space Adaptation Nasal Congestion, 2023):",
+          "1. Best case: no treatment; congestion resolves spontaneously.",
+          "2. Reassess breathing and environment; report worsening.",
+          "3. Fever or marked dyspnea: evaluate for infection or another cause.",
+          "4. Congestion beyond 72 h: ear, nose and throat examination (worst case)."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Fever or marked shortness of breath is not explained by adaptation congestion.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Nasal Congestion (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-nasal-congestion-cliff-2023.pdf?emrc=36ac04"
+        ]
+      },
+      {
+        "treatment_name": "Decongestant and nasal corticosteroid",
+        "indication": "Persistent or severe congestion (CliFF worst case)",
+        "diagnostic_markers": "nasal_congestion lasting > 72 h (cutoff nasal_congestion) OR bothersome symptoms after examination",
+        "sensor_method": "Crew symptom report; blood pressure before decongestant",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL96, 2023):",
+          "1. Ear, nose and throat physical examination.",
+          "2. Decongestant (pseudoephedrine, phenylephrine or oxymetazoline) - the mainstay pharmacologic intervention.",
+          "3. Fluticasone (corticosteroid) as a treatment capability.",
+          "4. Limit decongestant treatment to a maximum of 3 days (terrestrial standard of care).",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route or frequency.",
+        "warnings_and_interactions": "Decongestant use limited to 3 days. Check contraindications such as elevated blood pressure before use.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Nasal Congestion (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-nasal-congestion-cliff-2023.pdf?emrc=36ac04"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C08",
+    "condition_name": "Space motion sickness",
+    "treatments": [
+      {
+        "treatment_name": "Assessment, head-movement limitation and hydration monitoring",
+        "indication": "Nausea/vomiting after microgravity entry (rules C08.R1 to C08.R3)",
+        "diagnostic_markers": "SUSPECTED: (nausea OR vomiting) AND recent_microgravity_transition AND NOT neuro_red_flags. URGENT: (persistent_vomiting OR vomiting_episodes > 2) AND (dehydration_signs OR (heart_rate > 100 bpm AND hypotension = blood_pressure_systolic < 90 mmHg (caution_below))). Review if symptoms last > 72 h (cutoff space_motion_sickness).",
+        "sensor_method": "Crew symptom report; vomiting episode count; heart rate and blood pressure",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL97 Space Motion Sickness, 2023):",
+          "1. Set-up, history and physical examination (about 0.53 h).",
+          "2. Limit rapid head movements until the brain adapts to microgravity.",
+          "3. Monitor hydration (dehydration_signs, heart rate, blood pressure); use emesis bags.",
+          "4. Worst case: more thorough exam including neurological, fundoscopic and vision testing; reassess the patient.",
+          "5. Routine medical ground communication to assist treatment."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Do not attribute new focal neurological deficits to space motion sickness.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Space Motion Sickness (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-space-motion-sickness-cliff-2023.pdf?emrc=f09f5b"
+        ]
+      },
+      {
+        "treatment_name": "Oral antiemetic (ondansetron) and anti-vertigo medication",
+        "indication": "Symptoms affecting function or continued vomiting",
+        "diagnostic_markers": "(nausea OR vomiting) AND recent_microgravity_transition AND NOT neuro_red_flags",
+        "sensor_method": "Crew symptom report",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL97, 2023):",
+          "1. Oral antiemetic for symptom control; ondansetron is named with priority 1.",
+          "2. Worst case: same class for longer with additional doses, plus anti-vertigo medication.",
+          "Space guidelines (NASA CliFF ICL95 Insomnia, 2023):",
+          "3. Promethazine has been used on orbit as the agent of choice for space motion sickness, given on flight day 1 before sleep.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route or frequency for ondansetron, promethazine or anti-vertigo medications.",
+        "warnings_and_interactions": "Ondansetron: check QTc and interactions before use (see qtc_interval_prolongation). Promethazine: sedating; astronauts who took promethazine had about 3 times higher odds of in-flight urinary retention (NASA NTRS).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Space Motion Sickness (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-space-motion-sickness-cliff-2023.pdf?emrc=f09f5b",
+          "NASA – Insomnia (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-insomnia-cliff-2023.pdf?emrc=07aabf",
+          "NASA NTRS – NASA Astronaut Urinary Conditions Associated with Spaceflight: https://ntrs.nasa.gov/citations/20150020958"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C09",
+    "condition_name": "Space adaptation urinary incontinence",
+    "treatments": [
+      {
+        "treatment_name": "Event logging, hardware check and urological evaluation",
+        "indication": "Any involuntary urine leakage (rules C09.R1 and C09.R2)",
+        "diagnostic_markers": "MONITOR: urinary_leakage (also evaluate C10 and C18). SUSPECTED (clinical review): urinary_leakage lasting > 24 h (cutoff urinary_incontinence).",
+        "sensor_method": "Crew report; urine collection system; bladder ultrasound (post-void residual) and urine dipstick if available",
+        "instructions": [
+          "Space guidelines (NASA OCHMO-MTB-003 Urinary Health):",
+          "1. Log every leakage episode; check urine collection hardware, ergonomics and use of the Maximum Absorbency Garment (MAG).",
+          "2. Address psychosocial factors that lead crew to avoid urinating.",
+          "3. Check for retention with overflow (C10): post-void residual by ultrasound is an early sign of retention.",
+          "4. Check for urinary tract infection (C18): dysuria, frequency, urgency.",
+          "5. Contact the CMO / flight surgeon.",
+          "Terrestrial guideline (NICE CG97, men with lower urinary tract symptoms):",
+          "6. Use a urinary frequency-volume chart.",
+          "7. Urine dipstick for blood, glucose, protein, leucocytes and nitrites.",
+          "8. Offer external collecting devices (e.g., sheath appliances) before considering indwelling catheterisation.",
+          "Note: The NASA CliFF for this condition is listed on NASA's Integrated Medical Model documentation page, but its PDF could not be opened while compiling this file; steps are taken from the other sources listed."
+        ],
+        "dosage": "No automatic drug therapy.",
+        "warnings_and_interactions": "Do not give anticholinergic drugs before urinary retention has been excluded: anticholinergics can interfere with bladder function and cause retention (NASA OCHMO).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – OCHMO-MTB-003 Urinary Health (NASA-STD-3001 Medical Technical Brief): https://www.nasa.gov/ochmo-mtb-003-urinary-health-2/",
+          "NICE – CG97 Lower urinary tract symptoms in men: management (Recommendations): https://www.nice.org.uk/guidance/cg97/chapter/recommendations",
+          "NASA – Urinary Incontinence (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-urinary-incontinence-cliff-2023.pdf?emrc=653898"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C10",
+    "condition_name": "Space adaptation urinary retention",
+    "treatments": [
+      {
+        "treatment_name": "Bladder assessment and urethral catheterization",
+        "indication": "Unable to void, or painful bladder distension (rules C10.R1 and C10.R2)",
+        "diagnostic_markers": "URGENT: unable_to_void OR (suprapubic_pain AND bladder_distension_sensation). Beyond 24 h (cutoff urinary_retention): plan repeated/indwelling catheterization and review evacuation risk.",
+        "sensor_method": "Crew report; bladder ultrasound (post-void residual) if available; urine dipstick",
+        "instructions": [
+          "Space guidelines (NASA OCHMO-MTB-003 Urinary Health and NASA Risk of Urinary Retention):",
+          "1. Notify the CMO / flight surgeon immediately.",
+          "2. Assess the bladder; measure post-void residual by ultrasound if available.",
+          "3. Review medications: anticholinergics and space motion sickness drugs (e.g., promethazine) are linked to retention.",
+          "4. Urethral catheterization is the main treatment and has been performed on orbit; only a trained crew member with a sterile kit.",
+          "5. Tamsulosin is listed as a pharmacologic option that increases urine flow.",
+          "6. Use strict aseptic technique: catheter use raises infection risk (bacteriuria 3 to 10% per day with an indwelling catheter); monitor for C18.",
+          "7. Ultrasound-guided percutaneous bladder catheterization has been studied for microgravity but has not been used to date.",
+          "Note: The NASA CliFF for this condition is listed on NASA's Integrated Medical Model documentation page, but its PDF could not be opened while compiling this file; steps are taken from the other sources listed."
+        ],
+        "dosage": "Tamsulosin: no dose given in the NASA sources; per mission formulary.",
+        "warnings_and_interactions": "Do not force large fluid intake while the crew member cannot void. Do not attempt catheterization without training and a sterile kit. Retention risk is highest on the first day after landing (OCHMO). An astronaut with in-flight retention is 25 times more likely to have a UTI (NASA NTRS).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – OCHMO-MTB-003 Urinary Health (NASA-STD-3001 Medical Technical Brief): https://www.nasa.gov/ochmo-mtb-003-urinary-health-2/",
+          "NASA – Risk of Urinary Retention (Human System Risk Board): https://www.nasa.gov/directorates/esdmd/hhp/risk-of-urinary-retention",
+          "NASA NTRS – NASA Astronaut Urinary Conditions Associated with Spaceflight: https://ntrs.nasa.gov/citations/20150020958",
+          "NICE – CG97 Lower urinary tract symptoms in men: management (Recommendations): https://www.nice.org.uk/guidance/cg97/chapter/recommendations",
+          "NASA – Urinary Retention (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-urinary-retention-cliff-2023.pdf?emrc=b78513"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C11",
+    "condition_name": "Chemical eye injury",
+    "treatments": [
+      {
+        "treatment_name": "Immediate copious eye irrigation",
+        "indication": "Any reported chemical eye exposure (rule C11.R1)",
+        "diagnostic_markers": "EMERGENCY: chemical_eye_exposure. No other sign is required; start irrigation immediately.",
+        "sensor_method": "Event report (no biometric sensor detects it); ocular pH test strips after irrigation",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL19 Burn Chemical Eye, 2023):",
+          "1. Immediate eye irrigation is the most important initial management; do not delay it.",
+          "Terrestrial guideline (American Academy of Ophthalmology):",
+          "2. Begin copious irrigation immediately with clean water or the immediately available suitable irrigating solution.",
+          "3. Irrigate until ocular surface pH is normal (borate buffer preferred).",
+          "4. Identify the offending agent; remove particulate matter if pH fails to normalize.",
+          "5. Examine conjunctiva and cornea with fluorescein and cobalt blue light.",
+          "Space guidelines (NASA CliFF ICL19, 2023), after irrigation:",
+          "6. Mild pain medication and eye lubrication; regular follow-up, potentially topical therapy (anti-inflammatory therapy, topical antibiotics, bandage contact lens) per physician.",
+          "7. Worst case: stronger pain medication, eye shield, close monitoring and ground ophthalmology consult."
+        ],
+        "dosage": "NASA CliFF names no drug and gives no dose; topical drugs only after irrigation and by physician order.",
+        "warnings_and_interactions": "Never delay irrigation to collect data. Do not rub the eye. Delayed or no irrigation leads to slower healing (CliFF).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Burn Chemical Eye CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/burn-chemical-eye-cliff-2023.pdf?emrc=e42906",
+          "American Academy of Ophthalmology (EyeNet) – Treating Acute Chemical Injuries of the Cornea: https://www.aao.org/eyenet/article/treating-acute-chemical-injuries-of-cornea",
+          "American Academy of Ophthalmology (EyeWiki) – Chemical (Alkali and Acid) Injury of the Conjunctiva and Cornea: https://eyewiki.aao.org/Chemical_(Alkali_and_Acid)_Injury_of_the_Conjunctiva_and_Cornea",
+          "American Academy of Ophthalmology – Chemical Burns (AAO 2015): https://www.aao.org/annual-meeting-video/chemical-burns"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C12",
+    "condition_name": "Corneal abrasion",
+    "treatments": [
+      {
+        "treatment_name": "Irrigation, fluorescein exam and lubrication",
+        "indication": "Eye pain or foreign-body sensation after mechanical event (rules C12.R1 and C12.R2)",
+        "diagnostic_markers": "SUSPECTED: (eye_pain OR foreign_body_sensation) AND (tearing OR photophobia) AND mechanical_eye_event. URGENT: (eye_pain OR foreign_body_sensation) AND vision_decreased AND mechanical_eye_event.",
+        "sensor_method": "Crew symptom report; visual acuity check; fluorescein with cobalt blue lamp; high-resolution camera as magnifier",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL49 Eye Irritation / Corneal Abrasion / Ulceration, 2023):",
+          "1. Protect the eye from further rubbing.",
+          "2. Irrigate the eye.",
+          "3. Fluorescein examination with cobalt blue lamp (slit lamp not available).",
+          "4. Remove a superficial foreign body if present.",
+          "5. Topical lubricant (liposome-thickened agents are an option); treatment may continue up to 24 h, then reassess.",
+          "6. Worst case: topical ophthalmic antibiotic, antiviral or antifungal depending on cause; cycloplegic; systemic NSAID or acetaminophen; ocular steroid or systemic anti-infective only as adjuvant if no improvement; audio/video consult with ground ophthalmology; expected treatment 3 to 14 days.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route or frequency.",
+        "warnings_and_interactions": "Topical anesthetic (tetracaine) only for the initial examination, not for ongoing pain control (NASA Eye Foreign Body CliFF). Ocular steroid only as adjuvant with ophthalmology input.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Eye Irritation / Corneal Abrasion / Ulceration CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/eye-irritation-corneal-abrasion-ulceration-cliff-2023.pdf?emrc=21ed9a",
+          "NASA – Eye Foreign Body CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/eye-foreign-body-cliff-2023.pdf?emrc=7687ee"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C13",
+    "condition_name": "Eye foreign body",
+    "treatments": [
+      {
+        "treatment_name": "Foreign body removal (superficial)",
+        "indication": "Particle in the eye with persistent foreign-body sensation (rule C13.R1)",
+        "diagnostic_markers": "SUSPECTED: eye_particle_history AND foreign_body_sensation",
+        "sensor_method": "Crew report; fluorescein stain with UV light source; visual acuity",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL48 Eye Foreign Body, 2023):",
+          "1. Stop the exposure.",
+          "2. Remove the foreign body as soon as possible with ocular flush, ophthalmic burr or Alger brush (can take about 30 minutes).",
+          "3. Fluorescein stain with UV light to check for residual corneal abrasion (see C12).",
+          "4. Prophylactic topical antibiotic if an abrasion remains; ophthalmic antibiotic and pain management.",
+          "5. Partial-thickness scleral laceration under 1 cm: antibiotic ointment and ophthalmology follow-up within 72 h via ground.",
+          "6. Tetracaine only for the initial evaluation.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose for topical antibiotics or analgesics in the best case.",
+        "warnings_and_interactions": "Do not press on or rub the eye. Repeated topical anesthetic use is not allowed.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Eye Foreign Body CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/eye-foreign-body-cliff-2023.pdf?emrc=7687ee"
+        ]
+      },
+      {
+        "treatment_name": "Suspected penetrating injury: globe protection and antibiotic prophylaxis",
+        "indication": "Suspected penetrating injury or reduced vision (rule C13.R2)",
+        "diagnostic_markers": "URGENT: eye_particle_history AND (penetrating_eye_injury_suspected OR vision_decreased)",
+        "sensor_method": "Crew report; visual acuity; tonometry, fundus camera or OCT if available",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL48, 2023):",
+          "1. Protect the globe with a rigid shield taped to the periorbital bone, with no pressure on the globe.",
+          "2. Give antiemetics to prevent vomiting, which could further injure a ruptured globe.",
+          "3. Broad-spectrum antibiotic prophylaxis (regimen in dosage field).",
+          "4. Consider updating tetanus immunization (tetanus toxoid).",
+          "5. Manage raised intraocular pressure per traumatic hyphema guidance.",
+          "6. Foreign body removal ideally within 24 h (terrestrial); surgical repair is not in flight scope: do not attempt to pull out an embedded object.",
+          "7. Ground ophthalmology evaluation, follow-up and evacuation planning."
+        ],
+        "dosage": "NASA ophthalmology consultant regimen in the CliFF (may be modified by ophthalmologist and flight surgeon): topical vancomycin 50 mg/mL every hour and topical ceftazidime 50 mg/mL every hour for 7 to 10 days; oral levofloxacin 500 mg once a day for 7 to 10 days; high-risk cases IV vancomycin 1 g every 12 h and IV ceftazidime 1 g every 12 h; oral voriconazole or fluconazole 200 mg every 12 h only if fungal endophthalmitis is suspected. Topical cycloplegics and steroids per ophthalmology consultant.",
+        "warnings_and_interactions": "Check allergies, QTc and drug interactions before systemic levofloxacin or azoles (see qtc_interval_prolongation). Tetanus booster need depends on vaccination history (CDC).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Eye Foreign Body CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/eye-foreign-body-cliff-2023.pdf?emrc=7687ee",
+          "CDC – Clinical Guidance for Wound Management to Prevent Tetanus: https://www.cdc.gov/tetanus/hcp/clinical-guidance/index.html"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C14",
+    "condition_name": "Orthostatic intolerance after gravity transition",
+    "treatments": [
+      {
+        "treatment_name": "Supine positioning, monitoring and IV fluids if needed",
+        "indication": "Orthostatic symptoms or syncope after gravity re-exposure (rules C14.R1 and C14.R2)",
+        "diagnostic_markers": "SUSPECTED: orthostatic_symptoms AND relieved_by_lying_down AND recent_gravity_reexposure. Supporting: orthostatic_sbp_drop >= 20 mmHg OR orthostatic_dbp_drop >= 10 mmHg within 3 min of standing, heart_rate > 100 bpm. EMERGENCY: syncope_or_collapse AND recent_gravity_reexposure.",
+        "sensor_method": "Blood pressure cuff (supine and standing), heart rate; crew report",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL62 Gravity Well Orthostatic Intolerance, 2023):",
+          "1. Best case: no treatment required; symptoms resolve spontaneously. Keep the crew member lying down and recheck blood pressure and heart rate.",
+          "2. History, vital signs and physical examination (about 0.73 to 0.78 h).",
+          "3. Worst case (needs IV fluids or syncope): establish an IV line and give IV fluids.",
+          "4. Contact the CMO / flight surgeon (physician-level care).",
+          "Preventive countermeasures (CliFF): oral fluid loading before landing; lower-body compression garments during entry and landing; active cooling with a liquid cooling garment under the re-entry suit.",
+          "Terrestrial guideline (AAFP 2022):",
+          "5. Use nonpharmacologic management first, such as avoiding or modifying exacerbating activities; mobilize gradually under supervision."
+        ],
+        "dosage": "NASA CliFF gives no IV fluid type, volume or rate and lists no medication.",
+        "warnings_and_interactions": "No upright work or EVA while dizzy or after syncope; do not perform an orthostatic test on an unstable patient. Terrestrial guidance (AAFP) lists midodrine or droxidopa as first-line drugs, but NASA does not use midodrine for orthostatic intolerance (QTc prolongation; akathisia with promethazine) - see qtc_interval_prolongation. The 20/10 mmHg criteria are terrestrial and not validated at Mars gravity (0.38 g).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Gravity Well Entry (Orthostatic Intolerance) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/gravity-well-orthostatic-intolerance-cliff-2023.pdf?emrc=124cdd",
+          "American Academy of Family Physicians – Orthostatic Hypotension: A Practical Approach (2022): https://www.aafp.org/pubs/afp/issues/2022/0100/p39.html"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C15",
+    "condition_name": "General constipation",
+    "treatments": [
+      {
+        "treatment_name": "Hydration, diet and watchful waiting",
+        "indication": "Two or more bowel-habit symptoms (rule C15.R1)",
+        "diagnostic_markers": "MONITOR: at least 2 of reduced_bowel_movements, hard_stools, straining, incomplete_evacuation.",
+        "sensor_method": "Crew symptom report; bowel diary",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL92 Space Adaptation Constipation, 2023):",
+          "1. Keep a bowel-movement diary.",
+          "2. Increase hydration.",
+          "3. Dietary changes (e.g., more fiber).",
+          "4. Watchful waiting, with physical activity as allowed.",
+          "5. Re-evaluate if there is no improvement.",
+          "Note: NASA has no separate CliFF for general constipation; steps are adapted from the Space Adaptation Constipation CliFF. Per precedence_rules, C04 suppresses C15 (except URGENT/EMERGENCY) to avoid double counting."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Do not give laxatives or fiber without assessment when there is severe abdominal pain, vomiting, marked distension or inability to pass gas (possible obstruction).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Constipation (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-constipation-cliff-2023.pdf?emrc=503504"
+        ]
+      },
+      {
+        "treatment_name": "Bulk agent, stimulant laxative, enema or disimpaction",
+        "indication": "No response to basic measures",
+        "diagnostic_markers": "Bowel-habit symptoms persisting AND NOT (severe_abdominal_pain OR vomiting)",
+        "sensor_method": "Crew symptom report; bowel diary",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL92, 2023) - worst case, in addition to the basic measures:",
+          "1. Psyllium (bulk agent; psyllium wafers are available on orbit).",
+          "2. Bisacodyl (oral or rectal bowel stimulant).",
+          "3. Soap-water enema.",
+          "4. Fecal disimpaction by a trained crew member if needed.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route, frequency or enema volume. Per mission SOP.",
+        "warnings_and_interactions": "Do not give laxatives or fiber without assessment when there is severe abdominal pain, vomiting, marked distension or inability to pass gas (possible obstruction).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Constipation (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-constipation-cliff-2023.pdf?emrc=503504"
+        ]
+      },
+      {
+        "treatment_name": "Escalation: exclude ileus or obstruction",
+        "indication": "Constipation with severe abdominal pain or vomiting (rule C15.R2)",
+        "diagnostic_markers": "URGENT: any of reduced_bowel_movements, hard_stools, straining, incomplete_evacuation AND (severe_abdominal_pain OR vomiting)",
+        "sensor_method": "Crew symptom report; heart rate and blood pressure",
+        "instructions": [
+          "1. Stop laxatives and fiber.",
+          "2. Urgent CMO examination and ground consult to exclude ileus or bowel obstruction.",
+          "3. Monitor vital signs and hydration."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Do not give laxatives or fiber without assessment when there is severe abdominal pain, vomiting, marked distension or inability to pass gas (possible obstruction).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Constipation (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-constipation-cliff-2023.pdf?emrc=503504"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C16",
+    "condition_name": "Acute diarrhea",
+    "treatments": [
+      {
+        "treatment_name": "Oral rehydration, symptomatic treatment and hygiene",
+        "indication": "Three or more watery stools in 24 h (rule C16.R1)",
+        "diagnostic_markers": "SUSPECTED: watery_stools AND stool_count_24h >= 3. Supporting: core_temperature >= 38.0 C, heart_rate > 100 bpm.",
+        "sensor_method": "Crew report (stool count); heart rate, blood pressure; core temperature if available",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL59 Gastroenteritis / Acute Diarrhea, 2023):",
+          "1. Oral rehydration.",
+          "2. Dietary modification.",
+          "3. Symptomatic management: bulking agents and simethicone for diarrhea and cramping; antiemetic for nausea; antipyretic / mild pain control.",
+          "4. Loperamide or loperamide plus simethicone.",
+          "5. Prevention of spread: hand washing with soap, proper disposal of human waste, safe handling of food and water.",
+          "6. Monitor stool count, blood pressure, heart rate and urine output.",
+          "Terrestrial guideline (IDSA 2017):",
+          "7. Test stool if there is fever, bloody or mucoid stool, severe abdominal cramping/tenderness, or signs of sepsis.",
+          "8. Antibiotics are not recommended for immunocompetent adults with watery or bloody diarrhea unless sepsis is present; antibiotics are also excluded from the NASA CliFF treatment paradigm.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route or frequency for any medication or fluid.",
+        "warnings_and_interactions": "No routine antibiotics. Avoid antimotility agents (loperamide) in suspected inflammatory or bloody diarrhea or diarrhea with fever.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Gastroenteritis / Acute Diarrhea CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/gastroenteritis-acute-diarrhea-cliff-2023.pdf?emrc=e771e5",
+          "IDSA – 2017 Clinical Practice Guidelines for the Diagnosis and Management of Infectious Diarrhea (PubMed): https://pubmed.ncbi.nlm.nih.gov/29194529/",
+          "American Academy of Family Physicians – Infectious Diarrhea: IDSA Updates Guidelines for Diagnosis and Management (2018): https://www.aafp.org/pubs/afp/issues/2018/0515/p676.html"
+        ]
+      },
+      {
+        "treatment_name": "IV hydration and electrolyte replacement",
+        "indication": "Diarrhea with blood, syncope or hypotension (rule C16.R2)",
+        "diagnostic_markers": "URGENT: watery_stools AND stool_count_24h >= 3 AND (blood_in_stool OR syncope_or_collapse OR hypotension = blood_pressure_systolic < 90 mmHg (caution_below)).",
+        "sensor_method": "Heart rate, blood pressure; crew report",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL59, 2023) - worst case, in addition to the basic measures:",
+          "1. Vascular access.",
+          "2. IV hydration.",
+          "3. Electrolyte replacement.",
+          "4. Ground consultation and onboard clinical decision support; return to definitive care if not improving.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no fluid volume or rate.",
+        "warnings_and_interactions": "Bloody diarrhea: no antimotility agents; stool testing indicated (IDSA).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Gastroenteritis / Acute Diarrhea CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/gastroenteritis-acute-diarrhea-cliff-2023.pdf?emrc=e771e5",
+          "IDSA – 2017 Clinical Practice Guidelines for the Diagnosis and Management of Infectious Diarrhea (PubMed): https://pubmed.ncbi.nlm.nih.gov/29194529/"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C17",
+    "condition_name": "Dyspepsia / indigestion",
+    "treatments": [
+      {
+        "treatment_name": "Diet and sleep changes, antacid, H2 blocker or PPI",
+        "indication": "Meal-related epigastric discomfort without serious signs (rule C17.R1)",
+        "diagnostic_markers": "MONITOR: (epigastric_burning OR postprandial_fullness OR belching_reflux) AND meal_related AND NOT (chest_pain OR gi_bleeding_signs OR persistent_vomiting).",
+        "sensor_method": "Crew symptom report",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL58 Gastritis / Reflux / Esophagitis, 2023):",
+          "1. Observation: most mild cases resolve without treatment.",
+          "2. Review food and medications.",
+          "3. Bland, scheduled diet and sleep modifications before medication.",
+          "4. As-needed antacid; H2 receptor antagonist preferred over proton pump inhibitor (PPI) for mild symptoms; aluminum sucrose sulfate (sucralfate) for further relief.",
+          "5. Worst case: PPI (more effective) for 2 to 8 weeks; bloodwork, ultrasound, ECG and troponin to exclude other causes.",
+          "Space guidelines (NASA Indigestion CliFF):",
+          "6. Follow the ISS medical checklist for stomach upset; over-the-counter simethicone and antacids usually relieve mild symptoms.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFFs give no dosing frequency. Kit strengths listed in the Indigestion CliFF: bismuth subsalicylate 262 mg chewable tablets, omeprazole 20 mg, promethazine 25 mg tablets.",
+        "warnings_and_interactions": "H. pylori testing and endoscopy are not available on board.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Gastritis / Reflux / Esophagitis CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/gastritis-reflux-esophagitis-cliff-2023.pdf?emrc=f055de",
+          "NASA – Indigestion CliFF (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/indigestion-cliff.pdf?emrc=10737d"
+        ]
+      },
+      {
+        "treatment_name": "Escalation: exclude cardiac cause or GI bleeding",
+        "indication": "Dyspepsia with chest pain (rule C17.R2) or bleeding signs / persistent vomiting (rule C17.R3)",
+        "diagnostic_markers": "URGENT: dyspepsia symptoms AND chest_pain (watch heart_rate, blood_pressure_systolic, spo2). SUSPECTED: dyspepsia symptoms AND (gi_bleeding_signs OR persistent_vomiting).",
+        "sensor_method": "ECG, heart rate, blood pressure, pulse oximeter; crew report",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL58 and Indigestion CliFF):",
+          "1. Chest pain: ECG and troponin to exclude a cardiac cause before treating as dyspepsia.",
+          "2. Acute upper GI bleeding needs emergency-level evaluation; real-time ground medical direction is likely needed.",
+          "3. Nasogastric tube and suction for bloody vomit (separate procedure).",
+          "4. Evacuation if the condition does not improve or worsens."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Chest pain with dyspnea, sweating or hemodynamic change must not be labeled dyspepsia. Do not ignore vomiting blood or black stool.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Gastritis / Reflux / Esophagitis CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/gastritis-reflux-esophagitis-cliff-2023.pdf?emrc=f055de",
+          "NASA – Indigestion CliFF (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/indigestion-cliff.pdf?emrc=10737d"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C18",
+    "condition_name": "Urinary tract infection (UTI)",
+    "treatments": [
+      {
+        "treatment_name": "Assessment, urine testing and physician-directed antibiotics",
+        "indication": "Dysuria with frequency or urgency (rules C18.R1 and C18.R2)",
+        "diagnostic_markers": "SUSPECTED: dysuria AND (urinary_frequency OR urinary_urgency). URGENT (possible pyelonephritis or urosepsis): same AND (core_temperature >= 38.0 C OR chills OR flank_pain OR hypotension = blood_pressure_systolic < 90 mmHg (caution_below)).",
+        "sensor_method": "Crew symptom report; urine dipstick / culture if available; core temperature; heart rate and blood pressure",
+        "instructions": [
+          "Space guidelines (NASA OCHMO-MTB-003 Urinary Health):",
+          "1. Record symptoms and vital signs.",
+          "2. Antibiotics are the treatment of choice, with analgesics for discomfort; agent and dose chosen by the flight surgeon (allergy history, type of UTI, culture if available).",
+          "3. Hydration if safe; hydration and aseptic catheter technique are key preventive measures.",
+          "4. Check for urinary retention (C10): retention and UTI are strongly associated in flight.",
+          "Terrestrial guideline (CDC):",
+          "5. Diagnosis by symptoms, physical examination and urine tests if needed.",
+          "6. Fever, chills, flank pain, nausea or vomiting suggest pyelonephritis (complicated UTI): escalate as URGENT.",
+          "7. Hypotension or confusion: manage as possible urosepsis (see C20 sepsis treatment).",
+          "8. Reassess after starting treatment; worsening or no improvement requires re-evaluation.",
+          "Note: The NASA CliFF for this condition is listed on NASA's Integrated Medical Model documentation page, but its PDF could not be opened while compiling this file; steps are taken from the other sources listed."
+        ],
+        "dosage": "No antibiotic or dose specified in the NASA sources; per mission physician protocol.",
+        "warnings_and_interactions": "Do not start antibiotics automatically from fever alone. Spaceflight concerns: limited antibiotic supply, shelf life and bacterial resistance (OCHMO). Check allergies and QTc-prolonging antibiotics (e.g., ciprofloxacin, azithromycin - see qtc_interval_prolongation).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – OCHMO-MTB-003 Urinary Health (NASA-STD-3001 Medical Technical Brief): https://www.nasa.gov/ochmo-mtb-003-urinary-health-2/",
+          "CDC – Clinical Overview of Urinary Tract Infections: https://www.cdc.gov/uti/hcp/clinical-overview/index.html",
+          "CDC – Urinary Tract Infection Basics: https://www.cdc.gov/uti/about/index.html",
+          "NASA NTRS – NASA Astronaut Urinary Conditions Associated with Spaceflight: https://ntrs.nasa.gov/citations/20150020958",
+          "NASA – Urinary Tract Infection CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/urinary-tract-infection-cliff-2023.pdf?emrc=22eb23"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C19",
+    "condition_name": "Vaginal yeast infection",
+    "treatments": [
+      {
+        "treatment_name": "Topical azole or single-dose oral fluconazole",
+        "indication": "Female crew: itching with typical discharge or redness (rule C19.R1)",
+        "diagnostic_markers": "SUSPECTED (female crew only): vulvovaginal_pruritus AND (thick_vaginal_discharge OR vulvar_erythema); confirm before specific therapy if in doubt. With core_temperature >= 38.0 C (rule C19.R2): look for another cause.",
+        "sensor_method": "Crew symptom report; examination / microscopy if available",
+        "instructions": [
+          "Terrestrial guideline (CDC STI Treatment Guidelines 2021):",
+          "1. Confirm clinically (microscopy if available) and exclude other vaginitis or STI.",
+          "2. Uncomplicated VVC: short-course topical azole or single oral dose of fluconazole.",
+          "3. Severe VVC: 7 to 14 days of topical azole, or fluconazole in two sequential oral doses 72 h apart.",
+          "4. Pregnancy: only topical azoles for 7 days; oral fluconazole is not recommended.",
+          "Terrestrial guideline (MedlinePlus, U.S. National Library of Medicine):",
+          "5. Contact the provider if it is a first episode, the diagnosis is uncertain, or symptoms persist or worsen after treatment.",
+          "Note: The NASA CliFF for this condition is listed on NASA's Integrated Medical Model documentation page, but its PDF could not be opened while compiling this file; steps are taken from the other sources listed."
+        ],
+        "dosage": "CDC 2021 (terrestrial, not an automatic spaceflight prescription): fluconazole 150 mg orally in a single dose; OR clotrimazole 1% cream 5 g intravaginally daily for 7 to 14 days; OR terconazole 80 mg vaginal suppository daily for 3 days. Severe VVC: fluconazole 150 mg orally, 2 doses 72 h apart.",
+        "warnings_and_interactions": "Avoid oral fluconazole in pregnancy. Oil-based creams and suppositories may weaken latex condoms and diaphragms (CDC). Before systemic azoles: check liver disease, drug interactions and QTc.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "CDC – STI Treatment Guidelines 2021, Vulvovaginal Candidiasis: https://www.cdc.gov/std/treatment-guidelines/candidiasis.htm",
+          "MedlinePlus (U.S. National Library of Medicine) – Vaginal yeast infection: https://medlineplus.gov/ency/article/001511.htm",
+          "NASA – Vaginal Yeast Infection CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/vaginal-yeast-infection-cliff-2023.pdf?emrc=8d5e36"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C20",
+    "condition_name": "Bacterial skin infection / cellulitis",
+    "treatments": [
+      {
+        "treatment_name": "Wound care, monitoring and antibiotics",
+        "indication": "Spreading redness with local pain, warmth or swelling (rule C20.R1)",
+        "diagnostic_markers": "SUSPECTED: skin_erythema AND (local_pain OR local_warmth OR local_swelling) AND spreading.",
+        "sensor_method": "Visual inspection / photo of erythema border; core temperature; heart rate and blood pressure; ultrasound for abscess",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL87 Skin Infection, Bacterial, 2023):",
+          "1. Mark the border of redness and photograph it (with consent) to follow spread.",
+          "2. History and skin examination; worst case: ultrasound to look for cellulitis or underlying abscess.",
+          "3. Mild infection: watchful waiting, OR 2 to 3 days of topical antibiotic, OR a short oral antibiotic course (5 days, extended if not resolved).",
+          "4. Pain control: acetaminophen and NSAIDs.",
+          "5. Treatment failure or moderate-severe infection: second oral course, IM or IV antibiotics chosen by suspected bacteria, then prolonged oral course (5 to 14 days total).",
+          "6. Video communication with ground for management and ultrasound interpretation; frequent reassessment.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF names no antibiotic and gives no dose, route or frequency.",
+        "warnings_and_interactions": "Do not treat suspected infection with steroids alone.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Skin Infection (Bacterial) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/skin-infection-bacterial-cliff-2023.pdf?emrc=5d1f38"
+        ]
+      },
+      {
+        "treatment_name": "Sepsis management",
+        "indication": "Skin infection with fever and hypotension or confusion (rule C20.R2)",
+        "diagnostic_markers": "EMERGENCY: skin_erythema AND core_temperature >= 38.0 C AND (hypotension = blood_pressure_systolic < 90 mmHg (caution_below) OR acute_confusion).",
+        "sensor_method": "Heart rate, blood pressure (mean arterial pressure), core temperature, pulse oximeter; lactate if available; portable ultrasound",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL84 Sepsis, 2023):",
+          "1. History, examination, vital signs and laboratory tests; portable ultrasound to find the infection source.",
+          "2. IV crystalloid bolus of 30 mL/kg, then maintenance fluids.",
+          "3. Broad-spectrum IV antibiotics: 72 h then oral to complete 14 days (septic shock: 7 days IV, then oral).",
+          "4. Guide resuscitation with lactate, vital signs, mean arterial pressure and clinical exam.",
+          "5. Septic shock: norepinephrine through peripheral IV for up to 72 h, rotating sites every 24 h; cardiac ultrasound to assess volume status.",
+          "6. Immediate ground consult and evacuation planning."
+        ],
+        "dosage": "IV crystalloid 30 mL/kg initial bolus (NASA Sepsis CliFF). Antibiotic agents/doses and norepinephrine rate are not specified.",
+        "warnings_and_interactions": "Do not delay treatment of possible sepsis.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Sepsis CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/sepsis-cliff-2023.pdf?emrc=97415d",
+          "NASA – Skin Infection (Bacterial) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/skin-infection-bacterial-cliff-2023.pdf?emrc=5d1f38"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C21",
+    "condition_name": "Superficial skin abrasion",
+    "treatments": [
+      {
+        "treatment_name": "Clean, debride, cover and check tetanus status",
+        "indication": "Visible superficial abrasion after injury (rule C21.R1)",
+        "diagnostic_markers": "SUSPECTED: superficial_abrasion AND recent_injury",
+        "sensor_method": "Visual inspection",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL86 Skin Abrasion, 2023):",
+          "1. Control minor bleeding.",
+          "2. Clean the wound with water, soap or a mild antiseptic wash.",
+          "3. Remove foreign bodies and debris.",
+          "4. Apply antibiotic ointment if indicated.",
+          "5. Cover with a dressing; worst case: several days of local wound care with occlusive dressings (hydrogel, film or hydrocolloid).",
+          "6. Pain: NSAID or acetaminophen.",
+          "Terrestrial guideline (CDC tetanus wound management):",
+          "7. Clean and minor wound: tetanus booster if the primary series is incomplete or unknown, or the last dose was 10 or more years ago.",
+          "8. Observe for signs of infection and treat promptly (see C20)."
+        ],
+        "dosage": "NASA CliFF gives no dose for ointment or analgesics.",
+        "warnings_and_interactions": "Do not miss an embedded foreign body. Antibiotics (topical or systemic) are not used to prevent tetanus (CDC).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Skin Abrasion CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/skin-abrasion-cliff-2023.pdf?emrc=edf854",
+          "CDC – Clinical Guidance for Wound Management to Prevent Tetanus: https://www.cdc.gov/tetanus/hcp/clinical-guidance/index.html"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C22",
+    "condition_name": "Laceration / skin cut",
+    "treatments": [
+      {
+        "treatment_name": "Hemostasis, irrigation and wound closure",
+        "indication": "Visible open wound (rule C22.R1)",
+        "diagnostic_markers": "SUSPECTED: open_laceration (one finding is enough to act)",
+        "sensor_method": "Visual inspection; heart rate and blood pressure if bleeding is significant",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL89 Skin Laceration, 2023):",
+          "1. Control bleeding with direct pressure.",
+          "2. Irrigate with pressurized water, using suction and towels to absorb the runoff.",
+          "3. Local anesthetic for pain.",
+          "4. Close with skin adhesive, adhesive bandages, staples or sutures; complex or tension wounds: sutures for deep and superficial layers (absorbable deep, non-absorbable superficial preferred).",
+          "5. Change the dressing twice daily for 7 days.",
+          "Terrestrial guideline (CDC tetanus wound management):",
+          "6. Dirty or major wound: tetanus booster if the last dose was 5 or more years ago; TIG if vaccination history is unknown or incomplete.",
+          "7. Observe for infection (see C20)."
+        ],
+        "dosage": "Local anesthetic agent and dose not specified by NASA. Tetanus immune globulin (TIG) 250 IU IM if indicated (CDC).",
+        "warnings_and_interactions": "Do not close a deep or contaminated wound without examination. Do not remove an impaled object that may be controlling bleeding.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Skin Laceration CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/skin-laceration-cliff-2023.pdf?emrc=ff9785",
+          "CDC – Clinical Guidance for Wound Management to Prevent Tetanus: https://www.cdc.gov/tetanus/hcp/clinical-guidance/index.html"
+        ]
+      },
+      {
+        "treatment_name": "Uncontrolled bleeding",
+        "indication": "Bleeding that does not stop with pressure, or syncope with a wound (rule C22.R2)",
+        "diagnostic_markers": "EMERGENCY: uncontrolled_bleeding OR (open_laceration AND syncope_or_collapse)",
+        "sensor_method": "Heart rate, blood pressure; crew observation",
+        "instructions": [
+          "1. Firm direct pressure with pressure gauze; call the CMO and ground immediately.",
+          "2. Monitor heart_rate and blood_pressure_systolic for shock and escalate per the mission emergency SOP.",
+          "3. Once bleeding is controlled, continue with irrigation and closure as above."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Do not remove an impaled object.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Skin Laceration CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/skin-laceration-cliff-2023.pdf?emrc=ff9785"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C23",
+    "condition_name": "Skin rash",
+    "treatments": [
+      {
+        "treatment_name": "Remove trigger, emollient and topical corticosteroid",
+        "indication": "Visible rash without anaphylaxis signs (rule C23.R1)",
+        "diagnostic_markers": "MONITOR: skin_rash AND NOT anaphylaxis_red_flags. anaphylaxis_red_flags = acute_respiratory_distress OR airway_swelling OR syncope_or_collapse OR blood_pressure_systolic < 80 mmHg (critical_below). If red flags are present, handle as C02 (rule C23.R2).",
+        "sensor_method": "Visual inspection / photographs; heart rate, blood pressure and spo2 to screen for systemic reaction",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL78 Rash, Spaceflight Associated, 2023):",
+          "1. Ask about exposures and new medications; remove the irritant.",
+          "2. Over-the-counter moisturizer or emollient as needed, stopped when lesions resolve.",
+          "3. Low-potency topical corticosteroid, typically for 1 to 2 weeks (a single application may be enough in the mildest cases).",
+          "4. Severe dermatitis: medium-potency topical steroid (groups III to V) for at most 12 weeks; oral corticosteroids or oral antihistamines.",
+          "5. Send images to ground for specialist consultation.",
+          "6. Escalate if extensive, painful, with fever or mucosal lesions.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no strengths or dosing amounts, only durations.",
+        "warnings_and_interactions": "Do not give systemic corticosteroids blindly. Rash with dyspnea or airway swelling = C02 Anaphylaxis.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Skin Rash (Spaceflight Associated) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/rash-spaceflight-associated-cliff-2023.pdf?emrc=7850e6"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C24",
+    "condition_name": "Neurovestibular disturbance on gravity re-exposure",
+    "treatments": [
+      {
+        "treatment_name": "Activity restriction, symptom control and rehabilitation",
+        "indication": "Vertigo or imbalance after gravity re-exposure (rule C24.R1)",
+        "diagnostic_markers": "SUSPECTED: recent_gravity_reexposure AND (vertigo OR imbalance). EMERGENCY: recent_gravity_reexposure AND new_focal_neuro_deficit (rule C24.R2, exclude stroke).",
+        "sensor_method": "Crew report; basic neurological exam; blood pressure and heart rate to check for orthostatic cause (C14)",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL61 Gravity Well Entry Sensorimotor / Neurovestibular Disturbance, 2023):",
+          "1. Assist walking and restrict activity until readaptation.",
+          "2. Symptom control with antiemetics and anti-vertigo medications.",
+          "3. Functional task testing in a protected environment before EVA or construction tasks.",
+          "4. Virtual reality simulation to assess ability before complex tasks and for reorientation therapy (e.g., driving or flight).",
+          "5. Physical therapy, occupational therapy and rehabilitation with ground-based experts.",
+          "6. Ground communication to support treatment.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF names drug classes only (antiemetics, anti-vertigo medications); no dose.",
+        "warnings_and_interactions": "Sudden weakness, double vision, slurred speech or severe new headache is not ordinary vertigo: treat as possible stroke (EMERGENCY).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Gravity Well Entry (Sensorimotor / Neurovestibular Disturbance) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/gravity-well-entry-sensorimotor-neurovestibular-disturbance-cliff-2023.pdf?emrc=ef32a8"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C25",
+    "condition_name": "General headache",
+    "treatments": [
+      {
+        "treatment_name": "Red-flag screening and mild analgesic",
+        "indication": "Any headache (rule C25.R1); red flags = EMERGENCY (rule C25.R2)",
+        "diagnostic_markers": "MONITOR: headache. EMERGENCY: headache AND neuro_red_flags. neuro_red_flags = thunderclap_headache OR new_focal_neuro_deficit OR (neck_stiffness AND core_temperature >= 38.0 C).",
+        "sensor_method": "Crew symptom report; blood pressure, spo2, cabin ppCO2; core temperature if available",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL63 Headache, 2023):",
+          "1. Screen for red flags first.",
+          "2. History and physical examination; record onset and intensity; repeat blood pressure; check cabin CO2 (C05) and spo2.",
+          "3. Best case: mild pain medication and non-pharmacologic measures; rest and fluids if not urgent.",
+          "4. Refractory headache: escalate to metoclopramide, promethazine, ketorolac or sumatriptan (list not exhaustive).",
+          "5. About 1 to 2% may need hospital-level care (e.g., status migrainosus): ground consult.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF names no first-line drug and gives no dose, route or frequency.",
+        "warnings_and_interactions": "Do not mask serious symptoms with analgesics. Do not automatically attribute headache to CO2 or microgravity.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Headache CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/headache-cliff-2023.pdf?emrc=206bd3",
+          "NASA – Headache (CO2-Induced) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/headache-co2-induced-cliff-2023.pdf?emrc=79ed88"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C26",
+    "condition_name": "Acute stress",
+    "treatments": [
+      {
+        "treatment_name": "Private check-in and workload reduction",
+        "indication": "Self-reported acute distress (rule C26.R1)",
+        "diagnostic_markers": "MONITOR: acute_distress_report (private check-in with consent; no automatic diagnosis).",
+        "sensor_method": "Crew self-report; vital signs only to screen for medical causes",
+        "instructions": [
+          "Space guidelines (NASA behavioral health CliFFs and HRP behavioral risk):",
+          "1. Offer a private conversation (onboard private psychological conference) with consent.",
+          "2. Temporarily reduce workload or remove from hazardous tasks; crew rest or day off as needed.",
+          "3. Supportive behavioral health intervention; access to ground behavioral health and psychiatric consult.",
+          "4. Screen for medical causes (spo2, cabin CO2, core temperature).",
+          "5. If suicidal ideation or dangerous behavior appears, follow the behavioral emergency treatment below."
+        ],
+        "dosage": "No automatic medication or sedative.",
+        "warnings_and_interactions": "Do not diagnose stress from tachycardia. No autonomous benzodiazepine use. Do not share private data without a clear safety reason.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Depression CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-depression-cliff-2023.pdf?emrc=9d0acd",
+          "NASA – Adjustment Disorder CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-adjustment-disorder-cliff-2023.pdf?emrc=dc6c2f",
+          "NASA – Risk of Adverse Cognitive or Behavioral Conditions and Psychiatric Disorders (Human System Risk Board): https://www.nasa.gov/directorates/esdmd/hhp/risk-of-adverse-cognitive-or-behavioral-conditions-and-psychiatric-disorders"
+        ]
+      },
+      {
+        "treatment_name": "Behavioral emergency: safety, observation and physician-ordered sedation",
+        "indication": "Suicidal ideation, dangerous behavior or threat of violence",
+        "diagnostic_markers": "EMERGENCY: suicidal_ideation OR dangerous_behavior (C26.R2, C32.R2) OR threat_of_violence (C31.R2)",
+        "sensor_method": "Crew report / observation; private channel to ground",
+        "instructions": [
+          "Space guidelines (NASA Depression CliFF 2023 and Behavioral Emergency CliFF):",
+          "1. Screen for suicidal ideation; keep at least 24 hours of 1:1 observation.",
+          "2. Calm the patient; do not interview a volatile patient alone.",
+          "3. Immediate private contact with the flight surgeon and ground psychiatry.",
+          "4. Sedation only on physician order: lorazepam first line; diazepam second line; injectable ziprasidone in the worst case.",
+          "5. Restraints are a last resort in clinical guidelines.",
+          "6. Consider risk factors: male sex, prior suicide attempts or threats, isolation, prominent hopelessness."
+        ],
+        "dosage": "NASA Behavioral Emergency CliFF lists kit strengths only, not administered doses: lorazepam 1 mg tablets; diazepam 5 mg/mL (2 mL syringes); ziprasidone 20 mg/mL injectable. Dose only by flight surgeon / psychiatrist.",
+        "warnings_and_interactions": "Sedatives impair performance and breathing; do not sedate when hypoxia or unexplained respiratory failure is present. Protect privacy; share data only for a clear safety reason.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Depression CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-depression-cliff-2023.pdf?emrc=9d0acd",
+          "NASA – Behavioral Emergency CliFF (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/behavioral-emergency-cliff.pdf?emrc=989152",
+          "NASA – Risk of Adverse Cognitive or Behavioral Conditions and Psychiatric Disorders (Human System Risk Board): https://www.nasa.gov/directorates/esdmd/hhp/risk-of-adverse-cognitive-or-behavioral-conditions-and-psychiatric-disorders"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C27",
+    "condition_name": "Adjustment reaction",
+    "treatments": [
+      {
+        "treatment_name": "Psychotherapy (CBT), private conferences and duty adjustment",
+        "indication": "Persistent distress with stressor and functional impairment (rule C27.R1)",
+        "diagnostic_markers": "SUSPECTED / referral: persistent_distress AND identifiable_stressor AND functional_impairment (never auto-confirmed).",
+        "sensor_method": "Crew self-report; structured interview",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL13 Adjustment Disorder, 2023):",
+          "1. Protect privacy.",
+          "2. Ground communication and psychiatric consult for diagnostic clarification and treatment guidance.",
+          "3. Brief psychotherapy: CBT weekly for 1 month then every 2 weeks (best case), or weekly for 3 months then every 2 weeks (worst case), for the rest of the mission.",
+          "4. Onboard private psychological conferences for direct psychotherapy.",
+          "5. Cranial electrotherapy stimulation (CES) device (e.g., Alpha Stim, Fisher Wallace) only as an adjunct, not primary treatment.",
+          "6. Adjust duties and follow up with the CMO."
+        ],
+        "dosage": "Medication generally not required; the CliFF worst case may need at least 6 months of pharmacologic therapy, but no agent or dose is named.",
+        "warnings_and_interactions": "Do not infer a psychiatric diagnosis from heart rate variability. No sedative without assessment.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Adjustment Disorder CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-adjustment-disorder-cliff-2023.pdf?emrc=dc6c2f"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C28",
+    "condition_name": "Anxiety / panic attack",
+    "treatments": [
+      {
+        "treatment_name": "Exclude medical cause, behavioral support, physician-ordered medication",
+        "indication": "Intense fear with somatic symptoms (rules C28.R1 and C28.R2)",
+        "diagnostic_markers": "SUSPECTED: intense_fear AND (palpitations OR sweating OR tremor OR sense_of_impending_doom) AND NOT medical_cause_red_flags. URGENT: panic-like picture AND medical_cause_red_flags (spo2 < 95% caution_below OR chest_pain OR syncope_or_collapse OR cabin_co2 > 3.0 mmHg).",
+        "sensor_method": "Heart rate, blood pressure, pulse oximeter, ECG; cabin ppCO2 sensor; crew report",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL14 Anxiety, 2023):",
+          "1. Ensure safety and a calm, private setting.",
+          "2. Rule out a medical emergency first: vital signs, cardiopulmonary exam, hypoxia, cardiac cause, high CO2, drug effects.",
+          "3. Psychiatric history, mental status exam and psychiatry consult via ground.",
+          "4. Acute anxiety/panic (as needed, physician order): lorazepam or diazepam.",
+          "5. CBT weekly for 3 months then every 2 weeks (best case) or weekly for 6 months then every 2 weeks (worst case); onboard private psychological conferences; CES device as adjunct only.",
+          "6. Worst case: long-term SSRI (escitalopram preferred; fluoxetine or sertraline), benzodiazepines secondary.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFF gives no dose, route or frequency.",
+        "warnings_and_interactions": "Normal spo2 does not exclude a serious cause; not every dyspnea or tachycardia is panic. Do not give sedatives if hypoxia or unexplained respiratory failure is present. Citalopram is considered unsuitable because of QTc prolongation (CliFF).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Anxiety CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-anxiety-cliff-2023.pdf?emrc=c1bad0",
+          "NASA – OCHMO-TB-004 Carbon Dioxide (NASA-STD-3001 Technical Brief): https://www.nasa.gov/ochmo-tb-004-carbon-dioxide-2/"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C29",
+    "condition_name": "Cognitive disturbance",
+    "treatments": [
+      {
+        "treatment_name": "Acute confusion: remove from critical tasks and search for organic cause",
+        "indication": "Sudden confusion or new disorientation (rule C29.R1)",
+        "diagnostic_markers": "EMERGENCY: acute_confusion, even with normal measurements. Explain with: spo2 < 95%, cabin_co2 > 2.5 mmHg, core_temperature >= 38.0 C, hypotension = blood_pressure_systolic < 90 mmHg (caution_below).",
+        "sensor_method": "Pulse oximeter, blood pressure, heart rate, core temperature, cabin ppCO2; glucometer if in kit; neurological exam",
+        "instructions": [
+          "Space guidelines (NASA HRP behavioral and CO2 sources):",
+          "1. Remove the crew member from critical tasks and vehicle control.",
+          "2. Assess airway, breathing, circulation and vital signs.",
+          "3. Check cabin CO2: acute CO2 exposure can affect decision-making and cognition (NASA OCHMO-TB-004).",
+          "4. Check for fever, low oxygen, low blood pressure, glucose (if kit available), medications and new neurological signs (stroke).",
+          "5. Urgent CMO examination and ground consult; record all new neurological findings."
+        ],
+        "dosage": "No automatic psychoactive drug; treat only a confirmed cause.",
+        "warnings_and_interactions": "Do not attribute sudden confusion to fatigue or stress before excluding a medical emergency. Radiation exposure alone does not prove a cognitive deficit. No automatic sedation.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Risk of Adverse Cognitive or Behavioral Conditions and Psychiatric Disorders (Human System Risk Board): https://www.nasa.gov/directorates/esdmd/hhp/risk-of-adverse-cognitive-or-behavioral-conditions-and-psychiatric-disorders",
+          "NASA – OCHMO-TB-004 Carbon Dioxide (NASA-STD-3001 Technical Brief): https://www.nasa.gov/ochmo-tb-004-carbon-dioxide-2/"
+        ]
+      },
+      {
+        "treatment_name": "Subacute performance decline: cognitive testing and contributing factors",
+        "indication": "Subacute decline in attention, memory or decisions (rule C29.R2)",
+        "diagnostic_markers": "SUSPECTED: subacute_performance_decline",
+        "sensor_method": "Validated cognitive test; sleep log; cabin ppCO2",
+        "instructions": [
+          "Space guidelines (NASA HRP Human Factors and Behavioral Performance):",
+          "1. Administer a validated cognitive test.",
+          "2. Screen contributing factors: sleep loss and irregular schedules (C30), workload, CO2, medications, mood (C32).",
+          "3. Adjust workload and schedule; behavioral health consult via ground."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Do not use sedatives or stimulants without physician review.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Risk of Adverse Cognitive or Behavioral Conditions and Psychiatric Disorders (Human System Risk Board): https://www.nasa.gov/directorates/esdmd/hhp/risk-of-adverse-cognitive-or-behavioral-conditions-and-psychiatric-disorders",
+          "NASA HRP – Human Factors and Behavioral Performance Risks: https://www.nasa.gov/hrp/human-factors-and-behavioral-performance/hfbp-risks/"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C30",
+    "condition_name": "Insomnia / sleep disturbance / circadian misalignment",
+    "treatments": [
+      {
+        "treatment_name": "Sleep hygiene, lighting/scheduling countermeasures and CBT-I",
+        "indication": "Sleep problem plus daytime impact over several days (rule C30.R1)",
+        "diagnostic_markers": "MONITOR: (sleep_onset_difficulty OR sleep_maintenance_difficulty OR nonrestorative_sleep) AND (daytime_sleepiness OR daytime_impairment); requires a multi-day sleep log.",
+        "sensor_method": "Sleep diary / questionnaire; wearable (e.g., Oura Ring) if available; cabin ppCO2, light and noise",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL18 Sleep Disturbance and ICL95 Insomnia, 2023):",
+          "1. Check work shifts, light, noise and CO2.",
+          "2. Sleep hygiene, consistent sleep schedule, sleep-shift scheduling, naps; crew rest or day off as needed.",
+          "3. Blue-light blocking glasses, solid-state lighting adjustment, sleep mask, earplugs, private sleep quarters, window covers.",
+          "4. Cognitive behavioral therapy for insomnia (CBT-I): weekly for 1 month then every 2 weeks (best case), or weekly for 3 months then every 2 weeks (worst case).",
+          "5. Onboard private psychological conferences; ground psychiatric consult; CES device only as adjunct.",
+          "6. Performance vigilance testing to monitor impairment."
+        ],
+        "dosage": "Not applicable (non-pharmacological)",
+        "warnings_and_interactions": "Do not diagnose a circadian disorder from heart rate alone.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Sleep Disturbance CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-sleep-disturbance-cliff-2023.pdf?emrc=8fb893",
+          "NASA – Insomnia (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-insomnia-cliff-2023.pdf?emrc=07aabf"
+        ]
+      },
+      {
+        "treatment_name": "Sleep medication (physician-approved)",
+        "indication": "Persistent insomnia despite non-drug measures",
+        "diagnostic_markers": "Sleep problem with daytime impact persisting on the multi-day log",
+        "sensor_method": "Sleep diary; performance vigilance testing",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL18 and ICL95, 2023):",
+          "1. Chronobiologic agents (e.g., melatonin) and non-benzodiazepine hypnotics; diphenhydramine as a second-line antihistamine.",
+          "2. Worst case: ground-tested hypnotics; tetracyclic antidepressants with antihistaminic effects.",
+          "3. Stimulants only as a fatigue countermeasure for critical mission events.",
+          "4. Performance vigilance testing with any sleep medication.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "NASA CliFFs give no dose, route or frequency.",
+        "warnings_and_interactions": "No automatic sedative before critical tasks; check for residual impairment.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Sleep Disturbance CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-sleep-disturbance-cliff-2023.pdf?emrc=8fb893",
+          "NASA – Insomnia (Space Adaptation) CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/space-adaptation-insomnia-cliff-2023.pdf?emrc=07aabf"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C31",
+    "condition_name": "Interpersonal conflict (crew/Earth/family)",
+    "treatments": [
+      {
+        "treatment_name": "Confidential team support (non-medical)",
+        "indication": "Reported conflict or need for support (rule C31.R1)",
+        "diagnostic_markers": "TEAM_SUPPORT: interpersonal_conflict_report (not a medical diagnosis).",
+        "sensor_method": "Crew self-report; private communication channel",
+        "instructions": [
+          "Space guidelines (NASA Team Risk and HRP Human Factors and Behavioral Performance):",
+          "1. Offer a confidential check-in.",
+          "2. Use a neutral mediator (ground behavioral health and performance support).",
+          "3. Clarify roles, responsibilities and communication rules, including crew-ground communication delays.",
+          "4. Re-evaluate team functioning.",
+          "5. Threat of violence: follow the behavioral emergency treatment below."
+        ],
+        "dosage": "No medication: conflict is not a condition that justifies drug treatment.",
+        "warnings_and_interactions": "No automatic psychiatric label or medication because of disagreement. Protect personal data.",
+        "context": "Deep-space / Mars transit; non-medical team support event",
+        "sources": [
+          "NASA – Team Risk (Human System Risk Board): https://www.nasa.gov/directorates/esdmd/hhp/team-risk/",
+          "NASA HRP – Human Factors and Behavioral Performance Risks: https://www.nasa.gov/hrp/human-factors-and-behavioral-performance/hfbp-risks/"
+        ]
+      },
+      {
+        "treatment_name": "Behavioral emergency: safety, observation and physician-ordered sedation",
+        "indication": "Suicidal ideation, dangerous behavior or threat of violence",
+        "diagnostic_markers": "EMERGENCY: suicidal_ideation OR dangerous_behavior (C26.R2, C32.R2) OR threat_of_violence (C31.R2)",
+        "sensor_method": "Crew report / observation; private channel to ground",
+        "instructions": [
+          "Space guidelines (NASA Depression CliFF 2023 and Behavioral Emergency CliFF):",
+          "1. Screen for suicidal ideation; keep at least 24 hours of 1:1 observation.",
+          "2. Calm the patient; do not interview a volatile patient alone.",
+          "3. Immediate private contact with the flight surgeon and ground psychiatry.",
+          "4. Sedation only on physician order: lorazepam first line; diazepam second line; injectable ziprasidone in the worst case.",
+          "5. Restraints are a last resort in clinical guidelines.",
+          "6. Consider risk factors: male sex, prior suicide attempts or threats, isolation, prominent hopelessness."
+        ],
+        "dosage": "NASA Behavioral Emergency CliFF lists kit strengths only, not administered doses: lorazepam 1 mg tablets; diazepam 5 mg/mL (2 mL syringes); ziprasidone 20 mg/mL injectable. Dose only by flight surgeon / psychiatrist.",
+        "warnings_and_interactions": "Sedatives impair performance and breathing; do not sedate when hypoxia or unexplained respiratory failure is present. Protect privacy; share data only for a clear safety reason.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Depression CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-depression-cliff-2023.pdf?emrc=9d0acd",
+          "NASA – Behavioral Emergency CliFF (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/behavioral-emergency-cliff.pdf?emrc=989152",
+          "NASA – Risk of Adverse Cognitive or Behavioral Conditions and Psychiatric Disorders (Human System Risk Board): https://www.nasa.gov/directorates/esdmd/hhp/risk-of-adverse-cognitive-or-behavioral-conditions-and-psychiatric-disorders"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "C32",
+    "condition_name": "Mood disturbance / irritability",
+    "treatments": [
+      {
+        "treatment_name": "Private safety assessment and psychological support",
+        "indication": "Reported low mood or irritability (rule C32.R1)",
+        "diagnostic_markers": "MONITOR: mood_change_report (private check-in with consent; no automatic diagnosis).",
+        "sensor_method": "Crew self-report; confidential questionnaire",
+        "instructions": [
+          "Space guidelines (NASA CliFF ICL15 Depression, 2023):",
+          "1. Private safety assessment, including screening for suicidal ideation.",
+          "2. Check sleep, workload, pain and medications.",
+          "3. Psychological support: brief psychotherapy / CBT; onboard private psychological conferences; crew rest or day off as needed.",
+          "4. Ground communication and psychiatric consult if symptoms persist or affect function.",
+          "5. If depression is diagnosed (worst case): long-term SSRI (escitalopram favored; fluoxetine or sertraline) for at least 6 months, with CBT; CES or portable rTMS only as adjuncts.",
+          "6. Suicidal ideation or dangerous behavior: follow the behavioral emergency treatment below.",
+          "Note: Decision support only. Any drug requires an approved mission SOP and crew medical officer (CMO) / flight surgeon review."
+        ],
+        "dosage": "No antidepressant or sedative without full psychiatric diagnosis; NASA CliFF gives no dose, route or frequency.",
+        "warnings_and_interactions": "Do not infer depression from irritability or heart rate. No automatic SSRI or benzodiazepine. Citalopram is not recommended because of dose-related QTc prolongation (CliFF).",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Depression CliFF (2023) (Integrated Medical Model CliFF): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-depression-cliff-2023.pdf?emrc=9d0acd",
+          "NASA – Risk of Adverse Cognitive or Behavioral Conditions and Psychiatric Disorders (Human System Risk Board): https://www.nasa.gov/directorates/esdmd/hhp/risk-of-adverse-cognitive-or-behavioral-conditions-and-psychiatric-disorders"
+        ]
+      },
+      {
+        "treatment_name": "Behavioral emergency: safety, observation and physician-ordered sedation",
+        "indication": "Suicidal ideation, dangerous behavior or threat of violence",
+        "diagnostic_markers": "EMERGENCY: suicidal_ideation OR dangerous_behavior (C26.R2, C32.R2) OR threat_of_violence (C31.R2)",
+        "sensor_method": "Crew report / observation; private channel to ground",
+        "instructions": [
+          "Space guidelines (NASA Depression CliFF 2023 and Behavioral Emergency CliFF):",
+          "1. Screen for suicidal ideation; keep at least 24 hours of 1:1 observation.",
+          "2. Calm the patient; do not interview a volatile patient alone.",
+          "3. Immediate private contact with the flight surgeon and ground psychiatry.",
+          "4. Sedation only on physician order: lorazepam first line; diazepam second line; injectable ziprasidone in the worst case.",
+          "5. Restraints are a last resort in clinical guidelines.",
+          "6. Consider risk factors: male sex, prior suicide attempts or threats, isolation, prominent hopelessness."
+        ],
+        "dosage": "NASA Behavioral Emergency CliFF lists kit strengths only, not administered doses: lorazepam 1 mg tablets; diazepam 5 mg/mL (2 mL syringes); ziprasidone 20 mg/mL injectable. Dose only by flight surgeon / psychiatrist.",
+        "warnings_and_interactions": "Sedatives impair performance and breathing; do not sedate when hypoxia or unexplained respiratory failure is present. Protect privacy; share data only for a clear safety reason.",
+        "context": "Deep-space / Mars transit; adapted from NASA Integrated Medical Model CliFF (2023) treatment scenarios",
+        "sources": [
+          "NASA – Depression CliFF (2023): https://www.nasa.gov/wp-content/uploads/2026/08/bhp-depression-cliff-2023.pdf?emrc=9d0acd",
+          "NASA – Behavioral Emergency CliFF: https://www.nasa.gov/wp-content/uploads/2026/08/behavioral-emergency-cliff.pdf?emrc=989152",
+          "NASA – Risk of Adverse Cognitive or Behavioral Conditions and Psychiatric Disorders: https://www.nasa.gov/directorates/esdmd/hhp/risk-of-adverse-cognitive-or-behavioral-conditions-and-psychiatric-disorders"
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "anemia_low_hemoglobin",
+    "condition_name": "Low Hemoglobin / Anemia",
+    "treatments": [
+      {
+        "treatment_name": "Investigation of cause and specific therapy",
+        "indication": "Low Hemoglobin (Hb) or Low Hematocrit (Hct)",
+        "diagnostic_markers": "Hemoglobin below caution limit OR Hematocrit below caution limit",
+        "sensor_method": "Blood panel",
+        "instructions": [
+          "1. Investigate the underlying cause: check iron, ferritin, B12, and folic acid.",
+          "2. Check for bleeding (internal or external) and hemolysis.",
+          "3. Replenish deficiencies (iron, B12, etc.) or treat the underlying cause according to the findings."
+        ],
+        "dosage": "Not specified; depends on the underlying deficiency.",
+        "warnings_and_interactions": "None specified.",
+        "context": "General medical evaluation (NASA-STD-3001 Vol. 1: crew medical management).",
+        "sources": [
+          "NASA-STD-3001 Vol. 1: Clinical assessment and medical management of crew."
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "polycythemia_high_hemoglobin",
+    "condition_name": "High Hemoglobin / Polycythemia",
+    "treatments": [
+      {
+        "treatment_name": "Hydration and oxygenation assessment",
+        "indication": "High Hemoglobin (Hb) or High Hematocrit (Hct)",
+        "diagnostic_markers": "Hemoglobin above caution limit OR Hematocrit above caution limit",
+        "sensor_method": "Blood panel",
+        "instructions": [
+          "1. Assess oxygenation (chronic hypoxia).",
+          "2. Hydrate the crew member if dehydration is present.",
+          "3. Perform further hematological evaluation to investigate the cause."
+        ],
+        "dosage": "Not applicable.",
+        "warnings_and_interactions": "None specified.",
+        "context": "General medical evaluation (NASA-STD-3001 Vol. 1).",
+        "sources": [
+          "NASA-STD-3001 Vol. 1: Medical assessment and monitoring."
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "leukopenia_low_wbc",
+    "condition_name": "Leukopenia / Neutropenia (Low WBC)",
+    "treatments": [
+      {
+        "treatment_name": "Infection risk assessment and monitoring",
+        "indication": "Low White Blood Cells (WBC) or Low Neutrophils / Lymphocytes",
+        "diagnostic_markers": "WBC, Neutrophils, or Lymphocytes below caution limit",
+        "sensor_method": "Blood panel",
+        "instructions": [
+          "1. Assess the risk of infection and evaluate immune status.",
+          "2. Review medications (drug-induced bone marrow suppression) and check for viral infections.",
+          "3. Repeat the complete blood count (CBC).",
+          "4. Severe febrile neutropenia requires urgent medical evaluation and specific management."
+        ],
+        "dosage": "Not applicable.",
+        "warnings_and_interactions": "Fever with severe neutropenia is a medical emergency.",
+        "context": "Infection management and medical care (NASA-STD-3001 Vol. 1).",
+        "sources": [
+          "NASA-STD-3001 Vol. 1: Management of infections and crew medical monitoring."
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "leukocytosis_high_wbc",
+    "condition_name": "Leukocytosis / Neutrophilia (High WBC)",
+    "treatments": [
+      {
+        "treatment_name": "Investigation of infection or inflammation",
+        "indication": "High White Blood Cells (WBC) or High Neutrophils",
+        "diagnostic_markers": "WBC or Neutrophils above caution limit",
+        "sensor_method": "Blood panel",
+        "instructions": [
+          "1. Investigate the cause: check for bacterial infection, acute inflammation, or physiological response to stress.",
+          "2. Perform cultures where indicated.",
+          "3. Treat the underlying infection or disease.",
+          "4. Antibiotics should only be used when there is a specific clinical indication."
+        ],
+        "dosage": "Antibiotics only per physician order.",
+        "warnings_and_interactions": "Do not administer antibiotics without a specific indication.",
+        "context": "Infection management and medical care (NASA-STD-3001 Vol. 1).",
+        "sources": [
+          "NASA-STD-3001 Vol. 1: Assessment and management of infectious diseases."
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "thrombocytopenia_low_platelets",
+    "condition_name": "Thrombocytopenia (Low Platelets)",
+    "treatments": [
+      {
+        "treatment_name": "Bleeding risk assessment",
+        "indication": "Low Platelets (PLT)",
+        "diagnostic_markers": "Platelets below caution limit",
+        "sensor_method": "Blood panel",
+        "instructions": [
+          "1. Assess the risk of bleeding.",
+          "2. Repeat the measurement.",
+          "3. Investigate the cause (immune thrombocytopenia, drug effect, marrow disorders) and provide specific hematological treatment."
+        ],
+        "dosage": "Not specified.",
+        "warnings_and_interactions": "None specified.",
+        "context": "Bleeding risk assessment (NASA-STD-3001 Vol. 1).",
+        "sources": [
+          "NASA-STD-3001 Vol. 1: Assessment of bleeding risk and medical care."
+        ]
+      }
+    ]
+  },
+  {
+    "condition_id": "high_d_dimer_vte_risk",
+    "condition_name": "Elevated D-dimer / VTE Risk",
+    "treatments": [
+      {
+        "treatment_name": "VTE assessment and possible anticoagulation",
+        "indication": "High D-dimer",
+        "diagnostic_markers": "D-dimer above caution limit (>40 mg/dL for men, >50 mg/dL for women)",
+        "sensor_method": "Blood panel (lipid profile / D-dimer assay), Ultrasound",
+        "instructions": [
+          "1. Clinical assessment for the probability of Deep Vein Thrombosis (DVT) or Pulmonary Embolism (PE).",
+          "2. Perform imaging (ultrasound) to evaluate thrombotic risk.",
+          "3. Anticoagulant therapy is indicated only when thrombosis is documented or highly suspected, based on appropriate clinical indications.",
+          "4. Note: D-dimer is not used alone for diagnosis."
+        ],
+        "dosage": "Anticoagulation per physician order.",
+        "warnings_and_interactions": "D-dimer is not used solely for diagnosis; imaging is required.",
+        "context": "Thrombotic risk assessment in spaceflight (OCHMO-MTB-007).",
+        "sources": [
+          "OCHMO-MTB-007 - Venous Thrombosis in Spaceflight: Assessment with ultrasound and risk factors."
+        ]
+      }
+    ]
+  }
+]

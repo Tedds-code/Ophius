@@ -1,6 +1,0 @@
-{"sensor":"ppg","timestamp":"2026-11-14T09:00:00Z","origin":"simulated","device_id":"demo_ppg","calibration_id":"synthetic_example","data":{"heart_rate_bpm":75,"spo2_percent":97}}
-{"sensor":"co2","timestamp":"2026-11-14T09:00:01Z","origin":"simulated","device_id":"demo_co2","data":{"co2_ppm":950}}
-{"sensor":"radiation","timestamp":"2026-11-14T09:00:02Z","origin":"simulated","device_id":"demo_dosimeter","data":{"measurement_basis":"nasa_effective_dose_model","radiation_source":"other","cumulative_effective_dose":120,"lens_dose":10,"skin_dose":20,"bfo_dose":5}}
-{"sensor":"radiation","timestamp":"2026-11-14T09:00:03Z","origin":"simulated","device_id":"demo_dosimeter","data":{"measurement_basis":"nasa_effective_dose_model","radiation_source":"spe","solar_event_dose":0.5}}
-{"sensor":"radiation","timestamp":"2026-11-14T09:00:04Z","origin":"simulated","device_id":"demo_dosimeter","data":{"measurement_basis":"nasa_effective_dose_model","radiation_source":"nuclear_technology","nuclear_source_dose":0.2}}
-{"sensor":"radiation_environment","timestamp":"2026-11-14T09:00:05Z","origin":"simulated","device_id":"demo_habitat","data":{"measurement_basis":"nasa_effective_dose_model","radiation_source":"gcr","environment":"free_space","daily_gcr_dose_rate":0.32}}

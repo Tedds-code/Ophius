@@ -1,0 +1,167 @@
+{
+  "astronaut_id": "A-101",
+  "personal_information": {
+    "age": 38,
+    "gender": "male",
+    "blood_type": "O+",
+    "weight_kg": 78.5,
+    "height_cm": 182.0
+  },
+  "mission_details": {
+    "mission_name": "Ares-1",
+    "destination": "Mars Orbit & Surface",
+    "duration_days": 730
+  },
+  "medical_history": {
+    "past_conditions": [
+      "mild_childhood_asthma",
+      "appendectomy"
+    ],
+    "current_medications": [],
+    "allergies": [
+      "penicillin"
+    ],
+    "vte_history": false,
+    "family_history": {
+      "cardiovascular_disease": false,
+      "vte": false
+    }
+  },
+  "pre_flight_baseline": {
+    "blood_tests": {
+      "date": "2025-05-10T08:00:00Z",
+      "cbc": {
+        "hemoglobin": {
+          "value": 15.2,
+          "unit": "g/dL"
+        },
+        "hematocrit": {
+          "value": 45.0,
+          "unit": "%"
+        },
+        "rbc": {
+          "value": 5.1,
+          "unit": "10^12/L"
+        },
+        "wbc": {
+          "value": 6.8,
+          "unit": "10^9/L"
+        },
+        "neutrophils": {
+          "value": 4.1,
+          "unit": "10^9/L"
+        },
+        "lymphocytes": {
+          "value": 1.9,
+          "unit": "10^9/L"
+        },
+        "monocytes": {
+          "value": 0.5,
+          "unit": "10^9/L"
+        },
+        "eosinophils": {
+          "value": 0.2,
+          "unit": "10^9/L"
+        },
+        "basophils": {
+          "value": 0.05,
+          "unit": "10^9/L"
+        },
+        "platelets": {
+          "value": 250.0,
+          "unit": "10^9/L"
+        },
+        "reticulocytes": {
+          "value": 1.2,
+          "unit": "%"
+        }
+      },
+      "coagulation": {
+        "d_dimer": {
+          "value": 25.0,
+          "unit": "mg/dL",
+          "note": "Within normal male terrestrial limits (<40)"
+        },
+        "pt": {
+          "value": 11.5,
+          "unit": "seconds"
+        },
+        "aptt": {
+          "value": 30.0,
+          "unit": "seconds"
+        }
+      },
+      "chemistry": {
+        "potassium": {
+          "value": 4.2,
+          "unit": "mEq/L"
+        },
+        "magnesium": {
+          "value": 2.1,
+          "unit": "mg/dL"
+        }
+      }
+    },
+    "cardiovascular": {
+      "date": "2025-08-11T09:30:00Z",
+      "heart_rate_resting": {
+        "value": 62,
+        "unit": "bpm"
+      },
+      "blood_pressure_resting": {
+        "systolic": 112,
+        "diastolic": 72,
+        "unit": "mmHg"
+      },
+      "spo2_resting": {
+        "value": 99,
+        "unit": "%"
+      },
+      "ecg_baseline": {
+        "rhythm": "Sinus",
+        "qtc_interval": {
+          "value": 410,
+          "unit": "ms"
+        },
+        "pr_interval": {
+          "value": 160,
+          "unit": "ms"
+        },
+        "qrs_duration": {
+          "value": 90,
+          "unit": "ms"
+        }
+      },
+      "hrv": {
+        "rmssd": 45,
+        "unit": "ms",
+        "note": "Heart Rate Variability"
+      }
+    },
+    "vascular": {
+      "date": "2024-05-12T10:00:00Z",
+      "ijv_doppler": {
+        "status": "normal",
+        "flow_velocity": {
+          "value": 18,
+          "unit": "cm/s"
+        },
+        "cross_sectional_area": {
+          "value": 0.6,
+          "unit": "cm^2"
+        },
+        "note": "No signs of venous stasis or thrombosis pre-flight."
+      },
+      "ultrasound_lower_limbs": {
+        "status": "normal",
+        "note": "Deep veins compressible, normal flow."
+      }
+    },
+    "radiation_exposure": {
+      "career_effective_dose_start": {
+        "value": 120,
+        "unit": "mSv"
+      }
+    }
+  }
+}
