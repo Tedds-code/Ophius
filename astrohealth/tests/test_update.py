@@ -122,7 +122,7 @@ class DesktopShortcutTests(unittest.TestCase):
             for path in paths:
                 text = path.read_text()
                 self.assertIn('launch_desktop.py', text)
-                self.assertIn('Terminal=true', text)
+                self.assertIn('Terminal=false', text)
                 self.assertTrue(path.stat().st_mode & 0o111)
             entry = linux_entry(root/'App With Spaces'/'100%')
             self.assertIn('100%%/launch_desktop.py"', entry)

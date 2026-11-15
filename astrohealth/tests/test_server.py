@@ -193,6 +193,21 @@ class ServerTests(unittest.TestCase):
                 code, _ = self.request('GET', path)
                 self.assertEqual(code, 404)
 
+    def test_medication_allergy_guard_cannot_be_bypassed_through_api(self):
+        base='/api/astronauts/A-101'
+        code,check=self.request('POST',base+'/medication-check',{'medication':'amoxicillin'})
+        self.assertEqual(code,200)
+        self.assertTrue(check['blocked'])
+        code,error=self.request('POST',base+'/medication',{'medication':'amoxicillin','recording_allowed':True})
+        self.assertEqual(code,400)
+        self.assertIn('blocked',error['error'])
+        code,snap=self.request('PUT',base+'/allergies',{'allergies':['cetirizine']})
+        self.assertEqual(code,200)
+        code,check=self.request('POST',base+'/medication-check',{'medication':'cetirizine'})
+        self.assertTrue(check['blocked'])
+        code,_=self.request('GET','/app.js')
+        self.assertEqual(code,200)
+
     def test_conditional_mission_forecast_separate_from_current_alarm(self):
         when = self.now-timedelta(seconds=1)
         packet = self.packet({'nuclear_source_dose': {'value': 35, 'unit': 'mSv', 'metadata': {

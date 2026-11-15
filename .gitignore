@@ -1,0 +1,36 @@
+
+# Ignore everything except the app's source files.
+*
+!*/
+!.gitignore
+!*.py
+!*.js
+!*.html
+!*.css
+!*.svg
+!*.json
+!*.jsonl
+!*.sh
+!*.bat
+!*.command
+!*.desktop
+!README
+!README.*
+!requirements-desktop.txt
+
+# Always ignore local runtimes and generated data.
+.desktop-runtime/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+data/
+build/
+dist/
+output/
+*.app/
+.env
+.env.*

@@ -33,17 +33,21 @@ class Simulator:
         with self.lock:
             if action == 'stop':
                 self.active.pop(aid, None)
+                self.monitor.set_stream_active(aid,'simulation',False)
             elif action == 'start' or (action == 'scenario' and mode == 'cardiac_arrest'):
                 seconds = payload.get('interval_seconds', 2)
                 if isinstance(seconds, bool) or not isinstance(seconds, (int, float)) or not math.isfinite(seconds) or not 1 <= seconds <= 30:
                     raise ValueError('Simulation interval must be between 1 and 30 seconds')
                 self.active[aid] = {'mode': mode, 'interval_seconds': seconds, 'step': 0,
                                     'next': time.monotonic()}
+                self.monitor.set_stream_active(aid,'simulation',True)
             elif action in ('once', 'scenario'):
                 if mode == 'cardiac_arrest':
                     self.active[aid] = {'mode': mode, 'interval_seconds': 2, 'step': 0, 'next': time.monotonic()}
+                    self.monitor.set_stream_active(aid,'simulation',True)
                 else:
                     self._send(aid, mode, 0)
+                    self.monitor.set_stream_active(aid,'simulation',aid in self.active)
             else:
                 raise ValueError('action must be start, stop, once or scenario')
         return self.monitor.snapshot(aid)
@@ -88,6 +92,7 @@ class Simulator:
                     job['next'] = time.monotonic() + job['interval_seconds']
                     if job['mode'] == 'cardiac_arrest' and job['step'] >= 3:
                         self.active.pop(aid, None)
+                        self.monitor.set_stream_active(aid,'simulation',False)
                 except Exception as exc:
                     self.last_error = f'{aid}: {exc}'
                     self.active.pop(aid, None)

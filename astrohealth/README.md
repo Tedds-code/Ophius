@@ -1,261 +1,103 @@
-# AstroHealth — merged continuous monitor
+# AstroHealth 2.1 — preserved desktop view
 
-A local, English-only Windows/Linux application combining Paris's crew dashboard,
-symptom logic and explanations with Fresh-inspired validated sensor ingestion,
-SQLite sessions, exposure-context checks and conditional forecasts.
+This version preserves the original dark dashboard inside its own **Qt desktop window**. It does not launch a separate browser. The embedded renderer uses a memory-only, private profile. The localhost JSON service remains available for sensor gateways and automation.
 
-The supplied final thresholds, updated diagnostics, treatments and two astronaut
-profiles are included unchanged. This is a theoretical/research prototype; no
-physical device or clinical algorithm has been validated.
+The app includes the last supplied thresholds, diagnostic rules, treatments and two separate astronaut baseline profiles. Those five input documents remain unchanged. Patient allergies and exposures now affect assessment and medication safety through explicit application logic and a separate named-family catalog.
 
-## Start
+## Requirements
 
-Requires **Python 3.10 or newer**. There are no mandatory pip dependencies.
+- Python **3.10 or newer**.
+- A graphical desktop on Windows, Linux or macOS.
+- Internet access for the first setup: it installs PySide6/QtWebEngine into a local `.desktop-runtime` folder. The engine download is several hundred MB. Optional serial ingestion requires pyserial.
 
-**Windows:** double-click `run_windows.bat`, or run:
+Use a current supported Python release from python.org or your Linux distribution. Linux also needs Python venv/pip support and the standard Qt graphical libraries. A desktop session is required. The included setup installs the embedded engine without administrator privileges; later launches work offline.
 
-```bat
-py -3 app.py --desktop
-```
+## Install and launch
 
-**Linux:** run:
+1. Stop the old monitor before upgrading. Keep your `data` folder.
+2. Extract the entire AstroHealth folder to a permanent location, replacing the application files when upgrading. Do not delete your database.
+3. Create a desktop launcher once:
 
-```sh
-sh run_linux.sh
-```
-
-The background monitor prints its address, normally **http://127.0.0.1:8765**.
-Open that address whenever you want the dashboard. It opens automatically for a
-new warning. For an immediate dashboard at startup, add `--open`:
-
-```sh
-python3 app.py --desktop --open
-```
-
-Closing the browser **does not stop monitoring**. Keep the Python process running.
-Press **Ctrl+C in its terminal** to save current daily summaries and stop cleanly.
-The supplied launchers leave a terminal open so shutdown remains accessible.
-
-`--desktop` adds native warning windows through Python's Tkinter. On Linux this
-may require your distribution's `python3-tk` package and a graphical session.
-If Tk is unavailable, monitoring and browser warning opening continue. Browser
-and window focus are subject to operating-system policy. This version does not
-install an operating-system startup service or system-tray integration.
-
-Options: `--port 8766`, `--data-dir PATH`, `--no-alert-browser`, `--verbose`.
-With `--no-alert-browser`, use desktop alerts or open the dashboard yourself.
-Sound/browser notifications can also be enabled inside the dashboard.
-
-## Install a desktop launcher
-
-Extract the entire app to a permanent folder first. Python 3.10+ must be installed.
-
-- **Windows:** double-click `install_desktop_windows.bat`. It creates **AstroHealth.lnk** on your actual Windows desktop, including OneDrive-redirected desktops.
-- **Linux:** run `sh install_desktop_linux.sh`. It creates **AstroHealth.desktop** on your desktop and an Applications-menu entry. If prompted, select **Allow Launching** / **Trust and Launch**.
-
-Double-click the resulting **AstroHealth** shortcut to start the monitor and open its browser dashboard. Reopening it connects to an already-running current-version monitor. Keep the extracted app folder in place; recreate the shortcut if you move it. The monitor terminal remains available for Ctrl+C shutdown. The shortcut installer needs no administrator rights and does not install Python automatically.
-
-The regular `run_windows.bat` and `run_linux.sh` launchers now also open the dashboard immediately. For custom flags, use `python app.py --desktop --open --port 8766` (or `py -3` on Windows).
-
-## First use
-
-1. Select A-101 or A-102. Their preflight baselines appear alongside current
-   measurements. Current measurements start **missing**.
-2. In the simulation controls, explicitly start normal streaming or a scenario.
-   Nothing is simulated automatically at launch.
-3. Try the QTc scenario to inspect the threshold-linked treatment entry.
-4. Try the cardiac-arrest scenario. Heart rate runs **72 → 155 → 0 bpm** over
-   approximately four seconds. A valid zero warns immediately; the preceding
-   increase is recorded as context for a **possible arrest**, not confirmation.
-5. Stop simulation and inspect History for abnormal events and session summaries.
-6. Import `examples/blood_panel_example.json` manually to exercise blood findings.
-   The file is labelled synthetic and stays separate from observed data.
-
-For a forecast demonstration, select an astronaut without an existing later dose
-acquisition, choose **Import sensor packet**, and import
-`examples/mission_dose_example.json`. It is an explicitly synthetic 35 mSv
-mission-to-date report. In Forecasts, enter **1 mSv/day** for **21 days**:
-the result is conditional crossing of the configured **40 mSv** limit in **5 days**.
-The fixed example acquisition date is 2026-11-14; update its timestamp and matching
-coverage end together if needed. Its declared historical exposure is a fixture,
-not a claim of actual monitoring before the first acquisition.
-
-The first valid measurement anchors mission day one for that astronaut. Subsequent
-days use elapsed UTC calendar dates, including days when the app was not running.
-Simulation and observed data have independent anchors. Missing monitoring time
-does not become measured exposure. Both supplied missions last 730 days.
-
-## Continuous monitoring and storage
-
-- Every incoming sensor reading is validated and assessed immediately.
-- Normal raw readings live **only in a rolling 60-second memory buffer**. Expired
-  readings disappear from current values; timestamps indicate stale sources.
-- Previously active vital streams that stop reporting generate one technical
-  warning after 60 seconds; a new valid sample records recovery.
-- Daily/session summaries retain count, arithmetic mean, min/max, coverage,
-  time-weighted mean where supported and abnormal counts.
-- Dose summaries retain verified increments or declared cumulative totals.
-  Cumulative snapshots are **not summed**.
-- Ordinary daily summaries are saved on UTC day rollover and clean shutdown.
-  The in-progress day is visible through History before the write.
-- Abnormal-event records and manually imported laboratory reports are saved
-  immediately. These intentionally outlive the raw buffer. Warning events include
-  offending values; a possible-arrest event includes its short preceding sequence.
-- Acknowledging a warning does not change measurements or declare recovery.
-- Simulation and observed summaries/diagnostics are partitioned. Source labels
-  remain visible. A simulation never silently supplies missing observed values.
-
-Storage is `data/astrohealth.sqlite3`. It contains no table of ordinary raw vital
-samples. Back up the data directory only after a clean shutdown, or use SQLite's
-backup facilities. **Abrupt termination or a power loss can lose the unfinished
-day's normal summaries**, because continuous raw persistence was deliberately
-removed. Already committed abnormal events and reports remain durable.
-
-Sessions are grouped by astronaut, UTC date and source, making long-term daily
-data available without retaining the entire day's sensor stream. Sensor buffers
-start empty after restart. Historical baselines and blood tests are not live vitals.
-
-## Assessment states
-
-| State | Meaning |
+| Platform | Shortcut setup |
 |---|---|
-| Missing | No measurement was supplied |
-| Stale | No sensor sample remains within the last 60 seconds |
-| Invalid | Device quality is invalid/disconnected |
-| Needs context | A value exists but its coverage, window or provenance is insufficient |
-| Normal / caution / critical | Eligible value compared with the supplied threshold |
-| Projected | Conditional future scenario, separate from the current alert level |
+| Windows | Double-click `install_desktop_windows.bat` |
+| Linux | Run `sh install_desktop_linux.sh`; allow/trust launching if prompted |
+| macOS | Double-click `install_desktop_macos.command` |
 
-Normal describes assessed inputs; it does not certify that every measurement is
-available. Individual missing/stale/context states stay visible. Blood-test report
-dates remain visible; the application does not invent a clinical expiry period.
-Missing personal baselines display **Not supplied**.
+Setup downloads the desktop engine and creates the shortcut. Then double-click **AstroHealth** on your desktop. The launcher starts the desktop window, or restores the already-running current-version app. Windows shortcuts use pythonw when available; Linux desktop entries run without a terminal; macOS setup creates an `.app` launcher. The setup uses your existing Python to create an isolated local runtime; Python itself is not bundled. Run setup again after moving the application folder or upgrading from version 2.0.
 
-## Diagnostic and treatment data
+Direct launch alternatives:
 
-`config/thresholds.json` is the sole numeric threshold catalog. The original
-boundary policies are explicit in the engine: heart-rate critical upper and
-blood-pressure caution upper limits are inclusive; other bounds use `>`/`<`.
-The supplied mission-year nuclear-source dose limit scales by duration/365
-(730 days gives 40 mSv). Different radiation quantities and units remain separate.
+- Windows: double-click `run_windows.bat` or run `py -3 bootstrap_desktop.py --launch`.
+- Linux: `sh run_linux.sh` or `python3 bootstrap_desktop.py --launch`.
+- macOS: double-click `run_macos.command` or run `python3 bootstrap_desktop.py --launch`.
 
-`config/diagnostic_rules.json` supplies 38 rules. `config/treatment.json` supplies
-linked detailed treatment references. Their source text and warnings are displayed,
-including incomplete or older references. Treatment prose is not parsed into
-new diagnostic thresholds or dosing calculations. Benign guidance is suppressed
-for applicable red-flag/escalation-only findings.
+Closing the window with **X** hides it while monitoring continues. Reopen the desktop shortcut to restore it. The standard minimize control keeps it in your taskbar/dock. **Quit & save** stops monitoring and saves the current daily summaries. New warnings bring a hidden/minimized window back; an already visible window keeps its control focus.
 
-QTc prolongation uses the supplied sex-specific QTc thresholds and its linked
-catalog entry. Potassium/magnesium have no entries in the final thresholds file,
-so they do not generate automated findings or treatment selection. Unsupported
-laboratory values are noted as not assessed; a report containing no supported
-measurements is rejected. There is no automatic blood sampling.
+`python app.py --hidden` starts quietly until a new warning or a shortcut restore. The old `--desktop` and `--open` flags remain accepted, but never open a browser. `--port`, `--data-dir` and `--verbose` are supported. `--headless` runs the JSON gateway without any desktop window for development/gateway use.
 
-Invalid/disconnected signal is a technical warning, distinct from a valid numeric
-zero. A zero heart rate warns without requiring a preceding spike. A preceding
-above-caution heart rate inside the 60-second buffer adds possible-arrest context.
-The sequence does not prove cardiac arrest or replace checking the person/sensor.
+## Using the app
 
-## Radiation, CO₂ and forecasts
+- **Vitals:** current values, personal baseline, source, time and assessment. CO2 is absent when no current reading exists; it appears when a report is available and disappears when it expires.
+- **Laboratory results / Radiation & exposure windows:** expand either panel on Overview, choose a scenario and click **Run lab simulation** or **Run dose simulation**. All 12 supported labs and all 19 dose quantities are covered. Use the single-measurement scenario to test a selected value. JSON import remains available.
+- **Findings:** evidence, escalation, allergy context and guarded treatment references. Each lab/dose row has **Why / linked rules**, showing its effective threshold, window, reference source and the status of linked medical rules. Radiation quantities without a supplied diagnosis rule show the threshold comparison explicitly.
+- **Symptoms:** select reported symptoms/context, enter manual measurements and actual recent exposures.
+- **Treatments:** search condition names, medicine names and reference details. Query and focus are preserved while measurements update.
+- **Medication safety:** edit recorded allergies, check a single ingredient and record medication use only if the allergy guard allows it.
+- **History:** daily/session summaries, abnormal events, manual tests and medication records; export JSON.
+- **Forecasts:** measured-history projections and separately entered future-rate scenarios.
+- **Profile:** view/export the baseline and current medical-history document.
 
-CO₂ comparisons require a declared, verified one-hour average in **mmHg**.
-Instantaneous ppm is not silently converted or compared. Radiation reports require
-the matching dose quantity/unit, coverage start/end and verification flags. Calendar
-dates in Fresh reports are adapted as inclusive days; normalized timestamp intervals
-use an exclusive end. Missing coverage stays unassessed.
+Simulation is **OFF at startup**. Select a mode and click **Start continuous** or **One reading / scenario**. The standard simulator supplies all seven supported vital/environment values. The heart-rate-collapse scenario runs 72 →155 →0 bpm within a few seconds. Zero triggers an immediate possible-arrest warning; signal loss is a separate technical condition. CO2 is an explicitly synthetic instrument-reported one-hour average, not an hour of actual collection by the app.
 
-The Forecasts tab supports measured-history trends when enough qualifying exposure
-history exists, plus manually entered constant future-rate scenarios. Both require
-a known current total and label all assumptions. Projection alone never creates a
-current clinical alarm. Planned mission duration supports mission-limit scaling and
-mission-end estimates. A future rate alone cannot establish missing current exposure.
+Dropdowns and search fields stay in place during refresh. Lab and dose simulations are manual numerical fixtures, not a physiological model. Hypothetical dose coverage is labelled synthetic; it never establishes observed exposure. Normal, mixed, high and missing-context reports let you compare assessment states. The low-white-cells-with-fever scenario explicitly adds a synthetic, manually reported core temperature.
 
-The profiles' 120/145 mSv career baselines are retained as supplied; the documents
-do not independently establish complete verified career dosimetry. A suitable
-verified career report is required for a career-total assessment. No generic detector
-reading is converted into organ dose. Rolling-window predictions are withheld when
-the age-resolved history required to age old exposure out is unavailable.
+## Why previous versions repeated warnings
 
-## JSON imports and gateways
+The old startup code treated saved unacknowledged events as newly encountered warnings every time the process started. It could also report intentionally stopped simulation as sensor loss.
 
-Use **Import blood test** for a manually acquired report. Fresh's
-`astro_health_blood_panel_v1` format is supported: a timestamp, `synthetic` flag
-and `measurements` mapping with explicit `value` and `unit`. See the example.
-Use a new `report_id` for each distinct report; duplicates are rejected.
+Version2.0 seeds the notifier with existing event IDs at startup. Old events remain in History and the pending-warning list but are not replayed as new popups. Retained laboratory/context findings are deduplicated after restart. New episodes or worsening severity notify once. Acknowledging records that you saw a warning; it does not change a reading or erase history. Intentional simulation stops and completed one-shot tests do not produce sensor-loss alarms. Unexpected loss from an active stream still warns.
 
-Import another crew member using their own profile JSON through **Import crew
-profile**. IDs must be distinct. The profile document is the baseline reference,
-not a set of current observations. Profile export is available in the Profile tab.
-This version rejects same-ID replacement rather than silently rewriting history.
+## Allergy-aware assessment and medication guard
 
-Normalized packets can be sent to:
+A recorded allergy is medical history. To use it in a current allergic-reaction assessment, report an **actual recent exposure** in Symptoms, along with the observed symptoms. For example, for A-101, reported amoxicillin exposure matches the recorded penicillin allergy. Existing C01/C02 rules then evaluate the symptoms and escalation criteria with that matching exposure context. History or exposure alone does not manufacture a current diagnosis.
 
-```text
-POST /api/astronauts/A-101/ingest
-Content-Type: application/json
-```
+`config/medication_allergens.json` contains explicit ingredient aliases and named-family membership. The current guard includes penicillin-family drugs and named sulfonamide antibiotics. It is a conservative configured policy, not a complete clinical cross-reactivity engine. Uncertain related-drug cases, unknown products and unknown allergy history require review; they are not labelled safe.
 
-```json
-{
-  "packet_id": "unique-acquisition-id",
-  "timestamp": "2026-11-15T12:00:00Z",
-  "source": "simulation",
-  "quality": "ok",
-  "readings": {
-    "heart_rate": {"value": 72, "unit": "bpm"},
-    "spo2": {"value": 98, "unit": "%"}
-  }
-}
-```
+- Exact or named-family allergy matches block medication recording in both the desktop UI and the backend API.
+- Profile A-101's penicillin allergy blocks amoxicillin and ampicillin, including identified combinations.
+- Named-drug instructions/doses are withheld from applicable blocked treatment references. Medication portions lacking an identified ingredient require review.
+- Avoidance guidance, such as "Avoid Midodrine", remains visible.
+- Allergy edits persist in the local profile store and are audited in session history. Original bundled profile files are unchanged.
+- Every attempted medication record is checked again using current profile data; a prior UI result cannot override a newly recorded allergy.
 
-Use actual acquisition timestamps. Units must match the JSON catalog. Supported
-source labels are `simulation`, `jsonl`, `tcp`, `serial`; quality is `ok`, `invalid`
-or `disconnected`. Out-of-order per-measurement timestamps, future timestamps,
-non-finite numbers, duplicate JSON keys and duplicate packet identifiers are rejected.
+The guard does not calculate doses, prescribe alternatives, physically administer medication, or establish that a drug is safe for all other clinical reasons. Source guidance still requires appropriate medical review. The project remains a theoretical/research prototype, not a validated medical device.
 
-Fresh-style packets (`sensor`, `timestamp`, `data`, device metadata) are adapted for
-PPG, ECG, cuff pressure, thermistor, hourly CO₂ and dose reports. Clean synthetic
-waveform heart-rate extraction is retained as a demonstration only. Actual hardware
-requires a device-specific adapter; no manufacturer's driver is included.
+## Storage and assessment
 
-The optional gateway forwards existing JSONL, TCP or serial streams:
+Incoming readings are checked immediately. Normal raw sensor values live only in a rolling **60-second memory buffer**. Daily summaries retain count, mean, min/max, coverage/time-weighted mean and exposure aggregates. Different units are retained separately. Cumulative dose snapshots are not summed.
+
+Daily normal summaries commit at UTC rollover and clean shutdown. Abnormal events and imported blood reports commit immediately. Abrupt termination can lose the unfinished day's normal summary. Stored data is `data/astrohealth.sqlite3`; normal raw sensor readings have no durable raw-sample table.
+
+Observed and synthetic data have separate source partitions and mission anchors. The first valid in-mission measurement anchors dayone; later UTC calendar days continue counting even if acquisition had gaps. A gap is not measured exposure.
+
+Missing, stale, invalid and needs-context states remain distinct from normal/caution/critical results. Blood tests retain their collection dates rather than becoming live sensor readings. Radiation/CO2 comparisons require appropriate windows and provenance. Forecasts are conditional extrapolations, not current alarms; rolling-window forecasts are withheld when age-resolved information is insufficient.
+
+D-dimer uses the replacement thresholds' **mg/L** units (male caution above0.4, female above0.5). Old-unit reports remain stored but unassessed under the new catalog; original baselines with differing units are flagged. No correction is guessed.
+
+## JSON examples and gateways
+
+Run `python make_demo_reports.py` (`python3` on Linux/macOS) to generate complete synthetic lab/dose examples. Import the blood report manually through Labs & dose and use the sensor/dose import for the dose JSON. See **SIMULATION_COVERAGE.md** for all39 distinct threshold-backed inputs and additional manual inputs. No blood tests are run automatically.
+
+The optional localhost JSON API remains at127.0.0.1:8765. Fresh-style JSONL/TCP/serial gateways remain supported:
 
 ```sh
 python3 gateway.py --astronaut A-101 --file examples/cardiac_sequence.jsonl --replay-now --interval 2
 python3 gateway.py --astronaut A-101 --tcp 127.0.0.1:9000
-python3 gateway.py --astronaut A-101 --serial /dev/ttyUSB0
 ```
 
-On Windows a serial port might be `COM3`. Serial alone needs optional `pyserial`.
-`--replay-now` deliberately labels rebased file packets as simulation. Data cannot
-be assumed trustworthy solely because it carries a calibration/verification flag.
+The embedded desktop and gateway use the same monitor; the app never launches an external browser. Profile, lab, normalized-packet, symptom, history, forecast and acknowledgement API endpoints remain. New endpoints include `POST .../medication-check`, `POST .../medication`, `PUT .../allergies` and native `POST /api/window/show`. These remain localhost-only with origin/host checks.
 
-## Verification and architecture
+## Verification
 
-```sh
-python3 -m unittest discover -s tests -v
-```
-
-See **SIMULATION_COVERAGE.md** for the complete sensor, JSON and manual-input coverage table.
-
-`astrohealth/engine.py` owns shared thresholds/rules/treatment matching.
-`monitor.py` owns ingestion, buffers, context, sessions and projections.
-`storage.py` owns SQLite persistence. `transport.py` adapts Fresh-style packets.
-`simulation.py` owns explicit synthetic streams. `server.py` exposes only a
-localhost HTTP API. `static/` contains the English dashboard.
-
-The implementation is verified on Linux with Python 3.12 and Chromium. Windows
-launchers and portable code are supplied, but native Windows execution was not
-available in the build environment. Native Tk warning windows also require a
-graphical desktop and have not been validated against every desktop environment.
-
-This is a new merged data store. Historical database/state files from the two
-original ZIPs are not automatically migrated or included as current observations.
-
-## Version 1.1 threshold update and search
-
-The most recently supplied `thresholds.json` is included byte-for-byte. D-dimer is now **mg/L**, with upper caution limits **0.4 for male** and **0.5 for female** references. Previously stored mg/dL results remain in history but are unassessed under the new catalog. Daily summaries retain different units separately; the SQLite upgrade preserves the prior summaries. Original profile baselines are preserved and any differing unit is explicitly flagged beside the reading. No unit correction is guessed.
-
-Treatment search now matches condition names, medicine/treatment names, instructions and identifiers. It supports case-insensitive multiword searches and keeps both query and typing focus during live refreshes. Symptom/context search supports multiword terms and shows an explicit no-match message.
-
-All seven displayed vital/environment readings are included in continuous simulation. CO₂ is a clearly labelled synthetic instrument-reported one-hour average, including simulated coverage metadata. It does not imply that this app collected an hour of real data. The **High cabin CO₂** scenario exercises that warning.
+`python -m unittest discover -s tests -v` runs backend tests. Legacy widget regression tests also run when a graphical display is available. The actual Qt desktop was additionally exercised through its embedded page on Linux/Xvfb. See **VERIFICATION.md** for the checks and limits. Native execution was tested on Linux; Windows and macOS shortcut construction is covered, but actual execution on those platforms was not available.

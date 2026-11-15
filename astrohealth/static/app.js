@@ -4,7 +4,7 @@ const state = {
   meta: {}, crew: [], id: null, snapshot: null, tab: 'overview', history: null,
   monitor: {}, selectedSymptoms: new Set(), selectedContext: new Set(), symptomSearch: '',
   symptomDirty: false, librarySearch: '', seenAlerts: new Set(), forecast: null, polling: false, sound: false,
-  connected: false, audio: null, openDetails: new Set(), crewAlertCounts: {},
+  safeLibrary: [], libraryPatient: null, startupSeeded: false, headerSignature: '', crewSignature: '', pointerBusy: false, reportResult: null, medCheck: null, connected: false, audio: null, openDetails: new Set(), crewAlertCounts: {},
 };
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -38,6 +38,7 @@ function connection(ok) {
   $('#connection-detail').textContent = ok ? 'Checks every incoming reading' : 'Start the local application to reconnect';
 }
 function renderCrew() {
+  const signature=JSON.stringify(state.crew); if(signature===state.crewSignature && $('#crew-list').children.length)return; state.crewSignature=signature;
   $('#crew-count').textContent = state.crew.length;
   $('#crew-list').innerHTML = state.crew.length ? state.crew.map(c => {
     const id = c.id || c.astronaut_id;
@@ -45,13 +46,15 @@ function renderCrew() {
   }).join('') : '<div class="empty compact">Import a baseline profile to begin.</div>';
   $$('[data-crew]').forEach(button => button.onclick = guard(() => selectCrew(button.dataset.crew)));
 }
-function renderHeading() {
+function renderHeading(force=false) {
   const s = state.snapshot;
   if (!s) { $('#crew-heading').innerHTML = ''; $('#tabs').innerHTML = ''; return; }
+  const signature=JSON.stringify([state.id,state.tab,s.profile,s.mission_day,s.session_id,s.assessment?.overall,arr(s.assessment?.findings).map(f=>f.rule_id)]);
+  if(!force && state.headerSignature===signature)return; state.headerSignature=signature;
   const p = s.profile || {}, personal = p.personal_information || {}, mission = p.mission_details || {};
   $('#page-title').textContent = mission.mission_name || 'Mission overview';
   $('#crew-heading').innerHTML = `<div class="crew-heading"><div class="profile-heading"><span class="avatar">${esc(String(state.id).replace('A-', ''))}</span><div><h2>${esc(profileName(p))}</h2><div class="subtitle">${esc(human(personal.gender))} · ${esc(personal.age ?? '—')} years${mission.destination ? ' · ' + esc(mission.destination) : ''}</div></div></div><div class="mission-facts"><div class="fact"><small>Mission day</small><strong>${s.mission_day ? esc(s.mission_day) : 'Not started'} <span class="muted">/ ${esc(mission.duration_days || '—')}</span></strong></div><div class="fact"><small>Session</small><strong>${esc(s.session_id || '—')}</strong></div>${pill(s.assessment?.overall || 'UNKNOWN')}</div></div>`;
-  const tabs = [['overview', 'Overview'], ['findings', 'Findings & treatments'], ['symptoms', 'Symptoms'], ['history', 'Session history'], ['forecasts', 'Forecasts'], ['profile', 'Baseline profile']];
+  const tabs = [['overview', 'Overview'], ['findings', 'Findings & treatments'], ['symptoms', 'Symptoms'], ['history', 'Session history'], ['forecasts', 'Forecasts'], ['medication', 'Medication safety'], ['profile', 'Baseline profile']];
   $('#tabs').innerHTML = tabs.map(([key, label]) => `<button class="tab ${state.tab === key ? 'active' : ''}" data-tab="${key}">${label}${key === 'findings' && arr(s.assessment?.findings).length ? ' (' + arr(s.assessment.findings).length + ')' : ''}</button>`).join('');
   $$('[data-tab]').forEach(b => b.onclick = guard(async () => { state.tab = b.dataset.tab; renderHeading(); if (state.tab === 'history') state.history = await api('GET', idPath() + '/history'); renderContent(); }));
 }
@@ -73,14 +76,14 @@ function renderWarnings() {
       const n = new Notification('AstroHealth · ' + state.id, { body: alertMessage(fresh[0]), tag: state.id + ':' + alertId(fresh[0]) });
       n.onclick = () => { window.focus(); showWarnings(); n.close(); };
     }
-    showWarnings();
   }
 }
 function showWarnings() {
   const dialog = $('#warning-dialog');
-  dialog.innerHTML = `<button class="modal-close" aria-label="Close">×</button><span class="eyebrow">${esc(state.id)} · LIVE MONITOR</span><h2 class="warning-title">Warnings need attention</h2><p>Acknowledging records that you have seen the warning. It does not change the reading or clear an ongoing condition.</p>${alerts().map(a => `<article class="event"><div class="event-body"><strong>${esc(alertMessage(a))}</strong><p>${esc(date(a.timestamp))}${a.source ? ' · ' + esc(a.source) : ''}</p>${a.key ? `<p>${esc(human(a.key))}: ${fmt(a.value)} ${esc(a.unit || '')}</p>` : ''}</div>${pill(alertSeverity(a))}<button class="chip-button" data-ack="${esc(alertId(a))}">Acknowledge</button></article>`).join('') || '<div class="empty">All warnings acknowledged.</div>'}<div class="form-actions"><button class="button" id="close-warnings">Close</button></div>`;
+  dialog.innerHTML = `<button class="modal-close" aria-label="Close">×</button><span class="eyebrow">${esc(state.id)} · LIVE MONITOR</span><h2 class="warning-title">Warnings need attention</h2><p>Acknowledging records that you have seen the warning. It does not change the reading or clear an ongoing condition.</p>${alerts().map(a => `<article class="event"><div class="event-body"><strong>${esc(alertMessage(a))}</strong><p>${esc(date(a.timestamp))}${a.source ? ' · ' + esc(a.source) : ''}</p>${a.key ? `<p>${esc(human(a.key))}: ${fmt(a.value)} ${esc(a.unit || '')}</p>` : ''}</div>${pill(alertSeverity(a))}<button class="chip-button" data-ack="${esc(alertId(a))}">Acknowledge</button></article>`).join('') || '<div class="empty">All warnings acknowledged.</div>'}<div class="form-actions"><button class="button" id="ack-all-warnings">Acknowledge all listed</button><button class="button" id="close-warnings">Close</button></div>`;
   $('.modal-close', dialog).onclick = () => dialog.close(); $('#close-warnings').onclick = () => dialog.close();
   $$('[data-ack]', dialog).forEach(b => b.onclick = guard(async () => { await api('POST', idPath() + '/ack', { event_id: b.dataset.ack }); await refresh(); showWarnings(); }));
+  $('#ack-all-warnings').onclick=guard(async()=>{for(const event of alerts())await api('POST',idPath()+'/ack',{event_id:alertId(event)});await refresh();showWarnings();});
   if (!dialog.open) dialog.showModal();
 }
 function beep() {
@@ -104,15 +107,15 @@ function rowCategory(row) {
   return row.category || arr(state.meta.readings).find(r => r.key === row.key)?.category || '';
 }
 function compactRows(rows) {
-  return summaryTable(rows, [['Measurement', r => esc(r.label || human(r.key))], ['Current', r => fmt(r.value) + ' ' + esc(r.unit || '')], ['Personal baseline', r => baselineHtml(r)], ['Status', r => pill(r.status || 'missing')], ['Context', r => esc(r.reason || date(r.timestamp))]]);
+  return summaryTable(rows, [['Measurement', r => esc(r.label || human(r.key))], ['Current', r => fmt(r.value) + ' ' + esc(r.unit || '')], ['Personal baseline', r => baselineHtml(r)], ['Status', r => pill(r.status || 'missing')], ['Context', r => esc(r.reason || date(r.timestamp))], ['Medical connection', r => `<button class="chip-button" data-connections="${esc(r.key)}">Why / linked rules</button>`]]);
 }
 function renderOverview() {
-  const rows = readingRows(), vitals = rows.filter(r => ['cardiovascular', 'respiratory', 'vital', 'environment'].includes(rowCategory(r))), labs = rows.filter(r => r.type === 'lab' || rowCategory(r) === 'blood_panel'), radiation = rows.filter(r => rowCategory(r) === 'radiation'), manual = rows.filter(r => rowCategory(r) === 'symptom' && r.value != null);
+  const rows = readingRows(), vitals = rows.filter(r => ['cardiovascular', 'respiratory', 'vital', 'environment'].includes(rowCategory(r)) && (r.key !== 'cabin_co2' || r.value != null)), labs = rows.filter(r => r.type === 'lab' || rowCategory(r) === 'blood_panel'), radiation = rows.filter(r => rowCategory(r) === 'radiation'), manual = rows.filter(r => rowCategory(r) === 'symptom' && r.value != null);
   const monitoring = state.snapshot.monitoring || {};
   const sim = state.monitor.simulation?.active?.[state.id];
   const labCount = labs.filter(r => r.value != null).length;
   const radiationCount = radiation.filter(r => r.value != null).length;
-  return `<div class="section-header"><div><h2>Current measurements</h2><p>Current value and preflight baseline · assessed against the supplied limits</p></div><span class="simulation-label">${monitoring.synthetic ? '● SIMULATED DATA' : '● ' + esc(String(monitoring.source || 'AWAITING SOURCE').toUpperCase())}</span></div>${!state.snapshot.mission_day ? '<div class="inline-message">Monitoring begins with the first valid in-mission measurement. Preflight baselines are reference values and do not populate current readings.</div>' : ''}<div class="grid vitals-grid">${vitals.map(readingCard).join('') || '<div class="empty">No current sensor measurements. Start a simulation or supply sensor packets.</div>'}</div>${manual.length ? '<div class="grid vitals-grid spaced-top">' + manual.map(readingCard).join('') + '</div>' : ''}<details class="panel overview-details" data-detail="overview-labs" ${state.openDetails.has('overview-labs') ? 'open' : ''}><summary><strong>Laboratory results</strong><span class="muted small">${labCount ? labCount + ' imported measurements' : 'No results imported'} · Expand</span></summary><p class="hint spaced-top">Manually imported results retain their collection dates. Baselines remain separate from current results.</p>${compactRows(labs)}</details><details class="panel overview-details" data-detail="overview-radiation" ${state.openDetails.has('overview-radiation') ? 'open' : ''}><summary><strong>Radiation & exposure windows</strong><span class="muted small">${radiationCount} quantities reported · Expand</span></summary><p class="hint spaced-top">Required windows and exposure provenance must be available before comparison. Career baseline values do not establish complete history.</p>${compactRows(radiation)}</details><section class="panel"><div class="section-header"><div><h2>Simulation console</h2><p>Explicit test data, isolated from observed measurements. No physical device is required.</p></div><span class="pill projected">${sim ? 'Running' : 'Stopped'}</span></div><div class="simulation-controls"><select id="simulation-mode" aria-label="Simulation mode"><option value="normal">Within limits</option><option value="caution">Caution values</option><option value="critical">Critical values</option><option value="qtc">Prolonged QTc</option><option value="co2">High cabin CO₂</option><option value="cardiac_arrest">Heart-rate collapse</option></select><button class="button primary" data-simulation="start">Start continuous</button><button class="button" data-simulation="once">One reading / scenario</button><button class="button" data-simulation="stop">Stop</button></div><p class="hint simulation-hint">Heart-rate collapse plays an increase followed by zero within the 60-second buffer. A zero vital value raises a warning; poor signal remains distinct from a possible arrest.</p></section><div class="panel"><div class="section-header"><div><h2>Session storage</h2><p>Normal sensor samples remain in memory for ${esc(monitoring.buffer_seconds || 60)} seconds.</p></div><button class="button subtle" id="import-packet">Import sensor packet</button></div><div class="forecast-numbers"><div><small>Buffer samples</small>${esc(monitoring.buffer_samples ?? 0)}</div><div><small>Daily retention</small>Averages & totals</div><div><small>Warnings</small>Saved as events</div></div><p class="hint no-margin">${esc(monitoring.retention_note || 'Longer-term session history stores derived summaries and exposure coverage. A missing exposure window remains unassessed.')}</p></div>`;
+  return `<div class="section-header"><div><h2>Current measurements</h2><p>Current value and preflight baseline · assessed against the supplied limits</p></div><span class="simulation-label" data-live-region="source">${monitoring.synthetic ? '● SIMULATED DATA' : '● ' + esc(String(monitoring.source || 'AWAITING SOURCE').toUpperCase())}</span></div>${!state.snapshot.mission_day ? '<div class="inline-message">Monitoring begins with the first valid in-mission measurement. Preflight baselines are reference values and do not populate current readings.</div>' : ''}<div class="grid vitals-grid">${vitals.map(readingCard).join('') || '<div class="empty">No current sensor measurements. Start a simulation or supply sensor packets.</div>'}</div>${manual.length ? '<div class="grid vitals-grid spaced-top">' + manual.map(readingCard).join('') + '</div>' : ''}<details class="panel overview-details" data-detail="overview-labs" ${state.openDetails.has('overview-labs') ? 'open' : ''}><summary><strong>Laboratory results</strong><span class="muted small" data-live-region="lab-count">${labCount ? labCount + ' imported measurements' : 'No results imported'} · Expand</span></summary><p class="hint spaced-top">Manually imported results retain their collection dates. Baselines remain separate from current results.</p>${reportControls('labs')}<div data-live-region="labs">${compactRows(labs)}</div></details><details class="panel overview-details" data-detail="overview-radiation" ${state.openDetails.has('overview-radiation') ? 'open' : ''}><summary><strong>Radiation & exposure windows</strong><span class="muted small" data-live-region="dose-count">${radiationCount} quantities reported · Expand</span></summary><p class="hint spaced-top">Required windows and exposure provenance must be available before comparison. Career baseline values do not establish complete history.</p>${reportControls('dose')}<div data-live-region="dose">${compactRows(radiation)}</div></details><section class="panel"><div class="section-header"><div><h2>Simulation console</h2><p>Explicit test data, isolated from observed measurements. No physical device is required.</p></div><span class="pill projected" data-live-region="sim-status">${sim ? 'Running' : 'Stopped'}</span></div><div class="simulation-controls"><select id="simulation-mode" aria-label="Simulation mode"><option value="normal">Within limits</option><option value="caution">Caution values</option><option value="critical">Critical values</option><option value="qtc">Prolonged QTc</option><option value="co2">High cabin CO₂</option><option value="cardiac_arrest">Heart-rate collapse</option></select><button class="button primary" data-simulation="start">Start continuous</button><button class="button" data-simulation="once">One reading / scenario</button><button class="button" data-simulation="stop">Stop</button></div><p class="hint simulation-hint">Heart-rate collapse plays an increase followed by zero within the 60-second buffer. A zero vital value raises a warning; poor signal remains distinct from a possible arrest.</p></section><div class="panel"><div class="section-header"><div><h2>Session storage</h2><p>Normal sensor samples remain in memory for ${esc(monitoring.buffer_seconds || 60)} seconds.</p></div><button class="button subtle" id="import-packet">Import sensor packet</button></div><div class="forecast-numbers"><div><small>Buffer samples</small><span data-live-region="buffer">${esc(monitoring.buffer_samples ?? 0)}</span></div><div><small>Daily retention</small>Averages & totals</div><div><small>Warnings</small>Saved as events</div></div><p class="hint no-margin">${esc(monitoring.retention_note || 'Longer-term session history stores derived summaries and exposure coverage. A missing exposure window remains unassessed.')}</p></div>`;
 }
 
 function bulletList(items) { return arr(items).length ? '<ul>' + items.map(x => '<li>' + esc(typeof x === 'string' ? x : JSON.stringify(x)) + '</li>').join('') + '</ul>' : ''; }
@@ -126,23 +129,23 @@ function sourceLinks(sources) {
 }
 function treatmentHtml(t) {
   const detailKey = "treatment:" + (t.treatment_name || t.name || "reference");
-  return `<details class="treatment" data-detail="${esc(detailKey)}" ${state.openDetails.has(detailKey) ? "open" : ""}><summary><h4>${esc(t.treatment_name || t.name || 'Treatment reference')}</h4><span class="muted tiny">${esc(t.indication || t.context || 'Supplied treatment reference')} · Expand details</span></summary><div class="treatment-detail">${t.diagnostic_markers ? '<p><strong>Indication context:</strong> ' + esc(t.diagnostic_markers) + '</p>' : ''}${bulletList(t.instructions)}${t.dosage ? '<p><strong>Dosage in source:</strong> ' + esc(t.dosage) + '</p>' : ''}${t.warnings_and_interactions ? '<p class="warning-copy"><strong>Warnings & interactions:</strong> ' + esc(t.warnings_and_interactions) + '</p>' : ''}${t.context ? '<p><strong>Context:</strong> ' + esc(t.context) + '</p>' : ''}<div class="sources">${sourceLinks(t.sources)}</div></div></details>`;
+  return `<details class="treatment" data-detail="${esc(detailKey)}" ${state.openDetails.has(detailKey) ? "open" : ""}><summary><h4>${esc(t.treatment_name || t.name || 'Treatment reference')}</h4><span class="muted tiny">${esc(t.indication || t.context || 'Supplied treatment reference')} · Expand details</span></summary><div class="treatment-detail">${t.allergy_safety ? '<p class="warning-copy"><strong>Allergy check: ' + esc(human(t.allergy_safety.status)) + '</strong> · ' + esc(t.allergy_safety.reason) + '</p>' : ''}${t.diagnostic_markers ? '<p><strong>Indication context:</strong> ' + esc(t.diagnostic_markers) + '</p>' : ''}${bulletList(t.instructions)}${t.dosage ? '<p><strong>Dosage in source:</strong> ' + esc(t.dosage) + '</p>' : ''}${t.warnings_and_interactions ? '<p class="warning-copy"><strong>Warnings & interactions:</strong> ' + esc(t.warnings_and_interactions) + '</p>' : ''}${t.context ? '<p><strong>Context:</strong> ' + esc(t.context) + '</p>' : ''}<div class="sources">${sourceLinks(t.sources)}</div></div></details>`;
 }
 function findingHtml(f) {
   const key = f.rule_id || f.condition_id || f.name;
   const evidence = arr(f.evidence).map(e => e.kind === 'symptom' ? state.meta.symptoms_en?.[e.id] || human(e.id) : e.kind === 'context' ? state.meta.context_en?.[e.id] || human(e.id) : `${human(e.key)} ${fmt(e.value)}${e.level ? ' · ' + human(e.level) : ''}`);
-  return `<details class="finding" data-detail="${esc(key)}" ${state.openDetails.has(key) ? 'open' : ''}><summary>${pill(f.level || f.numeric_level || 'MONITOR')}<div><div class="finding-name">${esc(f.name || human(f.condition_id))}</div><div class="finding-id">${esc(key)} · ${esc(f.group || 'Decision support')}${f.privacy_sensitive ? ' · Sensitive' : ''}</div></div></summary><div class="finding-body">${f.escalation_only ? '<p class="warning-copy">Warning signs associated with this condition. The base condition has not been established.</p>' : ''}<div class="evidence">${evidence.map(e => '<span>' + esc(e) + '</span>').join('')}</div>${f.logic ? '<p class="spaced-top">' + esc(f.logic) + '</p>' : ''}${f.red_flag_text ? '<p class="warning-copy">' + esc(f.red_flag_text) + '</p>' : ''}${arr(f.severity_markers).length ? '<h3>Severity markers</h3>' + bulletList(f.severity_markers) : ''}${arr(f.confirmation).length ? '<h3>Confirmation</h3>' + bulletList(f.confirmation) : ''}${arr(f.do_not).length ? '<h3>Do not</h3>' + bulletList(f.do_not) : ''}${f.hide_therapy ? '<p class="warning-copy">Routine treatment guidance is withheld because warning signs require evaluation.</p>' : '<h3>Linked treatment references</h3>' + (arr(f.treatments).length ? f.treatments.map(treatmentHtml).join('') : '<p>No detailed treatment entry is linked to this finding.</p>')}${f.limitations ? '<p>' + esc(f.limitations) + '</p>' : ''}${f.source ? '<h3>Diagnostic source</h3><div class="sources">' + sourceLinks(f.source) + '</div>' : ''}</div></details>`;
+  return `<details class="finding" data-detail="${esc(key)}" ${state.openDetails.has(key) ? 'open' : ''}><summary>${pill(f.level || f.numeric_level || 'MONITOR')}<div><div class="finding-name">${esc(f.name || human(f.condition_id))}</div><div class="finding-id">${esc(key)} · ${esc(f.group || 'Decision support')}${f.privacy_sensitive ? ' · Sensitive' : ''}</div></div></summary><div class="finding-body">${f.escalation_only ? '<p class="warning-copy">Warning signs associated with this condition. The base condition has not been established.</p>' : ''}<div class="evidence">${evidence.map(e => '<span>' + esc(e) + '</span>').join('')}</div>${arr(f.allergy_evidence).length ? '<p class="warning-copy">Matched reported exposure: ' + esc(f.allergy_evidence.map(e=>e.exposure).join(', ')) + '</p>' : ''}${f.logic ? '<p class="spaced-top">' + esc(f.logic) + '</p>' : ''}${f.red_flag_text ? '<p class="warning-copy">' + esc(f.red_flag_text) + '</p>' : ''}${arr(f.severity_markers).length ? '<h3>Severity markers</h3>' + bulletList(f.severity_markers) : ''}${arr(f.confirmation).length ? '<h3>Confirmation</h3>' + bulletList(f.confirmation) : ''}${arr(f.do_not).length ? '<h3>Do not</h3>' + bulletList(f.do_not) : ''}${f.hide_therapy ? '<p class="warning-copy">Routine treatment guidance is withheld because warning signs require evaluation.</p>' : '<h3>Linked treatment references</h3>' + (arr(f.treatments).length ? f.treatments.map(treatmentHtml).join('') : '<p>No detailed treatment entry is linked to this finding.</p>')}${f.limitations ? '<p>' + esc(f.limitations) + '</p>' : ''}${f.source ? '<h3>Diagnostic source</h3><div class="sources">' + sourceLinks(f.source) + '</div>' : ''}</div></details>`;
 }
 function renderFindings() {
   const findings = arr(state.snapshot.assessment?.findings);
-  const library = state.meta.treatments_reference || state.meta.treatment_library || state.meta.treatments || [];
-  return `<div class="section-header"><div><h2>Findings & treatment references</h2><p>Findings explain the evidence that triggered a supplied diagnostic rule.</p></div>${pill(state.snapshot.assessment?.overall)}</div><div class="findings-list">${findings.map(findingHtml).join('') || '<div class="empty panel">No diagnostic findings are active.<br>Missing measurements do not establish that a condition is absent.</div>'}</div>${arr(library).length ? '<section class="panel"><h2>Treatment reference library</h2><p class="hint">Reference entries are not automatic diagnoses. Potassium and magnesium have no supplied thresholds and do not trigger automatic findings.</p><input class="search library-search" id="library-search" value="' + esc(state.librarySearch) + '" placeholder="Search conditions, treatments or medicines…" aria-label="Search treatments"><p class="hint" id="library-search-count" role="status" aria-live="polite"></p><div id="library-items">' + library.map((item, i) => `<details class="finding library-item" data-detail="${esc("library:" + (item.condition_id || i))}" ${state.openDetails.has("library:" + (item.condition_id || i)) ? "open" : ""} data-library-text="${esc((item.condition_name || item.name || item.condition_id || '').toLowerCase())}"><summary><div><div class="finding-name">${esc(item.condition_name || item.name || human(item.condition_id))}</div><div class="finding-id">${esc(item.condition_id || '')}</div></div></summary><div class="finding-body">${arr(item.treatments).map(treatmentHtml).join('')}</div></details>`).join('') + '</div></section>' : ''}`;
+  const library = state.safeLibrary || [];
+  return `<div class="section-header"><div><h2>Findings & treatment references</h2><p>Findings explain the evidence that triggered a supplied diagnostic rule.</p></div>${pill(state.snapshot.assessment?.overall)}</div><div class="findings-list">${findings.map(findingHtml).join('') || '<div class="empty panel">No diagnostic findings are active.<br>Missing measurements do not establish that a condition is absent.</div>'}</div><section class="panel"><h2>Abnormal measurements & reference links</h2><p class="hint">Numeric alerts remain distinct from diagnostic findings. Open a connection to see which rules and sources apply.</p>${compactRows(readingRows().filter(r=>['caution','critical'].includes(r.status)))}</section>${arr(library).length ? '<section class="panel"><h2>Treatment reference library</h2><p class="hint">Reference entries are not automatic diagnoses. Potassium and magnesium have no supplied thresholds and do not trigger automatic findings.</p><input class="search library-search" id="library-search" value="' + esc(state.librarySearch) + '" placeholder="Search conditions, treatments or medicines…" aria-label="Search treatments"><p class="hint" id="library-search-count" role="status" aria-live="polite"></p><div id="library-items">' + library.map((item, i) => `<details class="finding library-item" data-detail="${esc("library:" + (item.condition_id || i))}" ${state.openDetails.has("library:" + (item.condition_id || i)) ? "open" : ""} data-library-text="${esc((item.condition_name || item.name || item.condition_id || '').toLowerCase())}"><summary><div><div class="finding-name">${esc(item.condition_name || item.name || human(item.condition_id))}</div><div class="finding-id">${esc(item.condition_id || '')}</div></div></summary><div class="finding-body">${arr(item.treatments).map(treatmentHtml).join('')}</div></details>`).join('') + '</div></section>' : ''}`;
 }
 function choiceHtml(key, label, set, kind) { return `<label class="choice"><input type="checkbox" data-choice="${kind}" value="${esc(key)}" ${set.has(key) ? 'checked' : ''}><span>${esc(label)}</span></label>`; }
 function renderSymptoms() {
   const symptoms = Object.entries(state.meta.symptoms_en || {}), context = Object.entries(state.meta.context_en || {}), derived = [...Object.entries(state.meta.derived || {}), ...arr(state.meta.readings).filter(r => r.category === 'symptom').map(r => [r.key, r])];
   const saved = state.snapshot.state?.readings || {};
-  return `<div class="section-header"><div><h2>Reported symptoms & context</h2><p>These are manual reports. Sensor readings continue independently.</p></div><span class="selection-count" id="selection-count">${state.selectedSymptoms.size} symptoms selected</span></div><div class="symptom-toolbar"><input class="search" id="symptom-search" placeholder="Find symptoms or context…" value="${esc(state.symptomSearch)}" aria-label="Search symptoms"><button class="button subtle" id="clear-symptoms">Clear</button></div><div class="choices" id="symptom-choices">${symptoms.map(([k, v]) => choiceHtml(k, v, state.selectedSymptoms, 'symptom')).join('')}</div><p class="hint" id="symptom-search-count" role="status" aria-live="polite"></p><section class="panel"><h2>Context</h2><div class="choices spaced-top" id="context-choices">${context.map(([k, v]) => choiceHtml(k, v, state.selectedContext, 'context')).join('')}</div></section>${derived.length ? '<section class="panel"><h2>Manual measurements</h2><p class="hint">Only enter values that were actually measured or reported. Leave unavailable values blank.</p><div class="form-grid">' + derived.map(([k, v]) => `<label class="field">${esc(v.label || v.description || human(k))}${v.unit ? ' (' + esc(v.unit) + ')' : ''}<input type="number" step="any" data-derived="${esc(k)}" value="${esc(saved[k] ?? '')}" placeholder="Not supplied"></label>`).join('') + '</div></section>' : ''}<div class="form-actions"><span class="hint" id="symptom-save-state">${state.symptomDirty ? 'Unsaved changes' : 'Reports saved independently of sensor samples'}</span><button class="button primary" id="save-symptoms">Save reports & assess</button></div>`;
+  return `<div class="section-header"><div><h2>Reported symptoms & context</h2><p>These are manual reports. Sensor readings continue independently.</p></div><span class="selection-count" id="selection-count">${state.selectedSymptoms.size} symptoms selected</span></div><div class="symptom-toolbar"><input class="search" id="symptom-search" placeholder="Find symptoms or context…" value="${esc(state.symptomSearch)}" aria-label="Search symptoms"><button class="button subtle" id="clear-symptoms">Clear</button></div><div class="choices" id="symptom-choices">${symptoms.map(([k, v]) => choiceHtml(k, v, state.selectedSymptoms, 'symptom')).join('')}</div><p class="hint" id="symptom-search-count" role="status" aria-live="polite"></p><section class="panel"><h2>Context</h2><div class="choices spaced-top" id="context-choices">${context.map(([k, v]) => choiceHtml(k, v, state.selectedContext, 'context')).join('')}</div></section><section class="panel"><h2>Actual recent exposures</h2><p class="hint">Enter only substances actually received, comma-separated. Matching profile allergies inform allergic-reaction findings.</p><input id="reported-exposures" class="search" value="${esc(arr(state.snapshot.state?.reported_exposures).join(', '))}" aria-label="Actual recent exposures"></section>${derived.length ? '<section class="panel"><h2>Manual measurements</h2><p class="hint">Only enter values that were actually measured or reported. Leave unavailable values blank.</p><div class="form-grid">' + derived.map(([k, v]) => `<label class="field">${esc(v.label || v.description || human(k))}${v.unit ? ' (' + esc(v.unit) + ')' : ''}<input type="number" step="any" data-derived="${esc(k)}" value="${esc(saved[k] ?? '')}" placeholder="Not supplied"></label>`).join('') + '</div></section>' : ''}<div class="form-actions"><span class="hint" id="symptom-save-state">${state.symptomDirty ? 'Unsaved changes' : 'Reports saved independently of sensor samples'}</span><button class="button primary" id="save-symptoms">Save reports & assess</button></div>`;
 }
 function summaryTable(rows, columns) {
   if (!rows.length) return '<div class="empty">No records yet.</div>';
@@ -178,9 +181,9 @@ function renderProfile() {
 }
 function renderContent() {
   if (!state.snapshot) { $('#content').innerHTML = '<div class="empty large">Import a baseline profile to begin monitoring.</div>'; return; }
-  const renderer = { overview: renderOverview, findings: renderFindings, symptoms: renderSymptoms, history: renderHistory, forecasts: renderForecasts, profile: renderProfile }[state.tab] || renderOverview;
+  const renderer = { overview: renderOverview, findings: renderFindings, symptoms: renderSymptoms, history: renderHistory, forecasts: renderForecasts, profile: renderProfile, medication: renderMedication }[state.tab] || renderOverview;
   $('#content').innerHTML = renderer();
-  bindContent();
+  bindContent(); bindReportControls(); bindMedication();
 }
 function bindContent() {
   $$('[data-simulation]').forEach(b => b.onclick = guard(async () => {
@@ -207,7 +210,7 @@ function bindContent() {
     $('#clear-symptoms').onclick = () => { state.selectedSymptoms.clear(); state.selectedContext.clear(); state.symptomDirty = true; $$('[data-choice]').forEach(i => i.checked = false); $('#selection-count').textContent = '0 symptoms selected'; $('#symptom-save-state').textContent = 'Unsaved changes'; };
     $('#save-symptoms').onclick = guard(async () => {
       const readings = {}; $$('[data-derived]').forEach(i => { readings[i.dataset.derived] = i.value.trim() === '' ? null : Number(i.value); });
-      state.snapshot = await api('PUT', idPath() + '/symptoms', { symptoms: [...state.selectedSymptoms], context: [...state.selectedContext], readings });
+      state.snapshot = await api('PUT', idPath() + '/symptoms', { symptoms: [...state.selectedSymptoms], context: [...state.selectedContext], readings, reported_exposures: $('#reported-exposures').value.split(',').map(v=>v.trim()).filter(Boolean) });
       state.symptomDirty = false; toast('Reports saved. Findings updated.'); renderHeading(); renderWarnings(); renderContent();
     });
   }
@@ -242,7 +245,9 @@ function openImport(kind) {
   $('#submit-import').onclick = guard(async () => {
     const text = $('#json-text').value.trim(); if (!text) throw new Error('Select a JSON file or paste its contents.');
     let payload; try { payload = JSON.parse(text); } catch (_) { throw new Error('The document is not valid JSON.'); }
-    const result = await api('POST', kind === 'profile' ? '/astronauts' : idPath() + (kind === 'lab' ? '/lab' : '/ingest'), payload);
+    const target=kind === 'profile' ? '/astronauts' : idPath() + (kind === 'lab' ? '/lab' : '/ingest');
+    const response=await fetch('/api'+target,{method:'POST',headers:{'Content-Type':'application/json'},body:text});
+    const result=await response.json();if(!response.ok)throw new Error(result.error||'Import failed');
     dialog.close();
     if (kind === 'profile') { state.crew = await api('GET', '/astronauts'); await selectCrew(result.id || result.astronaut_id || payload.astronaut_id); }
     else { await refresh(); if (kind === 'lab') { state.tab = 'overview'; renderHeading(); renderContent(); } }
@@ -252,6 +257,7 @@ function openImport(kind) {
 }
 async function selectCrew(id) {
   state.id = id; state.snapshot = await api('GET', idPath()); state.history = null; state.forecast = null; state.symptomDirty = false; state.openDetails.clear();
+  state.safeLibrary=await api('GET',idPath()+'/treatments'); state.libraryPatient=id;
   syncReports(); renderCrew(); renderHeading(); renderWarnings();
   if (state.tab === 'history') state.history = await api('GET', idPath() + '/history');
   renderContent();
@@ -266,6 +272,7 @@ async function refresh() {
   try {
     const [crew, monitor] = await Promise.all([api('GET', '/astronauts'), api('GET', '/monitor')]);
     state.crew = crew; state.monitor = monitor;
+    if(!state.startupSeeded){ for(const [aid,ids] of Object.entries(monitor.startup_event_ids||{})) for(const id of ids)state.seenAlerts.add(aid+':'+id); state.startupSeeded=true; }
     for (const member of crew) {
       const memberId = member.id || member.astronaut_id, count = member.active_alerts || 0;
       if (memberId !== state.id && count > (state.crewAlertCounts[memberId] || 0) && state.id) {
@@ -278,17 +285,12 @@ async function refresh() {
     if (!state.id && crew.length) { const requested = new URLSearchParams(location.search).get('astronaut'); const first = crew.find(c => (c.id || c.astronaut_id) === requested) || crew.find(c => c.active_alerts > 0) || crew[0]; state.id = first.id || first.astronaut_id; }
     if (state.id && !crew.some(c => (c.id || c.astronaut_id) === state.id)) state.id = crew[0]?.id || crew[0]?.astronaut_id || null;
     if (state.id) state.snapshot = await api('GET', idPath()); else state.snapshot = null;
+    if(state.id && state.libraryPatient!==state.id){state.safeLibrary=await api('GET',idPath()+'/treatments');state.libraryPatient=state.id;}
     connection(true); syncReports(); renderCrew(); renderHeading(); renderWarnings();
     // Preserve forms, open treatment references, and scroll position during background updates.
-    if (state.tab === 'overview') {
-      const mode = $('#simulation-mode')?.value;
-      const top = window.scrollY; renderContent(); if (mode && $('#simulation-mode')) $('#simulation-mode').value = mode; window.scrollTo(0, top);
-    } else if (state.tab === 'findings') {
-      const top = window.scrollY, focused = document.activeElement;
-      const searchFocus = focused?.id === 'library-search', start = focused?.selectionStart, end = focused?.selectionEnd;
-      renderContent();
-      if (searchFocus && $('#library-search')) { $('#library-search').focus({ preventScroll: true }); $('#library-search').setSelectionRange(start, end); }
-      window.scrollTo(0, top);
+    if (state.tab === 'overview' && $('#content .vitals-grid')) patchOverview();
+    else if (state.tab === 'findings' && !state.pointerBusy && document.activeElement?.id !== 'library-search' && !document.getSelection()?.toString()) {
+      const top=window.scrollY;renderContent();window.scrollTo(0,top);
     } else if (!$('#content').children.length) renderContent();
   } catch (e) { connection(false); if (!state.snapshot) $('#content').innerHTML = `<div class="empty large">The local monitor is unavailable.<br>${esc(e.message)}<br>Keep the Python application running, then this page will reconnect.</div>`; }
   finally { state.polling = false; }
@@ -297,6 +299,7 @@ $('#import-profile').onclick = () => openImport('profile');
 $('#import-lab').onclick = () => openImport('lab');
 $('#sound-toggle').onchange = e => { state.sound = e.target.checked; if (state.sound) beep(); };
 $('#notification-toggle').onclick = guard(async () => {
+  if(state.meta.native_desktop){toast('Desktop warning restoration is enabled.');return;}
   if (!('Notification' in window)) return toast('This browser does not support desktop notifications.');
   const permission = await Notification.requestPermission();
   $('#notification-toggle').textContent = permission === 'granted' ? 'Notifications enabled' : 'Notifications unavailable';
@@ -308,3 +311,66 @@ async function initialize() {
   setInterval(async () => { if (!Object.keys(state.meta).length) { try { state.meta = await api('GET', '/meta'); } catch (_) { /* Retried next poll. */ } } await refresh(); }, 2000);
 }
 initialize();
+
+function patchOverview(){
+  if(state.pointerBusy || document.getSelection()?.toString())return;
+  const fresh=document.createElement('div');fresh.innerHTML=renderOverview();
+  for(const selector of ['.vitals-grid','[data-live-region="labs"]','[data-live-region="dose"]','[data-live-region="source"]','[data-live-region="sim-status"]','[data-live-region="buffer"]','[data-live-region="lab-count"]','[data-live-region="dose-count"]']){
+    const current=$(selector,$('#content')),next=$(selector,fresh);
+    if(current&&next&&current.innerHTML!==next.innerHTML)current.innerHTML=next.innerHTML;
+  }
+  bindConnections();
+}
+document.addEventListener('pointerdown',()=>{state.pointerBusy=true;});
+document.addEventListener('pointerup',()=>setTimeout(()=>{state.pointerBusy=false;},180));
+document.addEventListener('pointercancel',()=>{state.pointerBusy=false;});
+function reportControls(scope){
+ const scenarios=scope==='labs'?state.meta.lab_scenarios:state.meta.dose_scenarios;
+ const measurements=arr(state.meta.readings).filter(r=>r.category===(scope==='labs'?'blood_panel':'radiation'));
+ return `<section class="report-simulation"><h3>Simulate ${scope==='labs'?'a complete blood panel':'all dose quantities'}</h3><p class="hint">On-demand synthetic data only. ${scope==='labs'?'All 12 analytes use this astronaut’s reference bands.':'All 19 dose values include declared hypothetical exposure coverage; no real year of acquisition is implied.'}</p><div class="form-grid"><label class="field">Scenario<select data-report-scenario="${scope}">${Object.entries(scenarios||{}).map(([key,label])=>`<option value="${esc(key)}">${esc(label)}</option>`).join('')}</select></label><label class="field">Measurement for single-value case<select data-report-key="${scope}">${measurements.map(r=>`<option value="${esc(r.key)}">${esc(r.label)} (${esc(r.unit)})</option>`).join('')}</select></label><label class="field">Direction<select data-report-direction="${scope}"><option value="high">Above upper limit</option>${scope==='labs'?'<option value="low">Below lower limit</option>':''}<option value="normal">Within limits</option></select></label></div><div class="form-actions"><button class="button primary" data-run-report="${scope}">Run ${scope==='labs'?'lab':'dose'} simulation</button><button class="button" data-go-findings>View linked findings</button></div><div data-report-result="${scope}" class="hint" aria-live="polite"></div></section>`;
+}
+function bindReportControls(){
+ for(const scope of ['labs','dose']){
+  const scenario=$(`[data-report-scenario="${scope}"]`),key=$(`[data-report-key="${scope}"]`),direction=$(`[data-report-direction="${scope}"]`);
+  if(!scenario)continue;
+  const update=()=>{
+   const single=scenario.value==='single';key.disabled=!single;direction.disabled=!single;
+   const sex=state.snapshot.profile.personal_information.gender;
+   const rule=state.meta.threshold_catalog[key.value+'_'+sex]||state.meta.threshold_catalog[key.value]||{};
+   for(const option of direction.options){const suffix=option.value==='low'?'below':'above';option.disabled=option.value!=='normal'&&rule['caution_'+suffix]==null&&rule['critical_'+suffix]==null;}
+   if(direction.selectedOptions[0]?.disabled)direction.value='high';
+  };scenario.onchange=update;key.onchange=update;update();
+ }
+ $$('[data-run-report]').forEach(button=>button.onclick=guard(async()=>{
+  const scope=button.dataset.runReport;
+  const result=await api('POST',idPath()+'/simulate-report',{scope,scenario:$(`[data-report-scenario="${scope}"]`).value,key:$(`[data-report-key="${scope}"]`).value,direction:$(`[data-report-direction="${scope}"]`).value});
+  state.snapshot=result;state.reportResult=result.report_simulation;
+  await refresh();patchOverview();
+  $(`[data-report-result="${scope}"]`).textContent=`Generated ${result.report_simulation.measurement_count} synthetic values. Open Why / linked rules beside a result, or View linked findings.`;
+  toast('Synthetic report generated and assessed.');
+ }));
+ $$('[data-go-findings]').forEach(b=>b.onclick=()=>{state.tab='findings';renderHeading();renderContent();});
+ bindConnections();
+}
+function bindConnections(){
+ $$('[data-connections]').forEach(button=>button.onclick=guard(async()=>{
+  const result=await api('POST',idPath()+'/connections',{key:button.dataset.connections});
+  const dialog=$('#import-dialog');
+  dialog.innerHTML=`<button class="modal-close" aria-label="Close">×</button><h2>${esc(result.measurement.label)}</h2><p>${fmt(result.measurement.value)} ${esc(result.measurement.unit)} · ${esc(statusLabel(result.measurement.status))}</p><p>${esc(result.measurement.reason)}</p><h3>Configured reference</h3><p>Window: ${esc(human(result.reference.window))}</p>${summaryTable(Object.entries(result.effective_limits).filter(([,v])=>v!=null).map(([key,value])=>({key,value})),[['Boundary',r=>esc(human(r.key))],['Value',r=>fmt(r.value)+' '+esc(result.reference.unit)]])}<h3 class="spaced-top">Connections to supplied medical rules</h3><p>${esc(result.interpretation)}</p>${result.linked_rules.map(rule=>`<article class="event"><div class="event-body"><strong>${esc(rule.id)} · ${esc(rule.name)}</strong><p>${rule.active?'Triggered in this case':'Not currently triggered'} · ${esc(rule.logic)}</p></div></article>`).join('')}<h3 class="spaced-top">Reference source</h3>${sourceLinks(result.reference.source)}<div class="form-actions"><button class="button" id="close-connections">Close</button><button class="button primary" id="show-linked-findings">View findings & treatments</button></div>`;
+  $('.modal-close',dialog).onclick=()=>dialog.close();$('#close-connections').onclick=()=>dialog.close();$('#show-linked-findings').onclick=()=>{dialog.close();state.tab='findings';result.linked_rules.filter(r=>r.active).forEach(r=>state.openDetails.add(r.id));renderHeading();renderContent();};dialog.showModal();
+ }));
+}
+function renderMedication(){
+ const allergies=arr(state.snapshot.profile?.medical_history?.allergies);
+ return `<div class="section-header"><div><h2>Medication safety</h2><p>Checks use the selected astronaut’s recorded allergies and explicit drug-family mapping.</p></div></div><section class="panel"><label class="field">Recorded allergies, comma-separated<input id="allergy-edit" value="${esc(allergies.join(', '))}"></label><button class="button" id="save-allergies">Save allergy history</button></section><section class="panel"><label class="field">One active ingredient<input id="medication-name" placeholder="For example: amoxicillin"></label><button class="button" id="check-medication">Check medication</button><div id="medication-result" class="hint spaced-top"></div><label class="field spaced-top">Manual record note<input id="medication-note"></label><button class="button primary" id="record-medication" disabled>Record medication use</button><p class="hint">Known allergy matches are blocked. Unknown ingredients and uncertain reactions require review. Other clinical contraindications still apply.</p></section>`;
+}
+function bindMedication(){
+ if(!$('#medication-name'))return;
+ const reset=()=>{state.medCheck=null;$('#record-medication').disabled=true;$('#medication-result').textContent='Run a current allergy check before recording.';};
+ $('#medication-name').oninput=reset;
+ $('#save-allergies').onclick=guard(async()=>{state.snapshot=await api('PUT',idPath()+'/allergies',{allergies:$('#allergy-edit').value.split(',').map(v=>v.trim()).filter(Boolean)});state.safeLibrary=await api('GET',idPath()+'/treatments');reset();toast('Allergy history saved.');renderHeading();});
+ $('#check-medication').onclick=guard(async()=>{state.medCheck=await api('POST',idPath()+'/medication-check',{medication:$('#medication-name').value});$('#medication-result').textContent=human(state.medCheck.status)+': '+state.medCheck.reason;$('#record-medication').disabled=!state.medCheck.recording_allowed;});
+ $('#record-medication').onclick=guard(async()=>{await api('POST',idPath()+'/medication',{medication:$('#medication-name').value,note:$('#medication-note').value});toast('Medication recorded.');});
+}
+$('#hide-desktop').onclick=guard(()=>api('POST','/window/hide',{}));
+$('#quit-desktop').onclick=guard(()=>api('POST','/window/quit',{}));

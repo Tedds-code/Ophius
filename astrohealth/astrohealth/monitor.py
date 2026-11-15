@@ -17,6 +17,7 @@ import uuid
 
 from .engine import Case, KnowledgeBase, baseline_readings, validate_profile
 from .storage import Storage
+from .allergies import AllergyGuard
 
 UTC = timezone.utc
 BUFFER_SECONDS = 60
@@ -70,6 +71,7 @@ class Monitor:
         config_dir = Path(config_dir)
         self.kb = KnowledgeBase(config_dir / "thresholds.json", config_dir / "diagnostic_rules.json",
                                 treatment_path=config_dir / "treatment.json")
+        self.allergy_guard = AllergyGuard(config_dir/'medication_allergens.json' if (config_dir/'medication_allergens.json').exists() else None)
         self.storage = Storage(self.data_dir / "astrohealth.sqlite3")
         self.profiles = {}
         self.states = {}
@@ -83,6 +85,7 @@ class Monitor:
         self.episodes = {}
         self.forecasts = {}
         self.closed = False
+        self.inactive_streams = set()
         for profile in self.storage.load_profiles():
             self._add_loaded(profile)
         for path in sorted(self.profiles_dir.glob("*.json")):
@@ -97,7 +100,7 @@ class Monitor:
         self.active_source[aid] = "observed"
         for source in ("observed", "simulation"):
             group = (aid, source)
-            self.states[group] = {"symptoms": [], "context": [], "readings": {}}
+            self.states[group] = {"symptoms": [], "context": [], "readings": {}, "reported_exposures": []}
             self.buffers[group] = deque()
             self.last[group] = {}
             self.seen[group] = {}
@@ -122,6 +125,7 @@ class Monitor:
                 self.states[(aid, source)] = {
                     "symptoms": [v for v in state.get("symptoms", []) if v in self.kb.vocab["symptoms"]],
                     "context": [v for v in state.get("context", []) if v in self.kb.vocab["context"]],
+                    "reported_exposures": list(state.get('reported_exposures', [])),
                     "readings": {k: v for k, v in state.get("readings", {}).items()
                                  if k in self.kb.derived or (k in self.kb.signals and self.kb.signals[k].get("category") == "symptom")}}
             if event.get("packet_id"):
@@ -134,6 +138,18 @@ class Monitor:
                         self.last_timestamp[watermark] = acquired
         while len(self.packet_ids) > 10000:
             self.packet_ids.popitem(last=False)
+
+        # Restore only findings supported by retained laboratory/context data.
+        # A new, unrelated sensor sample must not announce these again.
+        events = self.storage.events(aid)
+        for mode in ('observed', 'simulation'):
+            known = {event.get('rule_id'): event for event in events
+                     if event.get('source') == mode and event.get('kind') == 'finding'}
+            assessment, _ = self._assessment(aid, mode)
+            for finding in assessment['findings']:
+                prior = known.get(finding['rule_id'])
+                if prior and prior.get('severity') == finding.get('level'):
+                    self.episodes[(aid, mode, 'finding:'+finding['rule_id'])] = finding.get('level')
 
     def _now(self):
         value = self.clock()
@@ -326,6 +342,9 @@ class Monitor:
         rule = self.kb.signals[item["rule_name"]]
         if rule["category"] == "radiation":
             md = item["metadata"]
+            if mode == 'simulation' and md.get('synthetic_scenario_id') and md.get('synthetic_scenario_id') != stat.get('reported_metadata',{}).get('synthetic_scenario_id'):
+                # Independent hypothetical fixtures are not a continuous dose counter.
+                stat.pop('dose_context_error',None)
             kind = md.get("kind", "reported_window")
             if kind == "interval":
                 start, end = md.get("coverage_start"), md.get("coverage_end")
@@ -379,6 +398,8 @@ class Monitor:
             mode = self._source(observation.get("source", "jsonl"))
             known_rows = [row for row in self.storage.all_daily(aid) if row["source"] == mode and row["key"] == key]
             known_rows.extend(row for row in self.pending.values() if row["aid"] == aid and row["source"] == mode and row["key"] == key)
+            if mode=='simulation' and md.get('synthetic_scenario_id'):
+                known_rows=[row for row in known_rows if row.get('reported_metadata',{}).get('synthetic_scenario_id')==md['synthetic_scenario_id']]
             if any(row.get("dose_context_error") for row in known_rows):
                 return "needs_context", "Exposure counter reset or overlapping intervals require a new verified baseline"
             md = observation.get("metadata", {})
@@ -427,10 +448,12 @@ class Monitor:
             return
         self.episodes[key] = signature
         event = {**payload, "timestamp": iso(when), "source": mode, "synthetic": mode == "simulation"}
+        if 'treatments' in event:
+            event['treatments'] = [self.allergy_guard.treatment(self.profiles[aid],item) for item in event['treatments']]
         self.storage.add_event(aid, sid, event["kind"], event)
 
     def _recover(self, aid, mode, sid, key, when):
-        for prefix in ("limit:", "zero:", "sensor:"):
+        for prefix in ("limit:", "zero:", "sensor:", "lab:"):
             episode = (aid, mode, prefix + key)
             if episode in self.episodes:
                 del self.episodes[episode]
@@ -505,11 +528,15 @@ class Monitor:
                 eligible[key] = item["value"]
         st = self.states[group]
         eligible.update(st["readings"])
+        matched_exposures = self.allergy_guard.exposure_matches(self.profiles[aid], st.get('reported_exposures', []))
+        context = set(st['context'])
+        if matched_exposures:
+            context.add('suspected_allergen_exposure')
         day = self.mission_day(aid, mode)
         if day is not None:
             eligible["mission_day"] = day
         assessment = self.kb.assess(Case(sex=self.profiles[aid]["personal_information"]["gender"],
-            symptoms=set(st["symptoms"]), context=set(st["context"]), readings=eligible,
+            symptoms=set(st["symptoms"]), context=context, readings=eligible,
             mission_duration_days=self.profiles[aid]["mission_details"]["duration_days"]))
         # No live/lab evidence must never become a reassuring NORMAL banner.
         meaningful = {k: v for k, v in eligible.items() if k != "mission_day"}
@@ -536,6 +563,12 @@ class Monitor:
                 "limitations": "The sequence is a theoretical warning trigger, not an independently confirmed diagnosis.",
                 "do_not": [], "severity_markers": [], "privacy_sensitive": False,
                 "source": {"reference": "User-specified simulated emergency trigger"}})
+        assessment['allergy_context'] = {'recorded_allergies': self.allergy_guard.allergies(self.profiles[aid])[0],
+            'reported_exposures': list(st.get('reported_exposures', [])), 'matched_exposures': matched_exposures}
+        assessment['findings'] = [self.allergy_guard.finding(self.profiles[aid], f) for f in assessment['findings']]
+        for finding in assessment['findings']:
+            if finding.get('rule_id') in {'C01', 'C02'}:
+                finding['allergy_evidence'] = matched_exposures
         return assessment, observations
 
     def snapshot(self, aid):
@@ -564,7 +597,12 @@ class Monitor:
                         "type": "sensor", "baseline": baseline}
                 rows.append(row)
             events = self.storage.events(aid)
-            alerts = [event for event in events if not event.get("acknowledged") and event.get("kind") not in {"recovery", "symptom_report"} and event.get("source") == mode]
+            alerts = [event for event in events if not event.get("acknowledged") and event.get('severity') != 'INFO' and event.get("kind") not in {"recovery", "symptom_report"} and event.get("source") == mode]
+            for event in alerts:
+                if 'treatments' in event:
+                    event['treatments'] = [self.allergy_guard.treatment(profile,item) for item in event['treatments']]
+                if 'finding' in event:
+                    event['finding'] = self.allergy_guard.finding(profile,event['finding'])
             sid = self._session(aid, mode, self._now()) if self.storage.get_anchor(aid, mode) else None
             return {"id": aid, "profile": deepcopy(profile), "mission_day": self.mission_day(aid, mode),
                 "session_id": sid, "active_source": mode, "readings": rows, "assessment": assessment,
@@ -640,6 +678,8 @@ class Monitor:
                     self._event_episode(aid, mode, sid, "lab:" + key, when,
                         {"kind": "laboratory", "key": key, "value": item["value"], "unit": item["unit"],
                          "severity": "MONITOR" if status == "caution" else "URGENT", "message": f"{key}: {status}", "report_id": rid})
+                else:
+                    self._recover(aid, mode, sid, key, when)
             self._update_finding_events(aid, mode, sid, when)
             snap = self.snapshot(aid)
             snap["import"] = {"report_id": rid, "ignored_measurements": ignored, "note": saved["note"]}
@@ -661,6 +701,13 @@ class Monitor:
                     if unknown:
                         raise ValueError(f"Unknown {field}: {', '.join(sorted(unknown))}")
                     st[field] = sorted(set(value))
+            if 'reported_exposures' in payload:
+                exposures = payload['reported_exposures']
+                if not isinstance(exposures, list) or len(exposures) > 50 or any(not isinstance(v, str) or not v.strip() or len(v) > 160 for v in exposures):
+                    raise ValueError('Reported exposures must be a list of up to 50 nonempty names')
+                if any(v.strip().lower().startswith(('no ', 'not ', 'never ', 'denies ')) for v in exposures):
+                    raise ValueError('Enter names of actual exposures; leave the list empty instead of entering a negated statement')
+                st['reported_exposures'] = list(dict.fromkeys(v.strip() for v in exposures))
             values = payload.get("readings", {})
             if not isinstance(values, dict):
                 raise ValueError("Derived readings must be an object")
@@ -687,6 +734,46 @@ class Monitor:
                 raise KeyError(event_id)
             return self.snapshot(aid)
 
+    def check_medication(self, aid, payload):
+        with self.lock:
+            profile = self._profile(aid)
+            if not isinstance(payload, dict):
+                raise ValueError('Medication check must be an object')
+            return self.allergy_guard.check(profile, payload.get('medication'))
+
+    def record_medication(self, aid, payload):
+        with self.lock:
+            check = self.check_medication(aid, payload)
+            if not check['recording_allowed']:
+                raise ValueError('Medication entry blocked: '+check['reason'])
+            note = payload.get('note', '')
+            if not isinstance(note, str) or len(note) > 2000:
+                raise ValueError('Medication note must be text up to 2000 characters')
+            mode, now = self.active_source[aid], self._now()
+            event = self.storage.add_event(aid, self._session(aid, mode, now), 'medication_record', {
+                'timestamp': iso(now), 'source': mode, 'severity': 'INFO', 'medication': check['ingredient'],
+                'message': 'Manual medication record: '+check['ingredient'], 'note': note, 'allergy_check': check})
+            self.storage.acknowledge(aid, event['id'])
+            return event
+
+    def update_allergies(self, aid, payload):
+        with self.lock:
+            profile = deepcopy(self._profile(aid))
+            values = payload.get('allergies') if isinstance(payload, dict) else None
+            if not isinstance(values, list) or len(values) > 50 or any(not isinstance(x, str) or not x.strip() or len(x) > 160 for x in values):
+                raise ValueError('Allergies must be a list of up to 50 names; use unknown if history is not established')
+            values = list(dict.fromkeys(v.strip() for v in values))
+            if any(v.lower() in {'none', 'no known allergies', 'nkda'} for v in values) and len(values) > 1:
+                raise ValueError('Do not combine none with named allergies')
+            profile.setdefault('medical_history', {})['allergies'] = values
+            self.storage.save_profile(profile)
+            self.profiles[aid] = profile
+            now, mode = self._now(), self.active_source[aid]
+            self.storage.add_event(aid, self._session(aid, mode, now), 'profile_update', {
+                'timestamp':iso(now), 'source':mode, 'severity':'INFO', 'message':'Allergy history updated', 'allergies':values})
+            self._update_finding_events(aid, mode, self._session(aid, mode, now), now)
+            return self.snapshot(aid)
+
     def _stat_export(self, stat):
         value = deepcopy(stat)
         value["mean"] = value["sum"] / value["count"] if value["count"] else None
@@ -706,6 +793,8 @@ class Monitor:
             for group in self.buffers:
                 self._purge(group, now)
                 aid, mode = group
+                if group in self.inactive_streams:
+                    continue
                 for key, seen in self.seen[group].items():
                     if key not in LIVE_VITALS or seen.get("quality") != "ok":
                         continue
@@ -716,6 +805,13 @@ class Monitor:
                              "message": f"{key}: no samples in 60 seconds; monitoring source may have stopped",
                              "last_acquisition": seen["timestamp"], "transport": seen["source"]})
             self._flush_before(now.date())
+
+    def set_stream_active(self, aid, source, active):
+        with self.lock:
+            self._profile(aid)
+            group=(aid,source)
+            if active:self.inactive_streams.discard(group)
+            else:self.inactive_streams.add(group)
 
     def history(self, aid):
         with self.lock:
@@ -731,6 +827,10 @@ class Monitor:
 
     def _dose_rows(self, aid, mode, key):
         rows = [row for row in self.history(aid)["daily"] if row["source"] == mode and row["key"] == key]
+        if mode=='simulation' and rows:
+            latest=max(rows,key=lambda row:row['last_timestamp'])
+            scenario=latest.get('reported_metadata',{}).get('synthetic_scenario_id')
+            if scenario:rows=[row for row in rows if row.get('reported_metadata',{}).get('synthetic_scenario_id')==scenario]
         return sorted(rows, key=lambda row: row["day"])
 
     def _known_total(self, aid, mode, key):

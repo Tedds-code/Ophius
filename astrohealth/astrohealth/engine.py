@@ -84,6 +84,9 @@ def validate_profile(profile: dict) -> dict:
     baseline = profile.get("pre_flight_baseline")
     if not isinstance(baseline, dict):
         raise ValueError("pre_flight_baseline must be an object")
+    allergies = profile.get('medical_history', {}).get('allergies', [])
+    if not isinstance(allergies, list) or any(not isinstance(x, str) or not x.strip() or len(x) > 160 for x in allergies):
+        raise ValueError('medical_history.allergies must be a list of nonempty names')
 
     def walk(node, path):
         if isinstance(node, dict):

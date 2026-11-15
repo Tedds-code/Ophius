@@ -18,12 +18,12 @@
       <div class="sidebar-bottom">
         <div class="monitor-indicator"><span class="dot" id="connection-dot"></span><div><strong id="connection">Connecting</strong><small id="connection-detail">Local background monitor</small></div></div>
         <p>Live samples expire after 60 seconds. Session summaries and warning events are retained.</p>
-        <button class="button subtle wide" id="notification-toggle">Enable notifications</button>
+        <button class="button subtle wide" id="notification-toggle">Desktop alerts on</button>
         <label class="sound-option"><input type="checkbox" id="sound-toggle"> Warning sound</label>
       </div>
     </aside>
     <main>
-      <header class="topbar"><div><span class="eyebrow">CREW MONITORING</span><h1 id="page-title">Mission overview</h1></div><div class="header-actions"><span class="local-badge">LOCAL · OFFLINE CAPABLE</span><button class="button" id="import-lab">Import blood test</button></div></header>
+      <header class="topbar"><div><span class="eyebrow">CREW MONITORING</span><h1 id="page-title">Mission overview</h1></div><div class="header-actions"><span class="local-badge">LOCAL · OFFLINE CAPABLE</span><button class="button" id="import-lab">Import blood test</button><button class="button subtle" id="hide-desktop">Hide & monitor</button><button class="button subtle" id="quit-desktop">Quit & save</button></div></header>
       <section id="warning-region" aria-live="assertive"></section>
       <section id="crew-heading"></section>
       <nav id="tabs" class="tabs" aria-label="Profile sections"></nav>

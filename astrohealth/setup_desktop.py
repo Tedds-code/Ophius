@@ -7,6 +7,8 @@ import platform
 import shutil
 import subprocess
 import sys
+import plistlib
+import shlex
 
 ROOT = Path(__file__).resolve().parent
 
@@ -41,7 +43,7 @@ def linux_entry(root=ROOT, executable=None):
             'Comment=Open the local astronaut health monitor\n'
             f'Exec={desktop_exec([executable or sys.executable, root / "launch_desktop.py"])}\n'
             f'Path={field(root)}\nIcon={field(root / "assets" / "astrohealth.svg")}\n'
-            'Terminal=true\nCategories=Science;Education;\nStartupNotify=false\n')
+            'Terminal=false\nCategories=Science;Education;\nStartupNotify=false\n')
 
 
 def install_linux(desktop=None):
@@ -78,7 +80,9 @@ $shortcut.Save()
 Write-Output $path
 '''
     environment = os.environ.copy()
-    environment.update(ASTROHEALTH_PYTHON=sys.executable, ASTROHEALTH_ROOT=str(ROOT),
+    pythonw = Path(sys.executable).with_name('pythonw.exe')
+    interpreter = str(pythonw) if pythonw.is_file() else sys.executable
+    environment.update(ASTROHEALTH_PYTHON=interpreter, ASTROHEALTH_ROOT=str(ROOT),
                        ASTROHEALTH_ARGUMENTS=subprocess.list2cmdline([str(ROOT/'launch_desktop.py')]),
                        ASTROHEALTH_DESKTOP=str(desktop) if desktop else '')
     result = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', script],
@@ -88,20 +92,39 @@ Write-Output $path
     return [Path(result.stdout.strip())]
 
 
+def install_macos(desktop=None):
+    desktop = Path(desktop) if desktop else Path.home()/'Desktop'
+    application = desktop/'AstroHealth.app'
+    executable = application/'Contents'/'MacOS'/'AstroHealth'
+    executable.parent.mkdir(parents=True, exist_ok=True)
+    executable.write_text('#!/bin/sh\nexec '+shlex.quote(sys.executable)+' '+shlex.quote(str(ROOT/'launch_desktop.py'))+'\n',encoding='utf-8')
+    executable.chmod(0o755)
+    information = {'CFBundleName':'AstroHealth', 'CFBundleDisplayName':'AstroHealth',
+                   'CFBundleIdentifier':'local.astrohealth.desktop', 'CFBundleVersion':'2.1.0',
+                   'CFBundleExecutable':'AstroHealth', 'CFBundlePackageType':'APPL', 'NSHighResolutionCapable':True}
+    with (application/'Contents'/'Info.plist').open('wb') as output:plistlib.dump(information,output)
+    return [application]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--desktop-dir', type=Path, help='Optional desktop folder override')
     args = parser.parse_args()
     if sys.version_info < (3, 10):
         parser.exit(1, 'Python 3.10 or newer is required.\n')
+    import importlib.util
+    if importlib.util.find_spec('PySide6') is None:
+        parser.exit(1, 'Run the included desktop installer to set up the embedded desktop runtime first.\n')
     try:
         system = platform.system()
         if system == 'Windows':
             paths = install_windows(args.desktop_dir)
         elif system == 'Linux':
             paths = install_linux(args.desktop_dir)
+        elif system == 'Darwin':
+            paths = install_macos(args.desktop_dir)
         else:
-            parser.exit(1, 'Desktop shortcuts are supported on Windows and Linux.\n')
+            parser.exit(1, 'Desktop shortcuts are supported on Windows, Linux and macOS.\n')
     except (OSError, ValueError, RuntimeError) as exc:
         parser.exit(1, f'Could not create desktop shortcut: {exc}\n')
     for path in paths:

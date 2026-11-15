@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 set -eu
 cd "$(dirname "$0")"
-exec python3 launch_desktop.py "$@"
+exec python3 bootstrap_desktop.py --launch "$@"

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "scope": "Conservative named-ingredient and named-family blocking; not a complete drug interaction or cross-reactivity engine.",
+  "families": {
+    "penicillin": ["penicillin", "penicillin g", "penicillin v", "amoxicillin", "ampicillin", "benzylpenicillin", "phenoxymethylpenicillin", "dicloxacillin", "flucloxacillin", "oxacillin", "nafcillin", "piperacillin", "ticarcillin"],
+    "sulfonamide antibiotic": ["sulfamethoxazole", "sulfadiazine", "sulfisoxazole", "sulfadoxine"]
+  },
+  "aliases": {
+    "penicillins": "penicillin", "penicillin allergy": "penicillin",
+    "sulfa": "sulfonamide antibiotic", "sulfonamide antibiotics": "sulfonamide antibiotic",
+    "adrenaline": "epinephrine", "paracetamol": "acetaminophen", "lignocaine": "lidocaine"
+  },
+  "known_ingredients": ["epinephrine", "lidocaine", "atropine", "midodrine", "cetirizine", "diphenhydramine", "methylprednisolone", "dexamethasone", "hydrocortisone", "prednisone", "prednisolone", "diclofenac", "ibuprofen", "aspirin", "naproxen", "acetaminophen", "ondansetron", "promethazine", "tamsulosin", "tetracaine", "levofloxacin", "ciprofloxacin", "azithromycin", "fluconazole", "miconazole", "clotrimazole", "loperamide", "bismuth subsalicylate", "famotidine", "omeprazole", "lorazepam", "diazepam", "haloperidol", "norepinephrine", "zolpidem", "zaleplon", "melatonin", "metoclopramide", "meclizine", "scopolamine", "trimethoprim", "cephalexin", "cefazolin", "ceftriaxone"],
+  "uncertain_related_families": {"penicillin": ["cephalexin", "cefazolin", "ceftriaxone"]},
+  "policy_notes": [
+    "Family membership blocks the named family and its listed ingredients, as requested by the user. An ingredient-specific allergy conservatively blocks its listed family too.",
+    "Cephalosporin use in a person with a penicillin allergy is marked needs_review, not automatically labelled allergic or cleared.",
+    "A sulfonamide antibiotic allergy does not automatically imply allergy to every non-antibiotic sulfonamide.",
+    "Unknown products, combination products without separately identified ingredients, unknown allergy history and unspecified medication classes need review before recording medication use."
+  ],
+  "references": ["https://www.cdc.gov/antibiotic-use/hcp/clinical-signs/index.html", "https://www.cdc.gov/sti/hcp/treatment-guidelines/penicillin-allergy.html"]
+}
