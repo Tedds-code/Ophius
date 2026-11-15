@@ -1,0 +1,313 @@
+OPHIUS 2.3.0 - FULL SOFTWARE STACK AND DEPENDENCIES
+================================================
+
+1. APPLICATION ARCHITECTURE
+
+Ophius is a local Python desktop application. Qt supplies the desktop window;
+Qt WebEngine displays the HTML/CSS/JavaScript dashboard inside that window.
+The interface communicates with the Python monitor through a loopback HTTP/JSON
+API. SQLite stores local profiles and long-term history. Normal monitoring does
+not require a cloud backend or a separately opened browser.
+
+Data flow:
+  Sensor/file/manual input -> adapters -> local JSON API -> Python monitor
+  Embedded dashboard <-> local JSON API <-> monitor <-> SQLite
+  Monitor -> event queue -> Qt desktop warning/tray/window restoration
+
+The desktop window runs on the main thread. The HTTP service and monitor run on
+background threads; HTTP requests use ThreadingHTTPServer request threads.
+Qt WebEngine manages its own Chromium renderer processes.
+
+2. PYTHON DEPENDENCY FILES
+
+requirements-desktop.txt:
+  PySide6>=6.7,<7
+  Minimum external Python dependency for the standard desktop installer.
+
+requirements.txt:
+  PySide6>=6.7,<7
+  pyserial>=3.5,<4
+  All application dependencies, including the optional serial gateway.
+
+requirements-dev.txt:
+  Includes requirements.txt.
+  playwright>=1.62,<2
+  Pillow>=10
+  Optional browser/desktop QA and screenshot tools. These are not needed for
+  routine monitoring or the standard unittest suite. The external QA helpers
+  used during development are not all distributed as application source.
+
+PySide6 automatically installs matching PySide6_Essentials, PySide6_Addons and
+shiboken6 packages. They supply Qt libraries, plugins and Python/C++ bindings;
+there is no need to install a separate Qt SDK for ordinary desktop use.
+
+These files declare compatible version ranges, not an exact cross-platform lock.
+The Qt desktop was checked with PySide6, Essentials, Addons and shiboken6 6.12.0.
+The QA environment reported Playwright 1.62.0 and Pillow 13.0.0. pySerial is an
+optional supported adapter; no physical serial device was available for testing.
+Exact Qt/Chromium/SQLite versions depend on the installed wheels and Python.
+
+3. INSTALLATION AND RUNTIME
+
+Prerequisites installed outside pip:
+  - Python 3.10 or newer, with venv, pip and sqlite3 support.
+  - A Windows, Linux or macOS graphical desktop for desktop mode.
+  - Operating-system libraries and graphics support required by the chosen Qt
+    wheel. On Linux this includes a compatible X11/XCB or Wayland environment,
+    fonts, keyboard libraries and graphics libraries. Package names vary by distro.
+  - Internet access for first-time dependency installation.
+
+The supplied install_desktop scripts invoke bootstrap_desktop.py. It creates a
+per-application .desktop-runtime virtual environment, installs the desktop engine
+and runs setup_desktop.py. Python itself is not bundled with the ZIP. Application
+files must remain in place after shortcut creation.
+
+The requirements files must be installed into the Python environment actually
+running Ophius. Installing into an unrelated .venv does not update .desktop-runtime.
+
+After the included desktop setup, install all application dependencies with:
+  Windows: .desktop-runtime\Scripts\python.exe -m pip install -r requirements.txt
+  Linux/macOS: .desktop-runtime/bin/python -m pip install -r requirements.txt
+
+For developer QA, use requirements-dev.txt instead. Record the exact installed
+Python package set by running that same interpreter with:
+  -m pip freeze
+
+Normal monitoring can run offline after setup. Opening external reference links
+requires internet access. --headless runs the local service without the Qt window;
+the core backend uses the standard library, with pySerial needed only for serial.
+
+4. DESKTOP AND EMBEDDED RENDERER
+
+Framework: PySide6 / Qt 6.
+Qt modules used: QtCore, QtGui, QtWidgets, QtWebEngineCore,
+                QtWebEngineWidgets.
+Main components: QApplication, QMainWindow, QWebEngineView, QWebEnginePage,
+                 QWebEngineProfile, QTimer, QAction, QSystemTrayIcon,
+                 QMenu, QFileDialog, QIcon, QUrl, QKeySequence.
+
+Qt WebEngine embeds Chromium, including Blink rendering and the V8 JavaScript
+engine. It displays local application assets and JSON-backed interface updates.
+The app uses an off-the-record web profile, memory-only HTTP caching and no
+persistent cookies. Native file dialogs handle exports. Reference links open
+additional embedded windows. Closing X hides the monitor; Quit & save stops it.
+
+A legacy Tkinter/ttk interface remains in ophius/desktop.py for regression checks.
+The current application launcher uses Qt. Tkinter/Tcl/Tk is optional for those
+legacy GUI tests; Linux distributions may supply it in a separate python3-tk
+package. It is not a pip dependency of the current desktop interface.
+
+5. FRONTEND
+
+Languages: HTML5, custom CSS, vanilla JavaScript.
+Files: static/index.html, static/style.css, static/app.js.
+Assets: assets/ophius.svg; supplied JSON documents and profile files.
+
+Browser APIs used:
+  - DOM selection, events, forms, tables, dialogs and accessibility attributes.
+  - Fetch and JSON for local API communication.
+  - File reading, Blob/object URLs and downloads for imports/exports.
+  - Timers for polling and interface state.
+  - Web Audio for optional warning sounds.
+  - Notifications API where supported; native desktop alerts use Qt as well.
+
+The dashboard polls approximately every two seconds. Dropdown/search elements
+remain stable during normal value refresh. CSS and interface assets are local;
+there is no frontend framework, npm dependency installation or build/bundle step.
+
+6. LOCAL BACKEND AND API
+
+Language: Python 3.10+.
+HTTP server: standard-library http.server.ThreadingHTTPServer and
+             BaseHTTPRequestHandler.
+Wire format: JSON over local HTTP; GET, POST and PUT routes.
+Static serving: local HTML, CSS and JavaScript files.
+Normal address: 127.0.0.1:8765.
+Testing address: 127.0.0.1:8766 by default.
+Ports and data base directory can be overridden through command-line arguments.
+
+API areas: metadata, monitor status, crew profiles, sensor ingestion, laboratory
+imports, symptoms/exposures, current assessment, history, radiation forecasts,
+medication checks/records, allergy edits, warning acknowledgements and native
+window show/hide/quit. Simulation routes are enabled only in testing mode.
+
+Local protections: loopback binding; Host and Origin checks; static path traversal
+checks; Content Security Policy; no-store responses; content-type and request-size
+validation; strict JSON parsing. The current service uses local HTTP and has no
+user-account authentication or built-in TLS layer. It is intended for local use.
+
+7. APPLICATION MODULES
+
+app.py                         Startup, workers, signals and clean shutdown.
+launch_desktop.py              Start or restore a matching running instance.
+bootstrap_desktop.py           Per-app venv/pip installation and launch.
+setup_desktop.py               Windows/Linux/macOS desktop shortcut creation.
+ophius/embedded_desktop.py     Current Qt desktop and embedded interface.
+ophius/server.py               HTTP API, request checks and static serving.
+ophius/monitor.py              Buffers, state, sessions, assessment, aggregates,
+                              mission days and radiation forecasts.
+ophius/engine.py               Profile validation, thresholds, diagnostic rules
+                              and treatment-reference linking.
+ophius/allergies.py            Exact/family matching and medication guards.
+ophius/storage.py              SQLite schema, queries, transactions and history.
+ophius/transport.py            Strict JSON and sensor/file/TCP/serial adapters.
+ophius/simulation.py           Testing-only vital/environment fixtures.
+ophius/report_simulation.py    Testing-only lab/dose fixtures and rule connections.
+ophius/desktop.py              Legacy Tk interface retained for regression checks.
+gateway.py                    Sends file/TCP/serial input to the local API.
+make_demo_reports.py           Generates explicitly synthetic JSON examples.
+
+8. MEDICAL CONFIGURATION AND CALCULATIONS
+
+Configuration sources:
+  config/thresholds.json
+  config/diagnostic_rules.json
+  config/treatment.json
+  config/medication_allergens.json
+  profiles/A-101.json
+  profiles/A-102.json
+
+The engine is deterministic Python rule evaluation. It combines configured
+thresholds, explicit units, reference bands, symptoms, exposure windows, mission
+duration, baselines and medical history. Treatment references are filtered through
+exact-name and configured drug-family allergy guards. These catalogs and guards
+are not a complete drug-interaction or clinical cross-reactivity database.
+
+Radiation predictions use constant-rate extrapolation from sufficient verified
+history or an explicitly entered what-if rate. They estimate dose accumulation,
+time to a reference limit and mission-end totals. There is no trained ML model,
+LLM, disease-onset prediction engine or cancer-probability model.
+
+9. DATA INPUT AND DEVICE ADAPTERS
+
+Formats: JSON objects and JSON Lines (newline-delimited JSON).
+Sources: manual imports, files, TCP streams and optional serial streams.
+TCP: Python socket; reads newline-delimited packets from an existing gateway.
+Serial: pySerial; default baud rate 115200, one-second read timeout.
+Gateway: urllib.request forwards validated/rebased input to the local API.
+
+Adapters cover normalized packets and Fresh-style PPG, ECG, blood pressure,
+thermistor, CO2 and dosimetry reports. Processing includes basic waveform peak
+detection for pulse rate and thermistor ADC-to-temperature conversion. Device SpO2
+reports require a calibration identifier. QTc is supplied as a measurement; the
+app does not perform a complete clinical ECG analysis or provide hardware drivers.
+
+Validation includes finite numeric values, explicit units, acquisition timestamps,
+coverage metadata, duplicate/out-of-order handling and a 2,000,000-byte JSON limit.
+Original JSON format identifiers remain compatible after the Ophius rename.
+
+10. SQLITE AND LONG-TERM STORAGE
+
+Database engine: SQLite 3 supplied through Python sqlite3.
+Access: parameterized SQL, explicit queries and transactions; no ORM.
+Settings: foreign keys, write-ahead logging (WAL), 5000 ms busy timeout.
+Structured profile/report/statistics fields use JSON stored in SQL text columns.
+
+Tables:
+  profiles             Astronaut profile documents.
+  selected_sources     Saved observed/simulation view selection.
+  anchors              First valid measurement timestamps by profile/source.
+  sessions             Astronaut/day/source session identifiers.
+  daily                Measurement statistics and exposure aggregates.
+  events               Abnormalities, findings, recovery, acknowledgements,
+                       symptom/exposure reports and medication audit records.
+  laboratory_reports   Durable imported laboratory results.
+
+Normal database: data/astrohealth.sqlite3.
+Testing database: data/testing/astrohealth.sqlite3.
+The older database filename and stable session identifiers are deliberately kept
+for compatibility with history created before the Ophius rename.
+
+Raw normal sensor values occupy a rolling 60-second memory buffer. Daily/session
+statistics, cumulative dose/context, labs and abnormal events form long-term
+history. Daily normal summaries commit at UTC rollover and clean shutdown;
+lab reports, mission anchors and abnormal events are committed immediately.
+An abrupt termination can lose the unfinished day's normal summary.
+
+Testing history persists independently. Source selection and mission days restore
+on reopening. Live vital cards need fresh samples; historical summaries are not
+relabelled as current sensor readings. Preserve the complete data folder during
+upgrades. No automatic long-term history deletion is configured. The SQLite files
+are ordinary local database files; application-level database encryption is not
+implemented. .gitignore keeps local data out of new Git tracking, not off disk.
+
+11. CONCURRENCY, TIMING AND LOGGING
+
+threading.Thread/RLock/Event: background work, state protection, shutdown and
+window signals. queue.Queue: new warnings passed to the desktop. collections.deque:
+short-lived raw buffers. OrderedDict: bounded packet deduplication tracking.
+
+Incoming readings are assessed during ingestion. The monitor maintenance loop and
+Qt event poll run about every half-second; dashboard HTTP polling is two seconds.
+All acquisition/session calculations use UTC and explicit timestamps. Mission day
+one is anchored by the first valid measurement, rather than process launch time.
+
+Logging: Python logging to data/monitor.log, or data/testing/monitor.log, plus
+stderr where available. There is no external logging or task-queue service.
+
+12. PLATFORM LAUNCHERS
+
+Windows:
+  .bat install/run/testing scripts; PowerShell; WScript.Shell COM .lnk creation;
+  pythonw.exe when present; ctypes MessageBoxW for startup errors.
+Linux:
+  .sh scripts; .desktop launchers; xdg-user-dir where available; optional gio trust
+  marking; optional zenity startup-error dialog; XDG application directory support.
+macOS:
+  .command scripts; generated Ophius.app wrapper and Info.plist via plistlib;
+  shell executable wrapper; optional osascript startup-error dialog.
+
+Qt supplies window/tray integration where the platform supports it. Native runtime
+was verified on Linux. Windows/macOS shortcut construction is covered by software
+checks; actual execution on those systems was not available during development.
+
+13. TESTING AND OPTIONAL QA TOOLS
+
+Automated checks: Python unittest and unittest.mock; 98 checks in the release.
+The tests use temporary databases/directories and controlled clocks. They cover
+rules, transport validation, history, units, forecasts, allergies, restart behavior,
+mode separation and shortcut construction. Legacy GUI checks need Tk and a display.
+
+Optional development environment:
+  - Playwright with Chromium DevTools connection to the actual embedded Qt page.
+  - Pillow for screen capture/image inspection in development helpers.
+  - Xvfb virtual X11 display for Linux GUI checks.
+  - xwininfo/xprop for Linux window inspection.
+  - Node.js used for JavaScript syntax checking (node --check), not app execution.
+  - Python compileall and POSIX sh -n for source/shell checks.
+  - SHA-256 input manifest for supplied JSON integrity.
+
+Xvfb, X11 utilities, Node.js and Tk are OS/development prerequisites, not pip
+packages in requirements.txt. Test-only container Qt flags and debugging ports are
+not enabled by the distributed application. Built-in numerical simulations are
+only available through run_testing launchers; they test values and rule connections
+and do not constitute clinical validation. No physical sensor was validated.
+
+Run software checks from the project root:
+  python -m unittest discover -s tests -v
+
+14. STANDARD-LIBRARY IMPORTS
+
+Python supplies the following modules used across application source and launchers;
+do not try to install them from pip:
+  argparse, collections, copy, ctypes, dataclasses, datetime, hashlib, http,
+  importlib, json, logging, math, mimetypes, os, pathlib, platform, plistlib,
+  queue, re, shlex, shutil, signal, socket, sqlite3, statistics, subprocess,
+  sys, threading, time, typing, unicodedata, urllib, uuid, venv.
+  tkinter is used only by the retained legacy interface/checks and may require
+  an optional OS package. __future__ enables Python language compatibility flags.
+
+The test suite additionally uses standard-library test utilities including
+unittest and tempfile. App-owned modules such as ophius and app are local source,
+not separately installed third-party packages.
+
+15. SOURCE CONTROL AND DISTRIBUTION
+
+Source control: Git; repository hosting: GitHub.
+Distribution: ZIP of source/assets plus local dependency bootstrap and launchers.
+The ZIP does not bundle Python or a prebuilt standalone executable.
+Private download hosting distributes files and is not the running app's backend.
+There is no bundled CI/CD workflow, Docker deployment, cloud database or cloud
+synchronization service. GitHub stores tracked source, not ignored local history.
+.gitignore retains app source, JSON, README, launchers, dependency manifests and
+this stack document while excluding local data, runtimes and generated artifacts.

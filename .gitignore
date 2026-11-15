@@ -1,5 +1,4 @@
-
-# Ignore everything except the app's source files.
+# Keep this app's source, JSON, README and launcher files.
 *
 !*/
 !.gitignore
@@ -16,9 +15,13 @@
 !*.desktop
 !README
 !README.*
+# Required by the desktop installer.
 !requirements-desktop.txt
+!requirements.txt
+!requirements-dev.txt
+!FULL_STACK.txt
 
-# Always ignore local runtimes and generated data.
+# Local runtimes, caches and generated application data stay private.
 .desktop-runtime/
 .venv/
 venv/

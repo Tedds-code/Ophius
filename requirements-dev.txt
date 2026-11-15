@@ -1,0 +1,6 @@
+# Application dependencies plus optional desktop/browser QA tools.
+# The tests/ unittest suite itself uses Python's standard library.
+# Install: python -m pip install -r requirements-dev.txt
+-r requirements.txt
+playwright>=1.62,<2
+Pillow>=10
