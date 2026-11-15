@@ -1,4 +1,4 @@
-# AstroHealth 2.2 — preserved desktop view
+# Ophius 2.3.0 — preserved desktop view
 
 This version preserves the original dark dashboard inside its own **Qt desktop window**. It does not launch a separate browser. The embedded renderer uses a memory-only, private profile. The localhost JSON service remains available for sensor gateways and automation.
 
@@ -15,7 +15,7 @@ Use a current supported Python release from python.org or your Linux distributio
 ## Install and launch
 
 1. Stop the old monitor before upgrading. Keep your `data` folder.
-2. Extract the entire AstroHealth folder to a permanent location, replacing the application files when upgrading. Do not delete your database.
+2. Extract the entire Ophius folder to a permanent location, replacing the application files when upgrading. Do not delete your database.
 3. Create a desktop launcher once:
 
 | Platform | Shortcut setup |
@@ -24,7 +24,7 @@ Use a current supported Python release from python.org or your Linux distributio
 | Linux | Run `sh install_desktop_linux.sh`; allow/trust launching if prompted |
 | macOS | Double-click `install_desktop_macos.command` |
 
-Setup downloads the desktop engine and creates the shortcut. Then double-click **AstroHealth** on your desktop. The launcher starts the desktop window, or restores the already-running current-version app. Windows shortcuts use pythonw when available; Linux desktop entries run without a terminal; macOS setup creates an `.app` launcher. The setup uses your existing Python to create an isolated local runtime; Python itself is not bundled. Run setup again after moving the application folder or upgrading from version 2.0.
+Setup downloads the desktop engine and creates the shortcut. Then double-click **Ophius** on your desktop. The launcher starts the desktop window, or restores the already-running current-version app. Windows shortcuts use pythonw when available; Linux desktop entries run without a terminal; macOS setup creates an `.app` launcher. The setup uses your existing Python to create an isolated local runtime; Python itself is not bundled. Run setup again after moving the application folder or upgrading from version 2.0.
 
 Direct launch alternatives:
 
@@ -156,6 +156,44 @@ Observed and synthetic data have separate source partitions and mission anchors.
 Missing, stale, invalid and needs-context states remain distinct from normal/caution/critical results. Blood tests retain their collection dates rather than becoming live sensor readings. Radiation/CO2 comparisons require appropriate windows and provenance. Forecasts are conditional extrapolations, not current alarms; rolling-window forecasts are withheld when age-resolved information is insufficient.
 
 D-dimer uses the replacement thresholds' **mg/L** units (male caution above0.4, female above0.5). Old-unit reports remain stored but unassessed under the new catalog; original baselines with differing units are flagged. No correction is guessed.
+
+## Upgrading from AstroHealth
+
+The application is now named **Ophius**. Quit the old monitor before upgrading,
+extract the Ophius folder, and preserve/copy your **entire existing data folder**
+into it before launching. Then run the included desktop installer to create the
+new **Ophius** shortcut. Existing old shortcuts still point to the previous folder.
+
+The database filenames remain `astrohealth.sqlite3` for compatibility with your
+existing normal and testing history; the on-screen app name is Ophius. Source code
+now lives in the `ophius/` package. Existing JSON formats, source documents, local
+ports (8765 normal / 8766 testing), session identities and the 60-second buffer are
+preserved. The rename does not clear history or require you to re-enter profiles.
+
+## Long-term history and restart behavior
+
+SQLite retains each astronaut's mission start, daily/session statistics, dose
+aggregates and coverage, imported laboratory reports and abnormal events. Testing
+history is durable too, in its separate database. Testing mode restores the saved
+source view after restart, including older databases that lack a saved selection;
+normal monitoring opens observed data. Day one is the date of the first valid
+measurement, and the day count continues across calendar dates and restarts.
+Reopening on the same date stays on the same mission day. An astronaut with no
+measurement in the selected source has not started monitoring yet.
+
+Use **Session history** to see saved statistics. The current-vitals cards require
+new samples; historical values are never presented as current readings after a
+restart. Normal raw sensor samples expire after 60 seconds and are not archived
+individually. Normal daily summaries save at UTC rollover and **Quit & save**;
+force-killing the process can lose the unfinished day's normal summary. Mission
+anchors, lab reports and abnormal events are committed immediately.
+
+Keep using the same application folder and **preserve the entire data folder**
+when upgrading. Normal data is `data/astrohealth.sqlite3`; test data is
+`data/testing/astrohealth.sqlite3`. Extracting into a new folder without transferring
+that data opens a different, initially empty database. Quit both apps before
+copying the data folder. **.gitignore only excludes data from Git tracking; it does
+not delete local history.** No automatic history deletion is configured.
 
 ## JSON examples and gateways
 

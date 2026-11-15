@@ -21,7 +21,7 @@ LOG = logging.getLogger(__name__)
 def make_server(monitor, simulator, port=8765, window_signals=None,hide_signal=None,stop_signal=None,testing_mode=False):
     startup_ids={aid:[e['id'] for e in monitor.history(aid)['events']] for aid in monitor.profiles}
     class Handler(BaseHTTPRequestHandler):
-        server_version = 'AstroHealth/1.0'
+        server_version = f'Ophius/{__version__}'
 
         def log_message(self, fmt, *args):
             LOG.debug(fmt, *args)

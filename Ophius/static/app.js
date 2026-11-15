@@ -73,7 +73,7 @@ function renderWarnings() {
   if (fresh.length) {
     if (state.sound) beep();
     if ('Notification' in window && Notification.permission === 'granted') {
-      const n = new Notification('AstroHealth · ' + state.id, { body: alertMessage(fresh[0]), tag: state.id + ':' + alertId(fresh[0]) });
+      const n = new Notification('Ophius · ' + state.id, { body: alertMessage(fresh[0]), tag: state.id + ':' + alertId(fresh[0]) });
       n.onclick = () => { window.focus(); showWarnings(); n.close(); };
     }
   }
@@ -278,7 +278,7 @@ async function refresh() {
       if (memberId !== state.id && count > (state.crewAlertCounts[memberId] || 0) && state.id) {
         toast(memberId + ': ' + count + ' warning(s) need attention. Select this crew member to review.');
         if (state.sound) beep();
-        if ('Notification' in window && Notification.permission === 'granted') { const n = new Notification('AstroHealth · ' + memberId, { body: count + ' warning(s) need attention.', tag: memberId + ':crew' }); n.onclick = () => { window.focus(); selectCrew(memberId).catch(e => toast(e.message)); n.close(); }; }
+        if ('Notification' in window && Notification.permission === 'granted') { const n = new Notification('Ophius · ' + memberId, { body: count + ' warning(s) need attention.', tag: memberId + ':crew' }); n.onclick = () => { window.focus(); selectCrew(memberId).catch(e => toast(e.message)); n.close(); }; }
       }
       state.crewAlertCounts[memberId] = count;
     }

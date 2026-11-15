@@ -7,9 +7,9 @@ import tempfile
 import threading
 import unittest
 
-from astrohealth.monitor import Monitor
-from astrohealth.server import make_server
-from astrohealth.simulation import Simulator
+from ophius.monitor import Monitor
+from ophius.server import make_server
+from ophius.simulation import Simulator
 
 ROOT = Path(__file__).resolve().parents[1]
 

@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from astrohealth.transport import file_packets, serial_packets, tcp_packets
+from ophius.transport import file_packets, serial_packets, tcp_packets
 
 
 def main():

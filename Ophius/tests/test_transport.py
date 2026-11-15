@@ -3,8 +3,8 @@ import json
 import math
 import unittest
 
-from astrohealth.engine import KnowledgeBase
-from astrohealth.transport import normalize_packet, pulse_rate, strict_json
+from ophius.engine import KnowledgeBase
+from ophius.transport import normalize_packet, pulse_rate, strict_json
 
 
 class TransportTests(unittest.TestCase):

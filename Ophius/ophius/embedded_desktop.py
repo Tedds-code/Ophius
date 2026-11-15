@@ -10,9 +10,9 @@ def desktop_loop(url,notifications,stop,show_window,hide_window,hidden=False,tes
     from PySide6.QtWebEngineWidgets import QWebEngineView
     from PySide6.QtWebEngineCore import QWebEngineProfile,QWebEnginePage
 
-    app=QApplication.instance() or QApplication(['AstroHealth'])
-    app.setApplicationName('AstroHealth');app.setQuitOnLastWindowClosed(False)
-    icon=QIcon(str(Path(__file__).resolve().parents[1]/'assets'/'astrohealth.svg'))
+    app=QApplication.instance() or QApplication(['Ophius'])
+    app.setApplicationName('Ophius');app.setQuitOnLastWindowClosed(False)
+    icon=QIcon(str(Path(__file__).resolve().parents[1]/'assets'/'ophius.svg'))
     app.setWindowIcon(icon)
     references=[]
 
@@ -21,7 +21,7 @@ def desktop_loop(url,notifications,stop,show_window,hide_window,hidden=False,tes
             super().__init__(parent);self.setPage(QWebEnginePage(profile,self))
         def createWindow(self,kind):
             window=QMainWindow();view=View(window);window.setCentralWidget(view)
-            window.setWindowTitle('AstroHealth — reference');window.resize(980,740)
+            window.setWindowTitle('Ophius — reference');window.resize(980,740)
             references.append(window);window.show()
             return view
 
@@ -30,7 +30,7 @@ def desktop_loop(url,notifications,stop,show_window,hide_window,hidden=False,tes
             event.ignore();self.hide()
 
     from . import __version__
-    window=Window();window.setWindowTitle(f'AstroHealth {__version__} — '+('TESTING MODE' if testing_mode else 'crew health monitor'));window.setWindowIcon(icon)
+    window=Window();window.setWindowTitle(f'Ophius {__version__} — '+('TESTING MODE' if testing_mode else 'crew health monitor'));window.setWindowIcon(icon)
     window.resize(1360,900)
     profile=QWebEngineProfile(app)
     # Do not persist a cache of short-lived sensor readings in the embedded renderer.
@@ -49,7 +49,7 @@ def desktop_loop(url,notifications,stop,show_window,hide_window,hidden=False,tes
     quit_action.triggered.connect(lambda:(stop.set(),app.quit()));menu.addAction(quit_action)
     tray=None
     if QSystemTrayIcon.isSystemTrayAvailable():
-        tray=QSystemTrayIcon(icon,app);tray.setToolTip('AstroHealth — monitoring')
+        tray=QSystemTrayIcon(icon,app);tray.setToolTip('Ophius — monitoring')
         tray_menu=QMenu();tray_menu.addAction(restore);tray_menu.addAction(hide);tray_menu.addAction(quit_action)
         tray.setContextMenu(tray_menu);tray.activated.connect(lambda reason:window.showNormal());tray.show()
     def restore_window():
@@ -64,7 +64,7 @@ def desktop_loop(url,notifications,stop,show_window,hide_window,hidden=False,tes
             except queue.Empty:break
         if new:
             if not window.isVisible() or window.isMinimized():restore_window()
-            if tray is not None:tray.showMessage('AstroHealth warning',new[0]['alert'].get('message','New warning'))
+            if tray is not None:tray.showMessage('Ophius warning',new[0]['alert'].get('message','New warning'))
             app.beep()
     timer=QTimer();timer.timeout.connect(poll);timer.start(500)
     if not hidden:window.show()

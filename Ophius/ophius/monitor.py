@@ -63,7 +63,8 @@ def strict_json(text):
 
 
 class Monitor:
-    def __init__(self, data_dir, config_dir, profiles_dir, clock=None):
+    def __init__(self, data_dir, config_dir, profiles_dir, clock=None, restore_source=False):
+        self.restore_source = restore_source
         self.clock = clock or (lambda: datetime.now(UTC))
         self.lock = threading.RLock()
         self.data_dir = Path(data_dir)
@@ -139,6 +140,24 @@ class Monitor:
         while len(self.packet_ids) > 10000:
             self.packet_ids.popitem(last=False)
 
+        # Testing reopens its saved partition; normal monitoring always opens observed data.
+        if self.restore_source:
+            selected = self.storage.selected_source(aid)
+            if selected is None:
+                # Older databases have no selection record. Infer the latest acquisition,
+                # not a new startup session; preserve their existing anchors and history.
+                candidates = [(timestamp(row['last_timestamp']), row['source'])
+                    for row in self.storage.all_daily(aid) if row.get('last_timestamp')]
+                candidates += [(timestamp(row['timestamp']), row['source'])
+                    for row in self.storage.labs(aid)]
+                candidates += [(timestamp(row['timestamp']), row['source'])
+                    for row in self.storage.events(aid) if row.get('source') in {'observed','simulation'}]
+                for source in ('observed','simulation'):
+                    anchor = self.storage.get_anchor(aid, source)
+                    if anchor:candidates.append((timestamp(anchor), source))
+                selected = max(candidates, key=lambda item:(item[0], item[1]=='simulation'))[1] if candidates else 'simulation'
+            self._activate_source(aid, selected)
+
         # Restore only findings supported by retained laboratory/context data.
         # A new, unrelated sensor sample must not announce these again.
         events = self.storage.events(aid)
@@ -161,6 +180,10 @@ class Monitor:
         if aid not in self.profiles:
             raise KeyError(aid)
         return self.profiles[aid]
+
+    def _activate_source(self, aid, mode):
+        self.storage.select_source(aid, mode)
+        self.active_source[aid] = mode
 
     def _source(self, packet_source):
         return "simulation" if packet_source == "simulation" else "observed"
@@ -255,7 +278,7 @@ class Monitor:
             # All validation finishes before state mutations.
             self._flush_before(when.date())
             self._purge(group, now)
-            self.active_source[aid] = mode
+            self._activate_source(aid, mode)
             session_id = self._session(aid, mode, when)
             if quality == "ok":
                 self.storage.anchor(aid, iso(when), mode)
@@ -668,7 +691,7 @@ class Monitor:
                 "readings": clean, "ignored_measurements": ignored,
                 "note": "No supplied thresholds; not assessed: " + ", ".join(ignored) if ignored else ""}
             self.storage.save_lab(aid, mode, saved)
-            self.active_source[aid] = mode
+            self._activate_source(aid, mode)
             self.storage.anchor(aid, iso(when), mode)
             sid = self._session(aid, mode, when)
             for key, item in clean.items():

@@ -52,7 +52,7 @@ class NativeApp:
         self.med_var, self.med_note = tk.StringVar(), tk.StringVar()
         self.forecast_key = tk.StringVar(value='nuclear_source_dose')
         self.forecast_rate, self.forecast_days = tk.StringVar(value='0.1'), tk.StringVar(value='21')
-        root.title('AstroHealth 2.0 — native desktop')
+        root.title('Ophius 2.0 — native desktop')
         root.geometry(f'{min(1180, root.winfo_screenwidth()-60)}x{min(820, root.winfo_screenheight()-80)}'); root.minsize(850, 600)
         root.protocol('WM_DELETE_WINDOW', self.hide)
         style = ttk.Style(root)
@@ -75,13 +75,13 @@ class NativeApp:
         try:
             return function(*args, **kwargs)
         except Exception as exc:
-            messagebox.showerror('AstroHealth', str(exc), parent=self.root)
+            messagebox.showerror('Ophius', str(exc), parent=self.root)
             return None
 
     def _build(self):
         outer = ttk.Frame(self.root, padding=14); outer.pack(fill='both', expand=True)
         top = ttk.Frame(outer); top.pack(fill='x')
-        ttk.Label(top, text='AstroHealth', style='Title.TLabel').pack(side='left', padx=(0,22))
+        ttk.Label(top, text='Ophius', style='Title.TLabel').pack(side='left', padx=(0,22))
         ttk.Label(top, text='Astronaut').pack(side='left', padx=5)
         self.crew_select = ttk.Combobox(top, textvariable=self.crew_var, state='readonly', width=18)
         self.crew_select.pack(side='left')

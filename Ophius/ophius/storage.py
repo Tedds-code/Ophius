@@ -42,6 +42,10 @@ class Storage:
                     document TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS selected_sources (
+                    astronaut_id TEXT PRIMARY KEY REFERENCES profiles(astronaut_id),
+                    source TEXT NOT NULL CHECK(source IN ('observed', 'simulation'))
+                );
                 CREATE TABLE IF NOT EXISTS anchors (
                     astronaut_id TEXT NOT NULL REFERENCES profiles(astronaut_id),
                     source TEXT NOT NULL,
@@ -117,6 +121,18 @@ class Storage:
                 "updated_at=excluded.updated_at",
                 (aid, encoded, _now()),
             )
+
+    def selected_source(self, aid):
+        with self.lock:
+            row = self.connection.execute('SELECT source FROM selected_sources WHERE astronaut_id=?', (aid,)).fetchone()
+            return row['source'] if row else None
+
+    def select_source(self, aid, source):
+        if source not in {'observed','simulation'}:raise ValueError('Unknown source partition')
+        with self.lock, self.connection:
+            self.connection.execute('INSERT INTO selected_sources(astronaut_id,source) VALUES (?,?) '
+                'ON CONFLICT(astronaut_id) DO UPDATE SET source=excluded.source '
+                'WHERE selected_sources.source<>excluded.source', (aid,source))
 
     def anchor(self, aid: str, iso_timestamp: str, source: str = "observed") -> str:
         """Set once per source partition; later imports do not move day one."""

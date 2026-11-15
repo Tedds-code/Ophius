@@ -10,9 +10,9 @@ import signal
 import sys
 import threading
 
-from astrohealth.monitor import Monitor
-from astrohealth.server import make_server
-from astrohealth.simulation import Simulator
+from ophius.monitor import Monitor
+from ophius.server import make_server
+from ophius.simulation import Simulator
 
 ROOT = Path(__file__).resolve().parent
 
@@ -68,7 +68,7 @@ def main(argv=None):
     notifications = queue.Queue(maxsize=100)
     worker_thread = None
     try:
-        monitor = Monitor(data_dir, ROOT/'config', ROOT/'profiles')
+        monitor = Monitor(data_dir, ROOT/'config', ROOT/'profiles', restore_source=args.testing_mode)
         simulator = Simulator(monitor)
         tracker = AlertTracker(monitor)
         server = make_server(monitor, simulator, port, testing_mode=args.testing_mode, window_signals=show_window if desktop_enabled else None,
@@ -91,10 +91,10 @@ def main(argv=None):
         threading.Thread(target=server.serve_forever,name='json-gateway',daemon=True).start()
         worker_thread=threading.Thread(target=worker,name='monitor',daemon=True);worker_thread.start()
         if args.headless:
-            if sys.stdout is not None:print(f'AstroHealth JSON gateway: http://127.0.0.1:{server.server_port}; simulation OFF',flush=True)
+            if sys.stdout is not None:print(f'Ophius JSON gateway: http://127.0.0.1:{server.server_port}; simulation OFF',flush=True)
             while not stop.is_set():stop.wait(.5)
         else:
-            from astrohealth.embedded_desktop import desktop_loop
+            from ophius.embedded_desktop import desktop_loop
             desktop_loop(f'http://127.0.0.1:{server.server_port}',notifications,stop,show_window,hide_window,
                          hidden=args.hidden and not args.open,testing_mode=args.testing_mode)
     finally:

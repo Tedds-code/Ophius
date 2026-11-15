@@ -8,8 +8,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from astrohealth.monitor import Monitor
-from astrohealth.simulation import Simulator
+from ophius.monitor import Monitor
+from ophius.simulation import Simulator
 from make_demo_reports import documents
 from setup_desktop import install_linux, install_windows, linux_entry
 
@@ -129,13 +129,13 @@ class DesktopShortcutTests(unittest.TestCase):
 
     def test_windows_shortcut_uses_native_desktop_folder_and_literal_arguments(self):
         from types import SimpleNamespace
-        with patch('setup_desktop.subprocess.run', return_value=SimpleNamespace(returncode=0, stdout='C:\\Desktop\\AstroHealth.lnk\n', stderr='')) as run:
+        with patch('setup_desktop.subprocess.run', return_value=SimpleNamespace(returncode=0, stdout='C:\\Desktop\\Ophius.lnk\n', stderr='')) as run:
             paths = install_windows()
         command = run.call_args.args[0]
         self.assertIn('DesktopDirectory', command[-1])
         self.assertIn('CreateShortcut', command[-1])
-        self.assertIn('launch_desktop.py', run.call_args.kwargs['env']['ASTROHEALTH_ARGUMENTS'])
-        self.assertEqual(str(paths[0]), 'C:\\Desktop\\AstroHealth.lnk')
+        self.assertIn('launch_desktop.py', run.call_args.kwargs['env']['OPHIUS_ARGUMENTS'])
+        self.assertEqual(str(paths[0]), 'C:\\Desktop\\Ophius.lnk')
 
 
 if __name__ == '__main__':

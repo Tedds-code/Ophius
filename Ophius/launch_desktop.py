@@ -16,9 +16,9 @@ def show_error(message):
     try:
         if sys.platform == 'win32':
             import ctypes
-            ctypes.windll.user32.MessageBoxW(0,message,'AstroHealth could not start',0x10)
+            ctypes.windll.user32.MessageBoxW(0,message,'Ophius could not start',0x10)
         elif sys.platform == 'darwin':
-            subprocess.run(['osascript','-e','on run argv\ndisplay alert "AstroHealth could not start" message (item 1 of argv)\nend run',message],check=False)
+            subprocess.run(['osascript','-e','on run argv\ndisplay alert "Ophius could not start" message (item 1 of argv)\nend run',message],check=False)
         else:
             if shutil.which('zenity'):subprocess.run(['zenity','--error','--text='+message],check=False)
             elif sys.stderr is not None:print(message,file=sys.stderr)
@@ -27,8 +27,8 @@ def show_error(message):
 
 
 def main():
-    if sys.version_info < (3,10):raise RuntimeError('AstroHealth requires Python 3.10 or newer.')
-    from astrohealth import __version__
+    if sys.version_info < (3,10):raise RuntimeError('Ophius requires Python 3.10 or newer.')
+    from ophius import __version__
     parser=argparse.ArgumentParser(add_help=False)
     parser.add_argument('--testing-mode',action='store_true')
     parser.add_argument('--port',type=int)
@@ -41,7 +41,7 @@ def main():
         except (OSError,URLError,ValueError):metadata=None
         if metadata and 'rules' in metadata and 'readings' in metadata:
             if metadata.get('app_version') != __version__ or not metadata.get('native_desktop') or bool(metadata.get('testing_mode'))!=options.testing_mode:
-                raise RuntimeError(f'Another AstroHealth version or mode is running on port {port}. Use Quit & save in that app, then launch this version.')
+                raise RuntimeError(f'Another Ophius version or mode is running on port {port}. Use Quit & save in that app, then launch this version.')
             request=Request(url+'/api/window/show',data=b'{}',headers={'Content-Type':'application/json'},method='POST')
             with urlopen(request,timeout=3) as response:response.read()
             return 0

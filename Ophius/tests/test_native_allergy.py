@@ -10,9 +10,9 @@ import plistlib
 from unittest.mock import patch
 
 from app import AlertTracker
-from astrohealth.allergies import AllergyGuard
-from astrohealth.monitor import Monitor
-from astrohealth.simulation import Simulator
+from ophius.allergies import AllergyGuard
+from ophius.monitor import Monitor
+from ophius.simulation import Simulator
 from setup_desktop import install_macos
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -75,8 +75,8 @@ class NativeAllergyTests(unittest.TestCase):
         bundle=paths[0]
         with (bundle/'Contents'/'Info.plist').open('rb') as source:info=plistlib.load(source)
         self.assertEqual(info['CFBundlePackageType'],'APPL')
-        self.assertIn('launch_desktop.py',(bundle/'Contents'/'MacOS'/'AstroHealth').read_text())
-        self.assertTrue((bundle/'Contents'/'MacOS'/'AstroHealth').stat().st_mode & 0o111)
+        self.assertIn('launch_desktop.py',(bundle/'Contents'/'MacOS'/'Ophius').read_text())
+        self.assertTrue((bundle/'Contents'/'MacOS'/'Ophius').stat().st_mode & 0o111)
         snap=self.monitor.update_symptoms('A-101',{'reported_exposures':['amoxicillin']})
         self.assertFalse(snap['assessment']['findings'])
 
@@ -141,7 +141,7 @@ class NativeAllergyTests(unittest.TestCase):
 class NativeWindowTests(unittest.TestCase):
     def setUp(self):
         import tkinter as tk
-        from astrohealth.desktop import NativeApp
+        from ophius.desktop import NativeApp
         self.temp=tempfile.TemporaryDirectory();self.monitor=Monitor(Path(self.temp.name),ROOT/'config',ROOT/'profiles')
         self.root=tk.Tk();self.root.withdraw();self.stop=threading.Event();self.queue=queue.Queue();self.show=threading.Event()
         self.app=NativeApp(self.root,self.monitor,Simulator(self.monitor),self.queue,self.stop,self.show)

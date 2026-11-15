@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from astrohealth.monitor import Monitor
+from ophius.monitor import Monitor
 
 ROOT = Path(__file__).resolve().parents[1]
 UTC = timezone.utc

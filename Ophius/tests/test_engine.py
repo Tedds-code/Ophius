@@ -4,7 +4,7 @@ import math
 import unittest
 from pathlib import Path
 
-from astrohealth.engine import Case, KnowledgeBase, baseline_readings, validate_profile
+from ophius.engine import Case, KnowledgeBase, baseline_readings, validate_profile
 
 ROOT = Path(__file__).resolve().parents[1]
 

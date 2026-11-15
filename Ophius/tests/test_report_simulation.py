@@ -3,8 +3,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from astrohealth.monitor import Monitor
-from astrohealth.report_simulation import simulate_report,measurement_connections,LAB_SCENARIOS
+from ophius.monitor import Monitor
+from ophius.report_simulation import simulate_report,measurement_connections,LAB_SCENARIOS
 
 ROOT=Path(__file__).resolve().parents[1]
 

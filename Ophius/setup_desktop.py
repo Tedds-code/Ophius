@@ -39,17 +39,17 @@ def linux_entry(root=ROOT, executable=None):
         raise ValueError('The app folder path must not contain newlines')
     # Escape string-field backslashes independently from Exec quoting.
     field = lambda value: str(value).replace('\\', '\\\\')
-    return ('[Desktop Entry]\nType=Application\nVersion=1.0\nName=AstroHealth\n'
+    return ('[Desktop Entry]\nType=Application\nVersion=1.0\nName=Ophius\n'
             'Comment=Open the local astronaut health monitor\n'
             f'Exec={desktop_exec([executable or sys.executable, root / "launch_desktop.py"])}\n'
-            f'Path={field(root)}\nIcon={field(root / "assets" / "astrohealth.svg")}\n'
+            f'Path={field(root)}\nIcon={field(root / "assets" / "ophius.svg")}\n'
             'Terminal=false\nCategories=Science;Education;\nStartupNotify=false\n')
 
 
 def install_linux(desktop=None):
     desktop = Path(desktop) if desktop else linux_desktop_directory()
     application_dir = Path(os.environ.get('XDG_DATA_HOME', Path.home()/'.local'/'share')) / 'applications'
-    targets = [desktop / 'AstroHealth.desktop', application_dir / 'astrohealth.desktop']
+    targets = [desktop / 'Ophius.desktop', application_dir / 'ophius.desktop']
     content = linux_entry()
     for target in targets:
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -65,16 +65,16 @@ def install_windows(desktop=None):
     # Native known-folder discovery supports redirected/OneDrive desktops.
     script = '''$ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
-$desktop = if ($env:ASTROHEALTH_DESKTOP) { $env:ASTROHEALTH_DESKTOP } else { [Environment]::GetFolderPath('DesktopDirectory') }
+$desktop = if ($env:OPHIUS_DESKTOP) { $env:OPHIUS_DESKTOP } else { [Environment]::GetFolderPath('DesktopDirectory') }
 if (-not $desktop) { throw 'Could not locate the Windows desktop folder' }
 [void][IO.Directory]::CreateDirectory($desktop)
-$path = Join-Path $desktop 'AstroHealth.lnk'
+$path = Join-Path $desktop 'Ophius.lnk'
 $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($path)
-$shortcut.TargetPath = $env:ASTROHEALTH_PYTHON
-$shortcut.Arguments = $env:ASTROHEALTH_ARGUMENTS
-$shortcut.WorkingDirectory = $env:ASTROHEALTH_ROOT
-$shortcut.IconLocation = $env:ASTROHEALTH_PYTHON + ',0'
-$shortcut.Description = 'Open the local AstroHealth monitor'
+$shortcut.TargetPath = $env:OPHIUS_PYTHON
+$shortcut.Arguments = $env:OPHIUS_ARGUMENTS
+$shortcut.WorkingDirectory = $env:OPHIUS_ROOT
+$shortcut.IconLocation = $env:OPHIUS_PYTHON + ',0'
+$shortcut.Description = 'Open the local Ophius monitor'
 $shortcut.WindowStyle = 1
 $shortcut.Save()
 Write-Output $path
@@ -82,9 +82,9 @@ Write-Output $path
     environment = os.environ.copy()
     pythonw = Path(sys.executable).with_name('pythonw.exe')
     interpreter = str(pythonw) if pythonw.is_file() else sys.executable
-    environment.update(ASTROHEALTH_PYTHON=interpreter, ASTROHEALTH_ROOT=str(ROOT),
-                       ASTROHEALTH_ARGUMENTS=subprocess.list2cmdline([str(ROOT/'launch_desktop.py')]),
-                       ASTROHEALTH_DESKTOP=str(desktop) if desktop else '')
+    environment.update(OPHIUS_PYTHON=interpreter, OPHIUS_ROOT=str(ROOT),
+                       OPHIUS_ARGUMENTS=subprocess.list2cmdline([str(ROOT/'launch_desktop.py')]),
+                       OPHIUS_DESKTOP=str(desktop) if desktop else '')
     result = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', script],
                             env=environment, capture_output=True, text=True, encoding='utf-8')
     if result.returncode:
@@ -94,14 +94,14 @@ Write-Output $path
 
 def install_macos(desktop=None):
     desktop = Path(desktop) if desktop else Path.home()/'Desktop'
-    application = desktop/'AstroHealth.app'
-    executable = application/'Contents'/'MacOS'/'AstroHealth'
+    application = desktop/'Ophius.app'
+    executable = application/'Contents'/'MacOS'/'Ophius'
     executable.parent.mkdir(parents=True, exist_ok=True)
     executable.write_text('#!/bin/sh\nexec '+shlex.quote(sys.executable)+' '+shlex.quote(str(ROOT/'launch_desktop.py'))+'\n',encoding='utf-8')
     executable.chmod(0o755)
-    information = {'CFBundleName':'AstroHealth', 'CFBundleDisplayName':'AstroHealth',
-                   'CFBundleIdentifier':'local.astrohealth.desktop', 'CFBundleVersion':'2.2.0',
-                   'CFBundleExecutable':'AstroHealth', 'CFBundlePackageType':'APPL', 'NSHighResolutionCapable':True}
+    information = {'CFBundleName':'Ophius', 'CFBundleDisplayName':'Ophius',
+                   'CFBundleIdentifier':'local.ophius.desktop', 'CFBundleVersion':'2.3.0',
+                   'CFBundleExecutable':'Ophius', 'CFBundlePackageType':'APPL', 'NSHighResolutionCapable':True}
     with (application/'Contents'/'Info.plist').open('wb') as output:plistlib.dump(information,output)
     return [application]
 
@@ -129,7 +129,7 @@ def main():
         parser.exit(1, f'Could not create desktop shortcut: {exc}\n')
     for path in paths:
         print(f'Created: {path}')
-    print('Double-click AstroHealth to start. Keep this app folder in place.')
+    print('Double-click Ophius to start. Keep this app folder in place.')
     if system == 'Linux':
         print('If your desktop asks, choose Allow Launching / Trust and Launch.')
     return 0
