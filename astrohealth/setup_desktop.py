@@ -100,7 +100,7 @@ def install_macos(desktop=None):
     executable.write_text('#!/bin/sh\nexec '+shlex.quote(sys.executable)+' '+shlex.quote(str(ROOT/'launch_desktop.py'))+'\n',encoding='utf-8')
     executable.chmod(0o755)
     information = {'CFBundleName':'AstroHealth', 'CFBundleDisplayName':'AstroHealth',
-                   'CFBundleIdentifier':'local.astrohealth.desktop', 'CFBundleVersion':'2.1.0',
+                   'CFBundleIdentifier':'local.astrohealth.desktop', 'CFBundleVersion':'2.2.0',
                    'CFBundleExecutable':'AstroHealth', 'CFBundlePackageType':'APPL', 'NSHighResolutionCapable':True}
     with (application/'Contents'/'Info.plist').open('wb') as output:plistlib.dump(information,output)
     return [application]

@@ -1,0 +1,36 @@
+# Keep this app's source, JSON, README and launcher files.
+*
+!*/
+!.gitignore
+!*.py
+!*.js
+!*.html
+!*.css
+!*.svg
+!*.json
+!*.jsonl
+!*.sh
+!*.bat
+!*.command
+!*.desktop
+!README
+!README.*
+# Required by the desktop installer.
+!requirements-desktop.txt
+
+# Local runtimes, caches and generated application data stay private.
+.desktop-runtime/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+data/
+build/
+dist/
+output/
+*.app/
+.env
+.env.*

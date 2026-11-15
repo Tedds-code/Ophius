@@ -20,7 +20,7 @@ class ServerTests(unittest.TestCase):
         self.now = datetime.now(timezone.utc)
         self.monitor = Monitor(Path(self.temp.name), ROOT/'config', ROOT/'profiles', clock=lambda: self.now)
         self.simulator = Simulator(self.monitor)
-        self.server = make_server(self.monitor, self.simulator, port=0)
+        self.server = make_server(self.monitor, self.simulator, port=0, testing_mode=getattr(self,'testing_mode',True))
         self.thread = threading.Thread(target=lambda: self.server.serve_forever(poll_interval=.01), daemon=True)
         self.thread.start()
         self.count = 0
@@ -232,6 +232,60 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(result['status'], 'insufficient_data')
         code, _ = self.request('POST', path, {'key': 'nuclear_source_dose', 'unit': 'mGy', 'daily_rate': 1})
         self.assertEqual(code, 400)
+
+
+class NormalDesktopModeTests(unittest.TestCase):
+    testing_mode = False
+    setUp = ServerTests.setUp
+    tearDown = ServerTests.tearDown
+    request = ServerTests.request
+    packet = ServerTests.packet
+    get = ServerTests.get
+    row = ServerTests.row
+
+    def test_normal_mode_blocks_both_simulation_endpoints_without_writing_data(self):
+        code, meta = self.request('GET','/api/meta')
+        self.assertEqual(code,200)
+        self.assertFalse(meta['testing_mode'])
+        self.assertEqual(meta['simulation_modes'],[])
+        self.assertEqual(meta['lab_scenarios'],{})
+        for path,payload in [('simulate',{'action':'once','mode':'critical'}),
+                             ('simulate-report',{'scope':'labs','scenario':'anemia'}),
+                             ('simulate-report',{'scope':'dose','scenario':'high'})]:
+            code, result=self.request('POST','/api/astronauts/A-101/'+path,payload)
+            self.assertEqual(code,403,result)
+        history=self.monitor.history('A-101')
+        self.assertFalse(history['events'])
+        self.assertFalse(history['lab_reports'])
+        self.assertFalse(history['daily'])
+
+    def test_normal_mode_rejects_explicitly_synthetic_imports(self):
+        packet=self.packet();packet['source']='simulation'
+        code,_=self.request('POST','/api/astronauts/A-101/ingest',packet)
+        self.assertEqual(code,403)
+        packet=self.packet();packet['readings']['heart_rate']['metadata']={'synthetic_coverage':True}
+        code,_=self.request('POST','/api/astronauts/A-101/ingest',packet)
+        self.assertEqual(code,403)
+        packet=self.packet();packet['readings']['heart_rate']['metadata']={'origin':'simulated'}
+        code,_=self.request('POST','/api/astronauts/A-101/ingest',packet)
+        self.assertEqual(code,403)
+        report={'timestamp':self.now.isoformat(),'synthetic':True,'report_id':'synthetic-normal',
+                'measurements':{'hemoglobin':{'value':11,'unit':'g/dL'}}}
+        code,_=self.request('POST','/api/astronauts/A-101/lab',report)
+        self.assertEqual(code,403)
+        self.assertEqual(self.get()['active_source'],'observed')
+        self.assertIsNone(self.get()['mission_day'])
+
+    def test_normal_mode_still_assesses_sensor_and_manual_lab_values(self):
+        code,snap=self.request('POST','/api/astronauts/A-101/ingest',self.packet())
+        self.assertEqual(code,200,snap)
+        self.assertEqual(self.row(snap,'heart_rate')['value'],72)
+        report={'timestamp':self.now.isoformat(),'report_id':'observed-normal',
+                'measurements':{'hemoglobin':{'value':11,'unit':'g/dL'}}}
+        code,snap=self.request('POST','/api/astronauts/A-101/lab',report)
+        self.assertEqual(code,200,snap)
+        self.assertEqual(snap['active_source'],'observed')
+        self.assertTrue(any(f['rule_id']=='B01' for f in snap['assessment']['findings']))
 
 
 if __name__ == '__main__':

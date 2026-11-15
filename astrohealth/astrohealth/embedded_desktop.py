@@ -3,7 +3,7 @@ from pathlib import Path
 import queue
 
 
-def desktop_loop(url,notifications,stop,show_window,hide_window,hidden=False):
+def desktop_loop(url,notifications,stop,show_window,hide_window,hidden=False,testing_mode=False):
     from PySide6.QtCore import QTimer,QUrl
     from PySide6.QtGui import QAction,QIcon,QKeySequence
     from PySide6.QtWidgets import QApplication,QFileDialog,QMainWindow,QMenu,QSystemTrayIcon
@@ -29,7 +29,8 @@ def desktop_loop(url,notifications,stop,show_window,hide_window,hidden=False):
         def closeEvent(self,event):
             event.ignore();self.hide()
 
-    window=Window();window.setWindowTitle('AstroHealth 2.1 — crew health monitor');window.setWindowIcon(icon)
+    from . import __version__
+    window=Window();window.setWindowTitle(f'AstroHealth {__version__} — '+('TESTING MODE' if testing_mode else 'crew health monitor'));window.setWindowIcon(icon)
     window.resize(1360,900)
     profile=QWebEngineProfile(app)
     # Do not persist a cache of short-lived sensor readings in the embedded renderer.

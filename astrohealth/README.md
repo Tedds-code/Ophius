@@ -1,4 +1,4 @@
-# AstroHealth 2.1 — preserved desktop view
+# AstroHealth 2.2 — preserved desktop view
 
 This version preserves the original dark dashboard inside its own **Qt desktop window**. It does not launch a separate browser. The embedded renderer uses a memory-only, private profile. The localhost JSON service remains available for sensor gateways and automation.
 
@@ -39,7 +39,7 @@ Closing the window with **X** hides it while monitoring continues. Reopen the de
 ## Using the app
 
 - **Vitals:** current values, personal baseline, source, time and assessment. CO2 is absent when no current reading exists; it appears when a report is available and disappears when it expires.
-- **Laboratory results / Radiation & exposure windows:** expand either panel on Overview, choose a scenario and click **Run lab simulation** or **Run dose simulation**. All 12 supported labs and all 19 dose quantities are covered. Use the single-measurement scenario to test a selected value. JSON import remains available.
+- **Laboratory results / Radiation & exposure windows:** view imported results and their personal baselines. Import real laboratory JSON manually and dose reports through the sensor-packet import. Simulations are available only in the separate testing mode described below.
 - **Findings:** evidence, escalation, allergy context and guarded treatment references. Each lab/dose row has **Why / linked rules**, showing its effective threshold, window, reference source and the status of linked medical rules. Radiation quantities without a supplied diagnosis rule show the threshold comparison explicitly.
 - **Symptoms:** select reported symptoms/context, enter manual measurements and actual recent exposures.
 - **Treatments:** search condition names, medicine names and reference details. Query and focus are preserved while measurements update.
@@ -48,9 +48,81 @@ Closing the window with **X** hides it while monitoring continues. Reopen the de
 - **Forecasts:** measured-history projections and separately entered future-rate scenarios.
 - **Profile:** view/export the baseline and current medical-history document.
 
-Simulation is **OFF at startup**. Select a mode and click **Start continuous** or **One reading / scenario**. The standard simulator supplies all seven supported vital/environment values. The heart-rate-collapse scenario runs 72 →155 →0 bpm within a few seconds. Zero triggers an immediate possible-arrest warning; signal loss is a separate technical condition. CO2 is an explicitly synthetic instrument-reported one-hour average, not an hour of actual collection by the app.
+## Normal operation and value testing
 
-Dropdowns and search fields stay in place during refresh. Lab and dose simulations are manual numerical fixtures, not a physiological model. Hypothetical dose coverage is labelled synthetic; it never establishes observed exposure. Normal, mixed, high and missing-context reports let you compare assessment states. The low-white-cells-with-fever scenario explicitly adds a synthetic, manually reported core temperature.
+The standard desktop shortcut and `run_windows.bat`, `run_linux.sh` or
+`run_macos.command` open **normal monitoring**. There are no simulation buttons in
+this mode. The monitor waits for sensor/gateway packets and manually imported
+laboratory reports; it does not manufacture measurements or run blood tests.
+Its local gateway is `127.0.0.1:8765` and its database is
+`data/astrohealth.sqlite3`. Stop monitoring with **Quit & save**; X hides the window.
+
+To test numerical values and their connections to the supplied medical rules,
+launch the explicitly separate **testing mode**:
+
+| Platform | Testing launcher |
+|---|---|
+| Windows | Double-click `run_testing_windows.bat` |
+| Linux | Run `sh run_testing_linux.sh` |
+| macOS | Double-click `run_testing_macos.command` |
+
+These launchers perform the same first-time dependency setup if needed. Testing
+uses port **8766**, shows a **TESTING MODE** banner, and stores its database in
+`data/testing/astrohealth.sqlite3`. The normal desktop shortcut continues to open
+normal monitoring. Both modes can run together; rerunning a launcher restores
+its matching desktop window. `--testing-mode` is also available on `app.py` and
+`launch_desktop.py` using the installed desktop runtime. When `--data-dir` is
+supplied in testing mode, a `testing/` subdirectory is appended to that base.
+
+Only testing mode enables the vitals simulation console and lab/dose scenario
+controls. Expand Laboratory results or Radiation & exposure windows on Overview
+for all **12 supported lab values** and **19 dose quantities**, including individual
+measurements. Use **Why / linked rules** and **View findings & treatments** to check
+the assessment and medical reference connections. Normal mode rejects simulation
+requests and imports explicitly marked as synthetic.
+
+**These simulations are only for testing values, thresholds, warnings and rule
+connections.** They are numerical fixtures, not physiological predictions or
+clinical validation. Tests never start automatically. The heart-rate test runs
+72 → 155 → 0 bpm within seconds; the synthetic CO2 example declares hypothetical
+one-hour coverage. Dose scenarios use explicitly hypothetical coverage rather than
+claiming actual exposure history. The low-white-cells-with-fever preset adds a
+synthetic manually reported core temperature. None of this is generated during
+normal monitoring.
+
+The separate `tests/` directory contains automated software checks. Run
+`python -m unittest discover -s tests -v` from the repository root to verify parsing,
+thresholds, assessment, storage and mode separation. These checks use temporary
+databases; they do not appear in the desktop interface or run on startup. They
+check software behavior and values, not clinical accuracy.
+
+## What the program predicts
+
+The forecast engine currently projects **radiation dose accumulation**. It does
+not forecast future heart rate, blood counts, disease onset or cancer probability.
+Vitals, lab findings and treatment references are assessed against current data
+and the supplied rules.
+
+Given a usable current dose total and a constant daily dose rate, it calculates:
+
+- Total after a selected horizon (automatically 21 days).
+- Time until the configured dose limit is reached and whether the total exceeds it within that horizon.
+- Total at the end of the planned mission, using the remaining mission days.
+
+The calculation is `future total = current total + daily rate × days`. For example,
+35 mSv currently, a 40 mSv limit and 0.3 mSv/day imply 41.3 mSv after 21 days and
+reaching the limit after about 16.7 days. This is conditional on that rate continuing.
+A projected future crossing stays separate from an actual current-limit warning.
+Limits marked as mission-scaled use the profile's planned duration.
+
+An automatic measured trend requires verified dose reports on at least **three
+distinct dates**, spanning at least **two elapsed days**, with the latest exposure
+no more than **24 hours** old. It uses verified cumulative differences or contiguous
+verified interval totals. A manually entered what-if rate still requires a usable
+current total. Missing coverage, mismatched units or counter resets prevent a
+forecast. Thirty-day and one-year rolling-window predictions are currently withheld
+because a fixed window total does not show when old exposure leaves the window.
+A one-shot lab/dose simulation does not supply a measured multi-day trend.
 
 ## Why previous versions repeated warnings
 
@@ -87,12 +159,12 @@ D-dimer uses the replacement thresholds' **mg/L** units (male caution above0.4, 
 
 ## JSON examples and gateways
 
-Run `python make_demo_reports.py` (`python3` on Linux/macOS) to generate complete synthetic lab/dose examples. Import the blood report manually through Labs & dose and use the sensor/dose import for the dose JSON. See **SIMULATION_COVERAGE.md** for all39 distinct threshold-backed inputs and additional manual inputs. No blood tests are run automatically.
+Run `python make_demo_reports.py` (`python3` on Linux/macOS) to generate complete synthetic lab/dose examples. Import these synthetic examples only in testing mode: use Import blood test for labs and Import sensor packet for dose JSON. See **SIMULATION_COVERAGE.md** for all39 distinct threshold-backed inputs and additional manual inputs. No blood tests are run automatically.
 
 The optional localhost JSON API remains at127.0.0.1:8765. Fresh-style JSONL/TCP/serial gateways remain supported:
 
 ```sh
-python3 gateway.py --astronaut A-101 --file examples/cardiac_sequence.jsonl --replay-now --interval 2
+python3 gateway.py --port 8766 --astronaut A-101 --file examples/cardiac_sequence.jsonl --replay-now --interval 2
 python3 gateway.py --astronaut A-101 --tcp 127.0.0.1:9000
 ```
 

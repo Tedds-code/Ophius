@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 LOG = logging.getLogger(__name__)
 
 
-def make_server(monitor, simulator, port=8765, window_signals=None,hide_signal=None,stop_signal=None):
+def make_server(monitor, simulator, port=8765, window_signals=None,hide_signal=None,stop_signal=None,testing_mode=False):
     startup_ids={aid:[e['id'] for e in monitor.history(aid)['events']] for aid in monitor.profiles}
     class Handler(BaseHTTPRequestHandler):
         server_version = 'AstroHealth/1.0'
@@ -75,8 +75,8 @@ def make_server(monitor, simulator, port=8765, window_signals=None,hide_signal=N
                 bits = path.removeprefix('/api/').strip('/').split('/')
                 if bits == ['meta'] and method == 'GET':
                     return self.send(200, {**monitor.kb.meta(), 'native_desktop': window_signals is not None, 'app_version': __version__, 'buffer_seconds': 60,
-                                           'simulation_modes': list(MODES),'threshold_catalog':monitor.kb.signals,
-                                           'lab_scenarios':LAB_SCENARIOS,'dose_scenarios':DOSE_SCENARIOS})
+                                           'testing_mode':testing_mode,'simulation_modes': list(MODES) if testing_mode else [],'threshold_catalog':monitor.kb.signals,
+                                           'lab_scenarios':LAB_SCENARIOS if testing_mode else {},'dose_scenarios':DOSE_SCENARIOS if testing_mode else {}})
                 if bits == ['monitor'] and method == 'GET':
                     return self.send(200, {'running': True, 'simulation': simulator.status(),
                                            'buffer_seconds': 60, 'daily_boundary': 'UTC','startup_event_ids':startup_ids})
@@ -101,14 +101,23 @@ def make_server(monitor, simulator, port=8765, window_signals=None,hide_signal=N
                     if method == 'GET' and sub == 'history':
                         return self.send(200, monitor.history(aid))
                     if method == 'POST' and sub == 'lab':
-                        return self.send(200, monitor.import_lab(aid, self.body()))
+                        payload=self.body()
+                        if payload.get('synthetic') is True and not testing_mode:
+                            return self.send(403,{'error':'Synthetic reports require testing mode; use the testing launcher'})
+                        return self.send(200, monitor.import_lab(aid, payload))
                     if method == 'POST' and sub == 'ingest':
-                        return self.send(200, monitor.ingest(aid, normalize_packet(self.body(), monitor.kb)))
+                        packet=normalize_packet(self.body(), monitor.kb)
+                        synthetic=packet.get('source')=='simulation' or any((r.get('metadata',{}).get('synthetic_coverage') is True or r.get('metadata',{}).get('origin') in {'simulated','synthetic','simulation'}) for r in packet['readings'].values())
+                        if synthetic and not testing_mode:
+                            return self.send(403,{'error':'Synthetic packets require testing mode; use the testing launcher'})
+                        return self.send(200, monitor.ingest(aid, packet))
                     if method == 'PUT' and sub == 'symptoms':
                         return self.send(200, monitor.update_symptoms(aid, self.body()))
                     if method == 'POST' and sub == 'simulate':
+                        if not testing_mode:return self.send(403,{'error':'Simulations are available only in testing mode'})
                         return self.send(200, simulator.control(aid, self.body()))
                     if method=='POST' and sub=='simulate-report':
+                        if not testing_mode:return self.send(403,{'error':'Simulations are available only in testing mode'})
                         return self.send(200,simulate_report(monitor,aid,self.body()))
                     if method=='POST' and sub=='connections':
                         return self.send(200,measurement_connections(monitor,aid,self.body().get('key')))

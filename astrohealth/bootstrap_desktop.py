@@ -12,6 +12,7 @@ ROOT=Path(__file__).resolve().parent
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--launch',action='store_true')
+    parser.add_argument('--testing-mode',action='store_true',help='Launch the separate synthetic value testing mode')
     parser.add_argument('--desktop-dir',type=Path)
     args=parser.parse_args()
     if sys.version_info<(3,10):parser.exit(1,'Python 3.10 or newer is required.\n')
@@ -29,7 +30,7 @@ def main():
     subprocess.run(command,check=True)
     if args.launch:
         target=python.with_name('pythonw.exe') if os.name=='nt' and python.with_name('pythonw.exe').exists() else python
-        subprocess.Popen([str(target),str(ROOT/'launch_desktop.py')],cwd=ROOT)
+        subprocess.Popen([str(target),str(ROOT/'launch_desktop.py')]+(['--testing-mode'] if args.testing_mode else []),cwd=ROOT)
     return 0
 
 

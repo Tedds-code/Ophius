@@ -37,7 +37,8 @@ class AlertTracker:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--port', type=int, default=8765, help='Local JSON gateway port')
+    parser.add_argument('--testing-mode', action='store_true', help='Enable synthetic value tests with a separate testing database')
+    parser.add_argument('--port', type=int, help='Local gateway port: 8765 normally, 8766 in testing mode')
     parser.add_argument('--data-dir', type=Path, default=ROOT/'data')
     parser.add_argument('--headless', action='store_true', help='Run JSON gateway only, without a desktop window')
     parser.add_argument('--hidden', action='store_true', help='Start desktop monitoring hidden until a new warning')
@@ -46,7 +47,10 @@ def main(argv=None):
     parser.add_argument('--no-alert-browser', action='store_true', help=argparse.SUPPRESS)
     parser.add_argument('--verbose', action='store_true')
     args = parser.parse_args(argv)
-    data_dir = args.data_dir.resolve();data_dir.mkdir(parents=True, exist_ok=True)
+    data_dir = args.data_dir.resolve()
+    if args.testing_mode:data_dir = data_dir/'testing'
+    port = args.port if args.port is not None else (8766 if args.testing_mode else 8765)
+    data_dir.mkdir(parents=True, exist_ok=True)
     handlers = [logging.FileHandler(data_dir/'monitor.log', encoding='utf-8')]
     if sys.stderr is not None:handlers.append(logging.StreamHandler())
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
@@ -67,14 +71,15 @@ def main(argv=None):
         monitor = Monitor(data_dir, ROOT/'config', ROOT/'profiles')
         simulator = Simulator(monitor)
         tracker = AlertTracker(monitor)
-        server = make_server(monitor, simulator, args.port, window_signals=show_window if desktop_enabled else None,
+        server = make_server(monitor, simulator, port, testing_mode=args.testing_mode, window_signals=show_window if desktop_enabled else None,
                              hide_signal=hide_window,stop_signal=stop)
         def halt(*_):stop.set()
         signal.signal(signal.SIGINT, halt);signal.signal(signal.SIGTERM, halt)
         def worker():
             while not stop.is_set():
                 try:
-                    simulator.tick();monitor.tick()
+                    if args.testing_mode:simulator.tick()
+                    monitor.tick()
                     for event in tracker.collect(monitor):
                         if desktop_enabled:
                             try:notifications.put_nowait(event)
@@ -91,7 +96,7 @@ def main(argv=None):
         else:
             from astrohealth.embedded_desktop import desktop_loop
             desktop_loop(f'http://127.0.0.1:{server.server_port}',notifications,stop,show_window,hide_window,
-                         hidden=args.hidden and not args.open)
+                         hidden=args.hidden and not args.open,testing_mode=args.testing_mode)
     finally:
         stop.set()
         if worker_thread is not None:worker_thread.join(timeout=5)

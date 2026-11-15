@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Start or restore the native desktop; never opens a browser."""
+import argparse
 import json
 import os
 from pathlib import Path
@@ -28,14 +29,19 @@ def show_error(message):
 def main():
     if sys.version_info < (3,10):raise RuntimeError('AstroHealth requires Python 3.10 or newer.')
     from astrohealth import __version__
-    if not sys.argv[1:]:
-        url='http://127.0.0.1:8765'
+    parser=argparse.ArgumentParser(add_help=False)
+    parser.add_argument('--testing-mode',action='store_true')
+    parser.add_argument('--port',type=int)
+    options,_=parser.parse_known_args()
+    port=options.port if options.port is not None else (8766 if options.testing_mode else 8765)
+    if '--headless' not in sys.argv[1:]:
+        url=f'http://127.0.0.1:{port}'
         try:
             with urlopen(url+'/api/meta',timeout=1) as response:metadata=json.load(response)
         except (OSError,URLError,ValueError):metadata=None
         if metadata and 'rules' in metadata and 'readings' in metadata:
-            if metadata.get('app_version') != __version__ or not metadata.get('native_desktop'):
-                raise RuntimeError('An older monitor is still running. Stop it first, then launch the native desktop app.')
+            if metadata.get('app_version') != __version__ or not metadata.get('native_desktop') or bool(metadata.get('testing_mode'))!=options.testing_mode:
+                raise RuntimeError(f'Another AstroHealth version or mode is running on port {port}. Use Quit & save in that app, then launch this version.')
             request=Request(url+'/api/window/show',data=b'{}',headers={'Content-Type':'application/json'},method='POST')
             with urlopen(request,timeout=3) as response:response.read()
             return 0
